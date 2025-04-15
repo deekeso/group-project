@@ -1,0 +1,79 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}
+
+/* Success Modal Styles */
+.success-modal {
+  background: rgba(0, 3, 140, 0.95) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.success-modal .el-message-box__title {
+  color: #FFFFFF !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 24px !important;
+  text-align: center !important;
+}
+
+.success-modal .el-message-box__message {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  text-align: center !important;
+  padding: 20px 0 !important;
+}
+
+.success-modal .el-message-box__status {
+  color: #67C23A !important;
+  font-size: 28px !important;
+}
+
+.success-modal .el-button {
+  background: #FFFFFF !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #000000 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  padding: 12px 24px !important;
+  width: 100% !important;
+  transition: background-color 0.3s !important;
+}
+
+.success-modal .el-button:hover {
+  background: #F5F5F5 !important;
+}
