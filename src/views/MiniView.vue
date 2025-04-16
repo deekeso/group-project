@@ -2,8 +2,6 @@
   <div>
     <h1>Mini Keno Page</h1>
     <MiniGrid />
-    <el-button>Draw</el-button>
-    <el-text>{{ drawNumber }}</el-text>
   </div>
 </template>
 
