@@ -7,40 +7,46 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      redirect: '/login',
     },
     {
       path: '/login',
       name: 'login',
       component: LoginForm,
-      meta: { layout: 'full' }
+      meta: { layout: 'full' },
     },
     {
       path: '/register',
       name: 'register',
       component: () => import('@/components/RegisterForm.vue'),
-      meta: { layout: 'full' }
+      meta: { layout: 'full' },
     },
     {
       path: '/home',
       name: 'home',
       component: () => import('@/views/HomeView.vue'),
-      meta: { requiresAuth: true }
-    }
-  ]
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/mini-keno',
+      name: 'mini',
+      component: () => import('@/views/MiniView.vue'),
+      meta: { requiresAuth: true },
+    },
+  ],
 })
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Check if route requires auth
   if (to.meta.requiresAuth) {
     if (!authStore.isAuthenticated) {
       // Redirect to login with return path
-      next({ 
+      next({
         path: '/login',
-        query: { redirect: to.fullPath }
+        query: { redirect: to.fullPath },
       })
       return
     }
