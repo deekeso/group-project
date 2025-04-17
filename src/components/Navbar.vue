@@ -24,16 +24,10 @@ const toggleMenu = () => {
         </div>
       </div>
       <div class="nav-right">
-        <div class="search-box">
-          <input type="text" placeholder="Search" class="search-input" />
-          <button class="search-btn">
-            <el-icon><Search /></el-icon>
-          </button>
-        </div>
         <div class="profile-icon">
           <el-icon><User /></el-icon>
         </div>
-        <button class="hamburger" :class="{ 'active': isMenuOpen }" @click="toggleMenu">
+        <button class="hamburger" :class="{ active: isMenuOpen }" @click="toggleMenu">
           <span></span>
           <span></span>
           <span></span>
@@ -93,7 +87,7 @@ const toggleMenu = () => {
   font-family: 'Istok Web', sans-serif;
   font-weight: 700;
   font-size: 16px;
-  color: #FFFFFF;
+  color: #ffffff;
   text-decoration: none;
   text-transform: uppercase;
   transition: all 0.3s ease;
@@ -115,7 +109,7 @@ const toggleMenu = () => {
 .search-box {
   display: flex;
   align-items: center;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 20px;
   padding: 8px 16px;
   width: 240px;
@@ -134,7 +128,7 @@ const toggleMenu = () => {
   background: none;
   border: none;
   cursor: pointer;
-  color: #1E1E1E;
+  color: #1e1e1e;
   display: flex;
   align-items: center;
 }
@@ -142,12 +136,12 @@ const toggleMenu = () => {
 .profile-icon {
   width: 40px;
   height: 40px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1E1E1E;
+  color: #1e1e1e;
 }
 
 .hamburger {
@@ -166,7 +160,7 @@ const toggleMenu = () => {
 .hamburger span {
   width: 100%;
   height: 3px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 3px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -240,4 +234,4 @@ const toggleMenu = () => {
     margin-top: 20px;
   }
 }
-</style> 
+</style>
