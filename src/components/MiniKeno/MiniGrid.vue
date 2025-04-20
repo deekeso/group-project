@@ -1,6 +1,6 @@
 <template>
   <div class="keno-grid">
-    <el-card>
+    <el-card class="container">
       <div class="grid">
         <div
           v-for="number in 49"
@@ -56,7 +56,9 @@ function toggleNumber(number: number): void {
   grid-template-columns: repeat(7, 60px);
   gap: 5px;
 }
-
+.container {
+  border: none;
+}
 .keno-cell {
   width: 60px;
   height: 60px;
