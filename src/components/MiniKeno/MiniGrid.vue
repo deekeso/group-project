@@ -27,6 +27,10 @@ import { storeToRefs } from 'pinia'
 const gameStore = useGameStore()
 const { selectedNumbers, matchedNumbers } = storeToRefs(gameStore)
 
+const emit = defineEmits<{
+  (e: 'numberSelected', numbers: number[]): void
+}>()
+
 // Function to toggle number selection
 function toggleNumber(number: number): void {
   const index = selectedNumbers.value.indexOf(number)
@@ -35,6 +39,7 @@ function toggleNumber(number: number): void {
   } else if (selectedNumbers.value.length < 10) {
     selectedNumbers.value.push(number)
   }
+  emit('numberSelected', selectedNumbers.value)
 }
 </script>
 

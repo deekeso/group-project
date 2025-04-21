@@ -2,8 +2,8 @@
   <div>
     <h1>Mini Keno Page</h1>
     <div class="grid-paytable-container">
-      <MiniGrid />
-      <PayTable :selected-cells="0" :matched-cells="0" style="padding-top: 10px" />
+      <MiniGrid @number-selected="setSelectedNumbers" />
+      <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px" />
     </div>
 
     <div class="drawn-numbers">
@@ -20,10 +20,12 @@ import KenoBall from '@/components/KenoBall.vue'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const { drawnNumbers, drawNumber, resetDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const miniGridSelectedNumbers = ref<number[]>([])
+const selectedCellsCount = computed(() => miniGridSelectedNumbers.value.length)
 
 function startDraw() {
   drawnNumbers.value = []
@@ -42,6 +44,10 @@ function startDraw() {
       isDrawing.value = false
     }
   }, 200)
+}
+
+function setSelectedNumbers(numbers: number[]) {
+  miniGridSelectedNumbers.value = numbers
 }
 </script>
 
