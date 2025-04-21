@@ -14,7 +14,7 @@ const toggleMenu = () => {
       <div class="logo-container">
         <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       </div>
-      <div class="nav-right">
+      <div class="profile-container">
         <div class="profile-icon">
           <el-icon><User /></el-icon>
         </div>
@@ -49,12 +49,6 @@ const toggleMenu = () => {
   padding: 0 40px;
 }
 
-.nav-left {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-
 .logo-container {
   display: flex;
   align-items: center;
@@ -69,54 +63,10 @@ const toggleMenu = () => {
   margin-top: 25px;
 }
 
-.nav-link {
-  font-family: 'Istok Web', sans-serif;
-  font-weight: 700;
-  font-size: 16px;
-  color: #ffffff;
-  text-decoration: none;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  letter-spacing: 0.5px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
-
-.nav-link:hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
-}
-
-.nav-right {
+.profile-container {
   display: flex;
   align-items: center;
   gap: 20px;
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 8px 16px;
-  width: 240px;
-}
-
-.search-input {
-  border: none;
-  outline: none;
-  background: transparent;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-}
-
-.search-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #1e1e1e;
-  display: flex;
-  align-items: center;
 }
 
 .profile-icon {
