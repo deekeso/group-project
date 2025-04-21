@@ -22,6 +22,10 @@ import { ref } from 'vue'
 // Declare types
 const selectedNumbers = ref<number[]>([])
 
+const emit = defineEmits<{
+  (e: 'numberSelected', numbers: number[]): void
+}>()
+
 // Function to toggle number selection
 function toggleNumber(number: number): void {
   const index = selectedNumbers.value.indexOf(number)
@@ -30,6 +34,7 @@ function toggleNumber(number: number): void {
   } else {
     selectedNumbers.value.splice(index, 1)
   }
+  emit('numberSelected', selectedNumbers.value)
 }
 </script>
 
