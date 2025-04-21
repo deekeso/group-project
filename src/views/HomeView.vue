@@ -39,23 +39,29 @@ const handleLogout = async () => {
 </script>
 
 <template>
-  <div class="home">
-    <Navbar />
-    <div class="heading">
-      <h1>Game Modes</h1>
-    </div>
-    <hr />
-    <div class="gamemode-container">
-      <GameModesCard />
-      <SloganSection />
+  <div class="background">
+    <div class="home">
+      <Navbar />
+      <div class="heading">
+        <h1>Game Modes</h1>
+      </div>
+      <hr />
+      <div class="gamemode-container">
+        <GameModesCard />
+        <SloganSection />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.background {
+  width: 100%;
+  justify-items: center;
+}
 .home {
   min-height: 100vh;
-  width: 100%;
+  width: 1216px;
   padding-top: 88px;
   margin-inline: 1rem;
   box-sizing: border-box;
