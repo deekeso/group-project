@@ -104,6 +104,7 @@ const handleLogout = async () => {
   font-size: 14px;
   text-align: end;
   margin-left: 20px;
+  color: #f8f8f8;
 }
 .tutorial-btn .el-button {
   margin-top: 40px;
@@ -120,9 +121,7 @@ const handleLogout = async () => {
     0 10px 20px rgba(0, 0, 0, 0.19),
     0 6px 6px rgba(0, 0, 0, 0.23);
 }
-.el-button:hover {
-  box-shadow: 0 10px 20px #f8ab00;
-}
+
 .tutorial-btn .Icon {
   color: #060351;
   margin-right: 14px;
