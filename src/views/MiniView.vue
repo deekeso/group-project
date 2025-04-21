@@ -27,6 +27,8 @@ const { drawnNumbers, drawNumber, resetDraw } = useKenoDraw()
 const isDrawing = ref(false)
 
 function startDraw() {
+  drawnNumbers.value = []
+
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
   isDrawing.value = true
@@ -41,6 +43,7 @@ function startDraw() {
       isDrawing.value = false
     }
   }, 200)
+  console.log(drawnNumbers)
 }
 </script>
 

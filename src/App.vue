@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useGameStore } from './stores/useGameStore'
+
+const gameStore = useGameStore()
+gameStore.loadFromStorage()
+
 // Just router view, no other components needed
 </script>
 
@@ -13,7 +18,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -33,4 +39,3 @@ html, body {
 @import url('https://fonts.googleapis.com/css2?family=Istok+Web:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 </style>
-
