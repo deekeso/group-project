@@ -1,7 +1,10 @@
 <template>
   <div>
     <h1>Mini Keno Page</h1>
-    <MiniGrid />
+    <div class="grid-paytable-container">
+      <MiniGrid />
+      <PayTable :selected-cells="0" :matched-cells="0" style="padding-top: 10px;" />
+    </div>
 
     <div class="drawn-numbers">
       <KenoBall v-for="num in drawnNumbers" :key="num" :number="num" />
@@ -15,6 +18,7 @@
 <script setup lang="ts">
 import KenoBall from '@/components/KenoBall.vue'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
+import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { ref } from 'vue'
 
@@ -44,5 +48,9 @@ function startDraw() {
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
+}
+.grid-paytable-container {
+  width: fit-content;
+  margin: 0 auto;
 }
 </style>
