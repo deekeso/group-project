@@ -10,6 +10,7 @@
             'cell',
             selectedNumbers.includes(number) ? 'selected' : '',
             matchedNumbers.includes(number) ? 'matched' : '',
+            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' : '',
           ]"
           @click="toggleNumber(number)"
         >
@@ -25,7 +26,7 @@ import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
-const { selectedNumbers, matchedNumbers } = storeToRefs(gameStore)
+const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
 
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
@@ -71,7 +72,7 @@ function toggleNumber(number: number): void {
   justify-content: center;
   color: #ffffff;
   font-size: 2rem;
-  background-color: hsla(270, 71%, 59%, 75%);
+  background-color: #846ccf;
   /* border: 1px solid #dcdfe6; */
   border-radius: 6px;
   font-weight: 500;
@@ -84,11 +85,17 @@ function toggleNumber(number: number): void {
 }
 
 .cell.selected {
-  background-color: #d8cf50;
-  color: rgb(51, 33, 7);
-  border-color: #409eff;
+  background-color: #bb78ff;
+  color: #ffffff;
+  border: 4px solid #e7cfff;
 }
 .cell.matched {
-  background-color: rgb(2, 165, 2);
+  background-color: #4adff0;
+  color: #246a72;
+  border: 4px solid #00b6ca;
+}
+.cell.missed {
+  background: #ff7779;
+  color: #4b0405;
 }
 </style>
