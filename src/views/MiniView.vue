@@ -23,7 +23,6 @@ import { useKenoDraw } from '@/composables/useKenoDraw'
 import { ref } from 'vue'
 
 const { drawnNumbers, drawNumber, resetDraw } = useKenoDraw()
-
 const isDrawing = ref(false)
 
 function startDraw() {
@@ -43,7 +42,6 @@ function startDraw() {
       isDrawing.value = false
     }
   }, 200)
-  console.log(drawnNumbers)
 }
 </script>
 
