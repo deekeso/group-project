@@ -5,18 +5,12 @@
       <MiniGrid @number-selected="setSelectedNumbers" />
       <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px" />
     </div>
-
-    <div class="drawn-numbers">
-      <KenoBall v-for="num in drawnNumbers" :key="num" :number="num" />
-    </div>
-
     <el-button @click="startDraw" :disabled="drawnNumbers.length >= 49">Draw Number</el-button>
     <el-button @click="resetDraw" :disabled="isDrawing">Reset</el-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import KenoBall from '@/components/KenoBall.vue'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
