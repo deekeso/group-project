@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <h1>Mini Keno Page</h1>
+  <div class="background">
     <div class="grid-paytable-container">
       <MiniGrid @number-selected="setSelectedNumbers" />
       <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px" />
@@ -62,5 +61,14 @@ function setSelectedNumbers(numbers: number[]) {
 .grid-paytable-container {
   width: fit-content;
   margin: 0 auto;
+}
+.background {
+  height: 100vh;
+  width: 100%;
+  align-content: center;
+  background-image: url(src/assets/game-background.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 </style>

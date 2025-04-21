@@ -33,6 +33,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding: 0;
+  margin: 0;
 }
 
 /* Import fonts properly */
