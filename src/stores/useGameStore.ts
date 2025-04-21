@@ -5,17 +5,19 @@ export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
+  const balance = ref<number>(3000) // defined balance for now
 
   //autosave to local storage
   watch(
-    [selectedNumbers, drawnNumbers, matchedNumbers],
+    [selectedNumbers, drawnNumbers, matchedNumbers, balance],
     () => {
       localStorage.setItem(
         'keno-game',
         JSON.stringify({
           selected: selectedNumbers.value,
-          drawn: matchedNumbers.value,
+          drawn: drawnNumbers.value,
           matches: matchedNumbers.value,
+          balance: balance.value,
         }),
       )
     },
@@ -31,6 +33,7 @@ export const useGameStore = defineStore('game', () => {
       selectedNumbers.value = parsed.selected || []
       drawnNumbers.value = parsed.drawn || []
       matchedNumbers.value = parsed.matched || []
+      balance.value = parsed.balance
     }
   }
 
@@ -49,6 +52,7 @@ export const useGameStore = defineStore('game', () => {
     selectedNumbers,
     drawnNumbers,
     matchedNumbers,
+    balance,
     setDrawnNumbers,
     resetGame,
     loadFromStorage,
