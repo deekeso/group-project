@@ -3,7 +3,7 @@
     <h1>Mini Keno Page</h1>
     <div class="grid-paytable-container">
       <MiniGrid @number-selected="setSelectedNumbers"/>
-      <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px;" />
+      <PayTable kenoType="mini" :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px;" />
     </div>
 
     <div class="drawn-numbers">
