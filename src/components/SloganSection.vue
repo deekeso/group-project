@@ -46,6 +46,9 @@ import { CaretRight } from '@element-plus/icons-vue'
   margin-left: 20px;
   color: #f8f8f8;
 }
+.slogan-body p {
+  max-width: 45ch;
+}
 .tutorial-btn .el-button {
   margin-top: 40px;
   background-color: #f8ab00;

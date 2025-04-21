@@ -55,7 +55,10 @@ const handleLogout = async () => {
 <style scoped>
 .home {
   min-height: 100vh;
+  width: 100%;
   padding-top: 88px;
+  margin-inline: 1rem;
+  box-sizing: border-box;
 }
 .heading {
   font-family: 'Grandstander', sans-serif;
@@ -66,5 +69,7 @@ const handleLogout = async () => {
 }
 .gamemode-container {
   display: flex;
+  justify-content: center;
+  margin-inline: 2rem;
 }
 </style>
