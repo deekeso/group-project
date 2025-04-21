@@ -1,7 +1,9 @@
+import { useGameStore } from '@/stores/useGameStore'
 import { ref } from 'vue'
 
 // Composable to handle Keno drawing logic
 export function useKenoDraw() {
+  const gameStore = useGameStore()
   // Reactive state for the drawn numbers
   const drawnNumbers = ref<number[]>([])
 
@@ -24,11 +26,13 @@ export function useKenoDraw() {
 
     // Add the drawn number to the list
     drawnNumbers.value.push(randomNumber)
+    gameStore.setDrawnNumbers([...drawnNumbers.value])
   }
 
   // Function to reset the drawn numbers
   function resetDraw(): void {
     drawnNumbers.value = []
+    gameStore.setDrawnNumbers([])
   }
 
   return {

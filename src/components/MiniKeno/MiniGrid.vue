@@ -6,7 +6,11 @@
           v-for="number in 49"
           :key="number"
           class="keno-cell"
-          :class="{ selected: selectedNumbers.includes(number) }"
+          :class="[
+            'cell',
+            selectedNumbers.includes(number) ? 'selected' : '',
+            matchedNumbers.includes(number) ? 'matched' : '',
+          ]"
           @click="toggleNumber(number)"
         >
           {{ number }}
@@ -17,30 +21,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
 
-// Declare types
-const selectedNumbers = ref<number[]>([])
+const gameStore = useGameStore()
+const { selectedNumbers, matchedNumbers } = storeToRefs(gameStore)
+
+const emit = defineEmits<{
+  (e: 'numberSelected', numbers: number[]): void
+}>()
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
   const index = selectedNumbers.value.indexOf(number)
-  if (index === -1) {
-    selectedNumbers.value.push(number)
-  } else {
+  if (index > -1) {
     selectedNumbers.value.splice(index, 1)
+  } else if (selectedNumbers.value.length < 10) {
+    selectedNumbers.value.push(number)
   }
+  emit('numberSelected', selectedNumbers.value)
 }
 </script>
 
 <style scoped>
-/* .grid-item {
-  background-color: hsla(270, 71%, 59%, 75%);
-  text-align: center;
-  font-size: 2rem;
-  margin: 5px;
-  border-radius: 5px;
-} */
 .el-card {
   background-color: transparent;
 }
@@ -76,13 +79,16 @@ function toggleNumber(number: number): void {
   transition: background-color 0.2s;
 }
 
-.keno-cell:hover {
+.cell:hover {
   background-color: hsla(270, 68%, 69%, 0.75);
 }
 
-.keno-cell.selected {
+.cell.selected {
   background-color: #d8cf50;
   color: rgb(51, 33, 7);
   border-color: #409eff;
+}
+.cell.matched {
+  background-color: rgb(2, 165, 2);
 }
 </style>
