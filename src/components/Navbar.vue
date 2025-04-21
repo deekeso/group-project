@@ -11,17 +11,8 @@ const toggleMenu = () => {
 <template>
   <nav class="navbar">
     <div class="nav-content">
-      <div class="nav-left">
-        <div class="logo-container">
-          <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
-        </div>
-        <div class="nav-links" :class="{ 'nav-links-active': isMenuOpen }">
-          <a href="#" class="nav-link">HOME</a>
-          <a href="#" class="nav-link">ABOUT</a>
-          <a href="#" class="nav-link">TICKET</a>
-          <a href="#" class="nav-link">WALLET</a>
-          <a href="#" class="nav-link">KENO MODE</a>
-        </div>
+      <div class="logo-container">
+        <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       </div>
       <div class="nav-right">
         <div class="profile-icon">
@@ -68,18 +59,14 @@ const toggleMenu = () => {
   display: flex;
   align-items: center;
   height: 100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .logo {
   height: 150px;
   width: auto;
   margin-top: 25px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 32px;
-  align-items: center;
 }
 
 .nav-link {
