@@ -63,14 +63,16 @@ import { CaretRight } from '@element-plus/icons-vue'
   display: block;
 }
 .classicImg {
-  margin-top: 14px;
+  margin-top: 24px;
+  width: 370px;
 }
 .miniImg {
-  margin-top: 14px;
+  margin-top: 24px;
+  width: 370px;
 }
 
 .el-card {
-  width: 388px;
+  width: 370px;
   border: none;
   border-radius: 0px 0px 12px 12px;
   background: linear-gradient(180deg, #f8ab00 0%, #926500 100%);
@@ -94,6 +96,7 @@ import { CaretRight } from '@element-plus/icons-vue'
   box-shadow:
     0 10px 20px rgba(0, 0, 0, 0.19),
     0 6px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 30px;
 }
 .el-button:hover {
   box-shadow: 0px 0px 5px 2px #f8ab00;
@@ -106,8 +109,9 @@ import { CaretRight } from '@element-plus/icons-vue'
   background-color: #060351;
   height: 48px;
   color: white;
-  font-size: 16px;
+  font-size: 14px;
   font-family: Inter, sans-serif;
+  font-variation-settings: 'wght' 700;
   border: none;
   margin-top: 20px;
 }
