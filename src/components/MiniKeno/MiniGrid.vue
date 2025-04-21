@@ -65,7 +65,8 @@ function toggleNumber(number: number): void {
   border: none;
 }
 .keno-cell {
-  width: 60px;
+  width: 100%;
+  max-width: 70px;
   height: 60px;
   display: flex;
   align-items: center;

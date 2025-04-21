@@ -42,10 +42,14 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
   }
 
-  function resetGame() {
+  function clearGame() {
     selectedNumbers.value = []
     drawnNumbers.value = []
     matchedNumbers.value = []
+
+    localStorage.removeItem('drawnNumbers')
+    localStorage.removeItem('selectedNumbers')
+    localStorage.removeItem('matchedNumbers')
   }
 
   return {
@@ -54,7 +58,7 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers,
     balance,
     setDrawnNumbers,
-    resetGame,
+    clearGame,
     loadFromStorage,
   }
 })

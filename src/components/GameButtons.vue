@@ -19,18 +19,17 @@ const { balance } = storeToRefs(gameStore)
 const wager = ref(0)
 
 function clearGame() {
+  gameStore.clearGame()
   useKenoDraw().resetDraw()
-  gameStore.resetGame()
-  gameStore.setDrawnNumbers([])
 }
 </script>
 
 <style scoped>
 .btn-container {
   width: 100%;
-  border: 1px solid black;
   display: flex;
   justify-content: center;
+  margin-block: 10px;
 }
 .btn {
   font-size: 1rem;

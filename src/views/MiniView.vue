@@ -20,7 +20,7 @@ import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 
 const gameStore = useGameStore()
-const { drawnNumbers, selectedNumbers, matchedNumbers } = storeToRefs(gameStore)
+const { drawnNumbers, matchedNumbers } = storeToRefs(gameStore)
 const { drawNumber } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
@@ -29,7 +29,6 @@ const selectedCellsCount = computed(() => miniGridSelectedNumbers.value.length)
 function startDraw() {
   gameStore.setDrawnNumbers([])
   useKenoDraw().resetDraw()
-  selectedNumbers.value = []
   matchedNumbers.value = []
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
@@ -45,7 +44,7 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
     }
-  }, 200)
+  }, 150)
 }
 
 function setSelectedNumbers(numbers: number[]) {
