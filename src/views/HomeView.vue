@@ -21,16 +21,12 @@ onBeforeMount(() => {
 
 const handleLogout = async () => {
   try {
-    await ElMessageBox.confirm(
-      'Are you sure you want to log out?',
-      'Confirm Logout',
-      {
-        confirmButtonText: 'Yes, Log Out',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }
-    )
-    
+    await ElMessageBox.confirm('Are you sure you want to log out?', 'Confirm Logout', {
+      confirmButtonText: 'Yes, Log Out',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    })
+
     authStore.logout()
     router.push('/login')
   } catch {
@@ -42,12 +38,10 @@ const handleLogout = async () => {
 <template>
   <div class="home">
     <Navbar />
-    
+
     <!-- Add logout button container -->
     <div class="logout-container">
-      <el-button type="danger" @click="handleLogout" class="logout-btn">
-        Logout
-      </el-button>
+      <el-button type="danger" @click="handleLogout" class="logout-btn"> Logout </el-button>
     </div>
 
     <!-- Hero Section -->
@@ -56,9 +50,18 @@ const handleLogout = async () => {
         <h1 class="hero-title">Fast Picks, Big Wins!</h1>
         <div class="hero-text">
           <p>Welcome to Keno Plus — where the numbers move fast, and the wins come faster!</p>
-          <p>Whether you're here for the classic thrill or a quick-hit game, Keno Plus lets you play your way.</p>
-          <p>Choose Classic Keno with 80 numbers for a traditional experience full of suspense, or jump into Mini Keno with just 49 numbers for rapid rounds and instant action.</p>
-          <p>It's simple, exciting, and built for players who love a good rush. Pick your numbers, feel the rush — and let the winning begin!</p>
+          <p>
+            Whether you're here for the classic thrill or a quick-hit game, Keno Plus lets you play
+            your way.
+          </p>
+          <p>
+            Choose Classic Keno with 80 numbers for a traditional experience full of suspense, or
+            jump into Mini Keno with just 49 numbers for rapid rounds and instant action.
+          </p>
+          <p>
+            It's simple, exciting, and built for players who love a good rush. Pick your numbers,
+            feel the rush — and let the winning begin!
+          </p>
         </div>
         <el-button class="learn-btn">Learn How to Play Keno Plus</el-button>
       </div>
@@ -101,7 +104,7 @@ const handleLogout = async () => {
 
 <style scoped>
 .home {
-  background: #05033D;
+  background: #05033d;
   min-height: 100vh;
   padding-top: 164px;
 }
@@ -129,7 +132,7 @@ const handleLogout = async () => {
 
 .hero-title {
   font-size: 48px;
-  color: #FFD700;
+  color: #ffd700;
   margin-bottom: 24px;
 }
 
@@ -145,7 +148,7 @@ const handleLogout = async () => {
 }
 
 .learn-btn {
-  background: #007BFF;
+  background: #007bff;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -178,7 +181,7 @@ const handleLogout = async () => {
 }
 
 .game-mode h2 {
-  color: #FFD700;
+  color: #ffd700;
   font-size: 36px;
   margin-bottom: 24px;
 }
@@ -207,8 +210,8 @@ const handleLogout = async () => {
 
 .play-btn {
   margin-top: 24px;
-  background: #FFD700;
-  color: #05033D;
+  background: #ffd700;
+  color: #05033d;
   padding: 12px 32px;
   border-radius: 8px;
   font-weight: bold;
