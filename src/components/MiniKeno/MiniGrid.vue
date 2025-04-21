@@ -44,10 +44,11 @@ function toggleNumber(number: number): void {
 .el-card {
   background-color: transparent;
 }
+.el-card:deep(.el-card__body) {
+  padding: 0;
+}
+
 .keno-grid {
-  display: flex;
-  justify-content: center;
-  padding: 10px;
   background-color: transparent;
 }
 
