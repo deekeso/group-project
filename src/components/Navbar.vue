@@ -39,8 +39,7 @@ const toggleMenu = () => {
 
 <style scoped>
 .navbar {
-  background: url('@/assets/20250410-174331 (2) (1) 1.png') no-repeat center;
-  background-size: cover;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
   height: 100px;
   width: 100%;
   position: fixed;

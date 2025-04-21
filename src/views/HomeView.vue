@@ -40,9 +40,6 @@ const handleLogout = async () => {
     <Navbar />
 
     <!-- Add logout button container -->
-    <div class="logout-container">
-      <el-button type="danger" @click="handleLogout" class="logout-btn"> Logout </el-button>
-    </div>
 
     <!-- Hero Section -->
     <div class="hero-section">
@@ -73,7 +70,7 @@ const handleLogout = async () => {
 
     <!-- Game Modes -->
     <div class="game-modes">
-      <div class="game-mode classic">
+      <!-- <div class="game-mode classic">
         <h2>Classic Keno</h2>
         <div class="mode-content">
           <img :src="classicKenoImg" alt="Classic Keno" />
@@ -84,9 +81,9 @@ const handleLogout = async () => {
             <el-button type="primary" class="play-btn">Play</el-button>
           </div>
         </div>
-      </div>
+      </div> -->
 
-      <div class="game-mode mini">
+      <!-- <div class="game-mode mini">
         <h2>Mini Keno</h2>
         <div class="mode-content">
           <img :src="miniKenoImg" alt="Mini Keno" />
@@ -97,14 +94,13 @@ const handleLogout = async () => {
             <el-button type="primary" class="play-btn">Play</el-button>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <style scoped>
 .home {
-  background: #05033d;
   min-height: 100vh;
   padding-top: 164px;
 }
