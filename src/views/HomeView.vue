@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import Navbar from '@/components/Navbar.vue'
-import GameModesCard from '@/components/GameModesCard.vue'
-import SloganSection from '@/components/SloganSection.vue'
-
+import { ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+
+import Navbar from '@/components/Navbar.vue'
+import GameModesCard from '@/components/GameModesCard.vue'
+import SloganSection from '@/components/SloganSection.vue'
+import SigninForm from '@/components/SigninForm.vue'
+
 // import { ElMessageBox } from 'element-plus'
 
 // import userPointIcon from '@/assets/ChatGPT Image Apr 13, 2025, 11_51_57 AM - Copy.png'
@@ -36,19 +39,34 @@ onBeforeMount(() => {
 //     // User cancelled logout
 //   }
 // }
+
+const isSigninVisible = ref(false)
+
+const showSigninModal = () => {
+  isSigninVisible.value = true
+}
+
+const closeSigninModal = () => {
+  isSigninVisible.value = false
+}
 </script>
 
 <template>
   <div class="background">
     <div class="home">
       <Navbar />
+
       <div class="heading">
         <h1>Game Modes</h1>
       </div>
       <hr />
       <div class="gamemode-container">
-        <GameModesCard />
+        <GameModesCard @trigger-signin="showSigninModal" />
         <SloganSection />
+
+        <el-dialog v-model="isSigninVisible" style="background-color: transparent" center>
+          <SigninForm />
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -77,5 +95,12 @@ onBeforeMount(() => {
   display: flex;
   justify-content: center;
   margin-inline: 2rem;
+}
+
+::v-deep(.el-dialog__header) {
+  display: none;
+}
+::v-deep(.el-dialocenter) {
+  display: none;
 }
 </style>

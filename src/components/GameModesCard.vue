@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { defineEmits } from 'vue'
 import { CaretRight } from '@element-plus/icons-vue'
+
+const emit = defineEmits(['trigger-signin'])
 </script>
 <template>
   <div class="gamemode-container">
@@ -17,7 +20,7 @@ import { CaretRight } from '@element-plus/icons-vue'
             </p>
           </div>
           <div class="play-btn">
-            <el-button>
+            <el-button @click="emit('trigger-signin')">
               <el-icon :size="38"><CaretRight class="Icon" /></el-icon>
               Play Classic Keno
             </el-button>
@@ -40,7 +43,7 @@ import { CaretRight } from '@element-plus/icons-vue'
             </p>
           </div>
           <div class="play-btn">
-            <el-button>
+            <el-button @click="emit('trigger-signin')">
               <el-icon :size="38"><CaretRight class="Icon" /></el-icon>
               Play Mini Keno
             </el-button>
