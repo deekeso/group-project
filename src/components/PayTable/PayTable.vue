@@ -83,7 +83,7 @@ updatePayTableData()
         <div 
           class="multiplier-cell-tight" 
           :class="{ hit: matchedCellsCount >= data.startIndex }">
-          <el-text size="large">{{ data.pays }}</el-text>
+          <el-text size="large">x{{ data.pays }}</el-text>
         </div>
         <div 
         class="selected-count-cell"
