@@ -12,8 +12,8 @@ export function useKenoDraw() {
 
   // Function to draw a random number (without duplicates)
   function drawNumber(): void {
-    if (drawnNumbers.value.length >= maxNumber) {
-      return // All numbers have been drawn, can't draw more
+    if (drawnNumbers.value.length >= 10) {
+      resetDraw()
     }
 
     // Generate a random number between 1 and maxNumber
