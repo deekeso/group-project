@@ -1,10 +1,30 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { ElMessageBox } from 'element-plus'
 
 const isMenuOpen = ref(false)
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
+}
+const router = useRouter()
+const authStore = useAuthStore()
+
+const handleLogout = async () => {
+  try {
+    await ElMessageBox.confirm('Are you sure you want to log out?', 'Confirm Logout', {
+      confirmButtonText: 'Yes, Log Out',
+      cancelButtonText: 'Cancel',
+      type: 'warning',
+    })
+
+    authStore.logout()
+    router.push('/login')
+  } catch {
+    // User cancelled logout
+  }
 }
 </script>
 
@@ -15,9 +35,18 @@ const toggleMenu = () => {
         <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       </div>
       <div class="profile-container">
-        <div class="profile-icon">
-          <el-icon><User /></el-icon>
-        </div>
+        <el-dropdown>
+          <div class="profile-icon">
+            <el-icon><User /></el-icon>
+          </div>
+          <template #dropdown>
+            <el-menu>
+              <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
+              <el-menu-item index="2">About</el-menu-item>
+            </el-menu>
+          </template>
+        </el-dropdown>
+
         <button class="hamburger" :class="{ active: isMenuOpen }" @click="toggleMenu">
           <span></span>
           <span></span>

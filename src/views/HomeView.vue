@@ -25,21 +25,6 @@ onBeforeMount(() => {
   }
 })
 
-// const handleLogout = async () => {
-//   try {
-//     await ElMessageBox.confirm('Are you sure you want to log out?', 'Confirm Logout', {
-//       confirmButtonText: 'Yes, Log Out',
-//       cancelButtonText: 'Cancel',
-//       type: 'warning',
-//     })
-
-//     authStore.logout()
-//     router.push('/login')
-//   } catch {
-//     // User cancelled logout
-//   }
-// }
-
 const isSigninVisible = ref(false)
 
 const showSigninModal = () => {

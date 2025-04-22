@@ -50,6 +50,7 @@ const handleSubmit = async (e: Event) => {
     // Get redirect path from query or default to home
     const redirect = (router.currentRoute.value.query.redirect as string) || '/home'
     router.push(redirect)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     ElMessage.error(error.message || 'An error occurred during login')
   } finally {
