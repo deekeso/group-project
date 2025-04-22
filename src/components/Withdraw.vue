@@ -36,14 +36,28 @@
           </el-input-number>
         </div>
 
-        <el-button class="withdraw-btn" type="warning" round @click="handleWithdraw">Withdraw</el-button>
+        <el-button class="withdraw-btn" type="warning" round @click="confirmWithdraw">Withdraw</el-button>
+
   </div>
+  <el-dialog v-model="showConfirmWithdraw" title="Confirm Withdrawal" width="300px" center>
+  <span>Are you sure you want to withdraw ₱{{ num }} using {{ value }}?</span>
+  <template #footer>
+    <el-button @click="showConfirmWithdraw = false">Cancel</el-button>
+    <el-button type="primary" @click="handleConfirmedWithdraw">Yes</el-button>
+  </template>
+</el-dialog>
+
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useWalletStore } from '@/stores/wallet'
 import { defineEmits } from 'vue'
+import { ElMessage } from 'element-plus'
+const showConfirmWithdraw = ref(false)
+
+
+
 
 const emit = defineEmits(['update:show'])
 const wallet = useWalletStore()
@@ -56,16 +70,38 @@ const options = [
   { value: 'Maya', label: 'Maya' },
 ]
 
-function handleWithdraw() {
-  if (num.value) {
-    try {
-      wallet.withdraw(Number(num.value))
-      num.value = null
-      radio2.value = ''
-      emit('update:show', false) // switch tab after withdraw
-    } catch (e: any) {
-      alert(e.message)
-    }
+watch(radio2, (val) => {
+  if (val) {
+    num.value = Number(val)
+  }
+})
+
+
+function confirmWithdraw() {
+  if (!value.value) {
+    ElMessage.error('Please select a withdrawal method.')
+    return
+  }
+
+  if (!num.value || num.value < 20 || num.value > 500000) {
+    ElMessage.error('Please enter an amount between ₱20 and ₱500,000.')
+    return
+  }
+
+  showConfirmWithdraw.value = true
+}
+
+function handleConfirmedWithdraw() {
+  try {
+    wallet.withdraw(Number(num.value))
+    ElMessage.success('Withdrawal successful!')
+    num.value = null
+    radio2.value = ''
+    value.value = ''
+    showConfirmWithdraw.value = false
+    emit('update:show', false)
+  } catch (e: any) {
+    ElMessage.error(e.message)
   }
 }
 
@@ -83,10 +119,11 @@ function handleWithdraw() {
 }
 .select-method {
   width: 100%;
+  margin-bottom: 2rem;
 }
 
 .withdraw-btn {
-   background-color: #f8a100;
+   background-color: #F8AB00;
   color: black;
   font-weight: bold;
   width: 100%;
@@ -96,7 +133,7 @@ function handleWithdraw() {
 .amount-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 2.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -105,5 +142,6 @@ function handleWithdraw() {
   background-color: white;
   border-radius: 1rem;
   padding: 0.25rem;
+  margin-bottom: 1rem;
 }
 </style>

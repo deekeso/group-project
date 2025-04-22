@@ -3,12 +3,14 @@
     <el-container class="wallet-box">
       <div class="wallet-header">
       <div class="balance-section">
-        <h3>My Balance</h3>
-        <!-- <h1>₱{{ wallet.balance.toFixed(2) }}</h1> -->
-        <h1>₱23,000</h1>
+        <p>Welcome, {{ auth.user?.username }}!</p>
+        <h3>Your Current Balance is</h3>
+        <h1>₱{{ wallet.balance.toFixed(2) }}</h1>
+
+
       </div>
 
-      <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="width: 200px;">
+      <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="min-width: 204px;">
         <el-radio-button label="1" class="deposit-tab">Deposit</el-radio-button>
         <el-radio-button label="2" class="withdraw-tab">Withdraw</el-radio-button>
       </el-radio-group>
@@ -31,7 +33,7 @@
 
         <div class="section">
           <label class="section-title">Deposit Amount</label>
-          <el-radio-group v-model="radio2" size="large" class="amount-buttons">
+          <el-radio-group v-model="radio2" class="amount-buttons">
             <el-radio-button label="20">₱20</el-radio-button>
             <el-radio-button label="50">₱50</el-radio-button>
             <el-radio-button label="100">₱100</el-radio-button>
@@ -53,7 +55,14 @@
           </el-input-number>
         </div>
 
-        <el-button class="deposit-btn" type="warning" round @click="handleDeposit">Deposit</el-button>
+        <el-button class="deposit-btn" type="warning" round @click="confirmDeposit">Deposit</el-button>
+        <el-dialog v-model="showConfirmDeposit" title="Confirm Deposit" width="300px" center>
+  <span>Are you sure you want to deposit ₱{{ num }} using {{ value }}?</span>
+  <template #footer>
+    <el-button @click="showConfirmDeposit = false">Cancel</el-button>
+    <el-button type="primary" @click="handleConfirmedDeposit">Yes</el-button>
+  </template>
+</el-dialog>
       </template>
       <Withdraw v-if="radio1 === '2'" :show="true" @update:show="radio1 = '1'" />
     </el-container>
@@ -64,10 +73,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,watch } from 'vue'
 import Withdraw from '@/components/Withdraw.vue'
 import { useWalletStore } from '@/stores/wallet'
+import { useAuthStore } from '@/stores/auth'
+import { ElMessage } from 'element-plus'
+
 const wallet = useWalletStore()
+const auth = useAuthStore()
+const showConfirmDeposit = ref(false)
+
 
 const num = ref(null)
 const radio1 = ref('1')
@@ -78,22 +93,48 @@ const options = [
   { value: 'Maya', label: 'Maya' },
 ]
 
-function handleDeposit() {
-  if (num.value) {
-    wallet.deposit(Number(num.value))
-    num.value = null
-    radio2.value = ''
+
+watch(radio2, (val) => {
+  if (val) {
+    num.value = Number(val)
   }
+})
+
+function confirmDeposit() {
+  if (!value.value) {
+    ElMessage.error('Please select a payment method.')
+    return
+  }
+
+  if (!num.value || num.value < 20 || num.value > 500000) {
+    ElMessage.error('Please enter an amount between ₱20 and ₱500,000.')
+    return
+  }
+
+  showConfirmDeposit.value = true
+}
+
+function handleConfirmedDeposit() {
+  wallet.deposit(Number(num.value))
+  ElMessage.success('Deposit successful!')
+  num.value = null
+  radio2.value = ''
+  value.value = ''
+  showConfirmDeposit.value = false
 }
 
 </script>
 
 <style scoped>
+html, body {
+  height: 100%;
+  margin: 0;
+}
 .wallet-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('/src/assets/Menu\ Background.png') no-repeat center center;
+  background: url('/src/assets/anime-night-sky-illustration.jpg') no-repeat center center;
   background-size: cover;
   min-height: 100dvh;
   padding: 2rem;
@@ -135,15 +176,28 @@ function handleDeposit() {
   background-color: #2f2fd1;
   border-radius: 999px;
   padding: 0.30rem;
+  display: flex;
+  flex: 1;
+  width: 100%; /* Fill available space */
+  max-width: 204px;
+}
+:deep(.el-radio-group) {
+  display: flex;
+  flex: 1;
+  width: 100%;
 }
 
 ::v-deep(.deposit-tab .el-radio-button__inner) {
   border-radius: 999px 0 0 999px;
+  width: 100%;
+  text-align: center;
 
 }
 
 ::v-deep(.withdraw-tab .el-radio-button__inner) {
   border-radius: 0 999px 999px 0px;
+  width: 100%;
+  text-align: center;
 }
 
 
@@ -170,15 +224,24 @@ function handleDeposit() {
 .amount-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap:2.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
 
 }
 
+::v-deep(.amount-buttons .el-radio-button__inner) {
+font-size: 16px; /* Increase font size */
+ height: 56px; /* Increase height */
+ line-height: 45px; /* Adjust line height */
+
+}
+
+
 :deep(.amount-buttons .el-radio-button__inner) {
-  border-radius: 1rem !important; /* or any value like 8px */
-  padding: 0.5rem 1.25rem; /* optional: spacing inside buttons */
+  border-radius: 2rem !important; /* or any value like 8px */
+  padding: 0.4rem 1rem; /* optional: spacing inside buttons */
   border: 1px solid #dcdfe6; /* optional: add a custom border */
+  width: 92px;
 }
 
 .custom-input {
