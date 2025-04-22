@@ -1,34 +1,37 @@
 <template>
-  <div>
-    <h1>Mini Keno Page</h1>
+  <div class="background">
     <div class="grid-paytable-container">
       <MiniGrid @number-selected="setSelectedNumbers" />
-      <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px" />
+      <PayTable
+        kenoType="mini"
+        :selectedCellsCount="selectedNumbers.length"
+        :matchedCellsCount="matchedNumbers.length"
+        style="padding-top: 24px"
+      />
+      <GameButtons @playGame="startDraw" />
     </div>
-
-    <div class="drawn-numbers">
-      <KenoBall v-for="num in drawnNumbers" :key="num" :number="num" />
-    </div>
-
-    <el-button @click="startDraw" :disabled="drawnNumbers.length >= 49">Draw Number</el-button>
-    <el-button @click="resetDraw" :disabled="isDrawing">Reset</el-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import KenoBall from '@/components/KenoBall.vue'
+import GameButtons from '@/components/GameButtons.vue'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
-import { computed, ref } from 'vue'
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 
-const { drawnNumbers, drawNumber, resetDraw } = useKenoDraw()
+const gameStore = useGameStore()
+const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
+const { drawNumber } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
-const selectedCellsCount = computed(() => miniGridSelectedNumbers.value.length)
 
 function startDraw() {
-  drawnNumbers.value = []
+  gameStore.setDrawnNumbers([])
+  useKenoDraw().resetDraw()
+  matchedNumbers.value = []
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -43,7 +46,7 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
     }
-  }, 200)
+  }, 150)
 }
 
 function setSelectedNumbers(numbers: number[]) {
@@ -59,5 +62,14 @@ function setSelectedNumbers(numbers: number[]) {
 .grid-paytable-container {
   width: fit-content;
   margin: 0 auto;
+}
+.background {
+  height: 100vh;
+  width: 100%;
+  align-content: center;
+  background-image: url(src/assets/game-background.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 </style>
