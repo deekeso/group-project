@@ -33,6 +33,12 @@ const router = createRouter({
       component: () => import('@/views/MiniView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/classic-keno',
+      name: 'classic',
+      component: () => import('@/views/ClassicView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
