@@ -1,52 +1,51 @@
 <script lang="ts" setup>
-import payTable from "./payTable.json"
-  
-  const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
-    selectedCellsCount: number
-    matchedCellsCount: number
-    kenoType: 'mini' | 'classic'
-  }>()
+import payTable from './payTable.json'
 
-  // PROTOTYPE FOR CONTIGUOUS ZERO
-  // function findContiguousZeros(arr: number[]) {
-  //   let result = [];
-  //   let start = -1;
+const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
+  selectedCellsCount: number
+  matchedCellsCount: number
+  kenoType: 'mini' | 'classic'
+}>()
 
-  //   for (let i = 0; i < arr.length; i++) {
-  //     if (arr[i] === 0 && start === -1) {
-  //       // Mark the start of a zero sequence
-  //       start = i;
-  //     } else if (arr[i] !== 0 && start !== -1) {
-  //       // Mark the end of a zero sequence
-  //       result.push([start, i - 1]);
-  //       start = -1;
-  //     }
-  //   }
+// PROTOTYPE FOR CONTIGUOUS ZERO
+// function findContiguousZeros(arr: number[]) {
+//   let result = [];
+//   let start = -1;
 
-  //   // Handle the case where the array ends with zeros
-  //   if (start !== -1) {
-  //     result.push([start, arr.length - 1]);
-  //   }
+//   for (let i = 0; i < arr.length; i++) {
+//     if (arr[i] === 0 && start === -1) {
+//       // Mark the start of a zero sequence
+//       start = i;
+//     } else if (arr[i] !== 0 && start !== -1) {
+//       // Mark the end of a zero sequence
+//       result.push([start, i - 1]);
+//       start = -1;
+//     }
+//   }
 
-    
-  //   return result[0];
-  // }
+//   // Handle the case where the array ends with zeros
+//   if (start !== -1) {
+//     result.push([start, arr.length - 1]);
+//   }
 
-  // const zeroIndices = ref<number[]>([])
-  // watch(
-  //   () => selectedCellsCount,
-  //   (newCount) => {
-  //     const [start, end] = findContiguousZeros(payTable[kenoType][newCount-1]);
+//   return result[0];
+// }
 
-  //     let indices: number[] = [];
-  //     for (let i = start; i <= end; i++) {
-  //       indices.push(i);
-  //     }
+// const zeroIndices = ref<number[]>([])
+// watch(
+//   () => selectedCellsCount,
+//   (newCount) => {
+//     const [start, end] = findContiguousZeros(payTable[kenoType][newCount-1]);
 
-  //     zeroIndices.value = indices; // Update zeroIndices
-  //   },
-  //   { immediate: true }
-  // )
+//     let indices: number[] = [];
+//     for (let i = start; i <= end; i++) {
+//       indices.push(i);
+//     }
+
+//     zeroIndices.value = indices; // Update zeroIndices
+//   },
+//   { immediate: true }
+// )
 </script>
 
 <template>
@@ -59,19 +58,17 @@ import payTable from "./payTable.json"
         <el-text tag="p" size="large">Hits</el-text>
       </div>
     </div>
-    
+
     <div class="cells-container">
       <div v-for="n in selectedCellsCount + 1" class="pay-data">
-
-        <div class="multiplier-cell-tight" :class="{ hit: matchedCellsCount >= n}">
-          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n-1] }}</el-text>
+        <div class="multiplier-cell-tight" :class="{ hit: matchedCellsCount >= n }">
+          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n - 1] }}</el-text>
         </div>
 
-        
-        <div class="selected-count-cell-tight" :class="{ hit: matchedCellsCount >= n}">
-          <el-text size="large">{{ n-1 }}</el-text>
+        <div class="selected-count-cell-tight" :class="{ hit: matchedCellsCount >= n }">
+          <el-text size="large">{{ n - 1 }}</el-text>
         </div>
-        
+
         <!-- <div v-else class="multiplier-cell" :class="{ hit: matchedCellsCount >= n}">
           <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n-1] }}</el-text>
         </div>
@@ -128,7 +125,6 @@ import payTable from "./payTable.json"
           <el-text size="large">{{ n - 1 }}</el-text>
         </div>
       </div> -->
-
     </div>
   </div>
 
@@ -147,42 +143,42 @@ import payTable from "./payTable.json"
 </template>
 
 <style scoped>
-  .pay-table {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-    position: relative;
-  }
-  
-  .label-container {
-    position: absolute;
-    bottom: 0;
-    left: -80px;
-    display: flex;
-    flex-direction: column;
-    align-items: end;
-    gap: 10px;
-  }
+.pay-table {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  position: relative;
+}
 
-  .cells-container {
-    width: 100%;
-    display: flex;
-    gap: 4px;
-    justify-content: space-between;
-    align-items: start;
-  }
-  
-  .pay-data {
-    width: 100%;
-    height: fit-content;
-    display: flex;
-    justify-content: space-between;
-    align-items: stretch;
-    flex-direction: column;
-    gap: 10px;
-  }
+.label-container {
+  position: absolute;
+  bottom: 0;
+  left: -80px;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 10px;
+}
+
+.cells-container {
+  width: 100%;
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.pay-data {
+  width: 100%;
+  height: fit-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .multiplier-cell,
 .multiplier-cell-tight {
@@ -194,31 +190,31 @@ import payTable from "./payTable.json"
   background-color: #964de0;
 }
 
-  .label {
-    padding: 4px 0px;
-    width: 100%;
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    border-radius: 8px;
-    text-align: end;
-    border: 2px solid rgba(0,0,0,0);
-  }
+.label {
+  padding: 4px 0px;
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  border-radius: 8px;
+  text-align: end;
+  border: 2px solid rgba(0, 0, 0, 0);
+}
 
-  .multiplier-cell, 
-  .selected-count-cell, 
-  .multiplier-cell-tight, 
-  .selected-count-cell-tight, 
-  .placeholder-cell {
-    width: 100%;
-    padding: 4px 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    border: 2px solid rgba(0,0,0,0);
-    text-align: center;
-  }
+.multiplier-cell,
+.selected-count-cell,
+.multiplier-cell-tight,
+.selected-count-cell-tight,
+.placeholder-cell {
+  width: 100%;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  text-align: center;
+}
 
 .multiplier-cell,
 .selected-count-cell,
@@ -245,5 +241,9 @@ import payTable from "./payTable.json"
 
 .placeholder-cell {
   background-color: #7674a7;
+}
+.el-text {
+  color: #ffffff;
+  font-weight: bold;
 }
 </style>

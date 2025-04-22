@@ -58,7 +58,7 @@ function toggleNumber(number: number): void {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 60px);
+  grid-template-columns: repeat(7, 80px);
   gap: 5px;
 }
 .container {
@@ -66,7 +66,6 @@ function toggleNumber(number: number): void {
 }
 .keno-cell {
   width: 100%;
-  max-width: 70px;
   height: 60px;
   display: flex;
   align-items: center;
@@ -76,7 +75,7 @@ function toggleNumber(number: number): void {
   background-color: #846ccf;
   /* border: 1px solid #dcdfe6; */
   border-radius: 6px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
 }
