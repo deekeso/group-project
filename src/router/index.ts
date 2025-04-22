@@ -33,6 +33,13 @@ const router = createRouter({
       component: () => import('@/views/MiniView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/wallet',
+      name: 'wallet',
+      component: () => import('@/views/Wallet.vue'),
+      meta: { requiresAuth: true },
+    },
+
   ],
 })
 
