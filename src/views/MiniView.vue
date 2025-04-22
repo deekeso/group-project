@@ -4,14 +4,12 @@
       <MiniGrid @number-selected="setSelectedNumbers" />
       <PayTable
         kenoType="mini"
-        :selectedCellsCount
+        :selectedCellsCount="selectedNumbers.length"
         :matchedCellsCount="matchedNumbers.length"
         style="padding-top: 24px"
       />
       <GameButtons @playGame="startDraw" />
     </div>
-    <!-- <el-button @click="startDraw" :disabled="drawnNumbers.length >= 49">Draw Number</el-button>
-    <el-button @click="resetDraw" :disabled="isDrawing">Reset</el-button> -->
   </div>
 </template>
 
@@ -22,14 +20,13 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers } = storeToRefs(gameStore)
+const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { drawNumber } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
-const selectedCellsCount = computed(() => miniGridSelectedNumbers.value.length)
 
 function startDraw() {
   gameStore.setDrawnNumbers([])
