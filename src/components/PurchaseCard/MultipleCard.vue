@@ -8,15 +8,29 @@
         <img src="../../assets/multiple-card/ball1.png" alt="keno card" class="ball-img mb1" />
         <img src="../../assets/multiple-card/ball2.png" alt="keno card" class="ball-img mb2" />
       </div>
-      <el-text>₱20.00+</el-text>
+      <el-text class="p">₱20.00+</el-text>
     </div>
   </div>
 </template>
 
 <style scoped>
+@font-face {
+  font-family: SuperDream;
+  src: url('src/assets/Fonts/super_dream/Super Dream.ttf');
+}
 h2 {
+  font-family: SuperDream, sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
+}
+h2,
+.p {
   color: #f8ab00;
   font-weight: bold;
+}
+.p {
+  text-align: right;
+  width: 100%;
 }
 .option {
   background-color: #00004d;
@@ -40,7 +54,7 @@ h2 {
 }
 .image-container {
   position: relative;
-  width: fit-content;
+  width: 100%;
 }
 .card-img {
   height: 175px;

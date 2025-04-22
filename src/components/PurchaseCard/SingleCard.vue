@@ -11,7 +11,14 @@
 </template>
 
 <style scoped>
+@font-face {
+  font-family: SuperDream;
+  src: url('src/assets/Fonts/super_dream/Super Dream.ttf');
+}
 h2 {
+  font-family: SuperDream, sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
   color: #f8ab00;
   font-weight: bold;
 }
@@ -37,7 +44,7 @@ h2 {
 }
 .image-container {
   position: relative;
-  width: fit-content;
+  width: 100%;
 }
 .card-img {
   height: 175px;
