@@ -3,7 +3,7 @@
     <el-card class="container">
       <div class="grid">
         <div
-          v-for="number in 49"
+          v-for="number in 80"
           :key="number"
           class="keno-cell"
           :class="[
@@ -58,7 +58,7 @@ function toggleNumber(number: number): void {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 80px);
+  grid-template-columns: repeat(10, 80px);
   gap: 5px;
 }
 .container {

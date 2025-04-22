@@ -1,7 +1,7 @@
 <template>
   <div class="background">
     <div class="grid-paytable-container">
-      <MiniGrid @number-selected="setSelectedNumbers" />
+      <ClassicGrid @number-selected="setSelectedNumbers" />
       <PayTable
         kenoType="mini"
         :selectedCellsCount="selectedNumbers.length"
@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
+import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
