@@ -4,7 +4,8 @@
       <div class="wallet-header">
       <div class="balance-section">
         <h3>My Balance</h3>
-        <h1>₱{{ wallet.balance.toFixed(2) }}</h1>
+        <!-- <h1>₱{{ wallet.balance.toFixed(2) }}</h1> -->
+        <h1>₱23,000</h1>
       </div>
 
       <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="width: 200px;">
