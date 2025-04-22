@@ -6,7 +6,7 @@
       <PayTable
         kenoType="mini"
         :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length"
+        :matchedCellsCount="matchedNumbers.length + 1"
         style="padding-top: 24px"
       />
       <GameButtons @playGame="startDraw" />
