@@ -3,7 +3,7 @@
     <el-text class="yellow-btn btn">₱{{ balance }}</el-text>
     <el-text class="yellow-btn btn">₱{{ wager }}</el-text>
     <el-text class="blue-btn btn">Auto Pick</el-text>
-    <el-text class="blue-btn btn" @click="clearGame">Clear</el-text>
+    <el-text class="blue-btn btn" @click="gameStore.resetGame">Clear</el-text>
     <el-text class="yellow-btn btn" @click="$emit('playGame')">Play</el-text>
   </div>
 </template>
@@ -17,11 +17,6 @@ import { ref } from 'vue'
 const gameStore = useGameStore()
 const { balance } = storeToRefs(gameStore)
 const wager = ref(0)
-
-function clearGame() {
-  gameStore.clearGame()
-  useKenoDraw().resetDraw()
-}
 </script>
 
 <style scoped>
