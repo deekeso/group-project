@@ -1,13 +1,13 @@
 <template>
   <div class="background">
     <div class="grid-paytable-container">
-      <MiniGrid @number-selected="setSelectedNumbers" />
       <PayTable
         kenoType="mini"
         :selectedCellsCount="selectedNumbers.length"
         :matchedCellsCount="matchedNumbers.length"
-        style="padding-top: 24px"
+        style="padding-bottom: 24px"
       />
+      <MiniGrid @number-selected="setSelectedNumbers" />
       <GameButtons @playGame="startDraw" />
     </div>
   </div>
