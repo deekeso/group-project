@@ -1,5 +1,6 @@
 <template>
   <div class="background">
+    <HomeButton @home="directToHome" />
     <div class="grid-paytable-container">
       <MiniGrid @number-selected="setSelectedNumbers" />
       <PayTable
@@ -15,13 +16,16 @@
 
 <script setup lang="ts">
 import GameButtons from '@/components/GameButtons.vue'
+import HomeButton from '@/components/HomeButton.vue'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { drawNumber } = useKenoDraw()
@@ -52,6 +56,10 @@ function startDraw() {
 function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
 }
+
+function directToHome() {
+  router.push('/home')
+}
 </script>
 
 <style scoped>
@@ -67,7 +75,7 @@ function setSelectedNumbers(numbers: number[]) {
   height: 100vh;
   width: 100%;
   align-content: center;
-  background-image: url(src/assets/game-background.png);
+  background-image: url('src/assets/game-background.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
