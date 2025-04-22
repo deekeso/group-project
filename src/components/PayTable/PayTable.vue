@@ -55,7 +55,6 @@ function updatePayTableData() {
     }
 
     payTableData.value = result
-    console.log(result)
 }
 
 watch(
