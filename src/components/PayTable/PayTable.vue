@@ -47,9 +47,6 @@ import payTable from "./payTable.json"
   //   },
   //   { immediate: true }
   // )
-
-
-
 </script>
 
 <template>
@@ -81,7 +78,6 @@ import payTable from "./payTable.json"
         <div v-else class="selected-count-cell" :class="{ hit: matchedCellsCount >= n}">
           <el-text size="large">{{ n-1 }} hit</el-text>
         </div> -->
-
       </div>
 
       <!-- PROTOTYPE FOR CONTIGUOUS ZEROS -->
@@ -135,7 +131,7 @@ import payTable from "./payTable.json"
 
     </div>
   </div>
-  
+
   <div v-else class="pay-table">
     <div class="cells-container">
       <div class="pay-data">
@@ -188,18 +184,15 @@ import payTable from "./payTable.json"
     gap: 10px;
   }
 
-  .multiplier-cell, .multiplier-cell-tight {
-    background-color: #524DE0;
-  }
-  
-  .selected-count-cell, .selected-count-cell-tight {
-    background-color: #964DE0;
-  }
+.multiplier-cell,
+.multiplier-cell-tight {
+  background-color: #524de0;
+}
 
-  .el-text {
-    color: white;
-    font-weight: 600;
-  }
+.selected-count-cell,
+.selected-count-cell-tight {
+  background-color: #964de0;
+}
 
   .label {
     padding: 4px 0px;
@@ -227,16 +220,30 @@ import payTable from "./payTable.json"
     text-align: center;
   }
 
-  .hit {
-    border: 2px solid greenyellow;
-  }
+.multiplier-cell,
+.selected-count-cell,
+.multiplier-cell-tight,
+.selected-count-cell-tight,
+.placeholder-cell {
+  width: 100%;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 0, 0, 0);
+}
 
-  .multiplier-cell-tight, .selected-count-cell-tight {
-    padding: 4px 0;
-  }
+.hit {
+  border: 2px solid greenyellow;
+}
 
-  .placeholder-cell {
-    background-color: #7674a7;
-  }
+.multiplier-cell-tight,
+.selected-count-cell-tight {
+  padding: 4px 0;
+}
 
+.placeholder-cell {
+  background-color: #7674a7;
+}
 </style>

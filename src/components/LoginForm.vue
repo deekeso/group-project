@@ -15,20 +15,20 @@ const { showSuccessModal } = useSuccessModal()
 
 const form = reactive({
   email: '',
-  password: ''
+  password: '',
 })
 
 const rules = reactive<FormRules>({
   email: [
     { required: true, message: 'Email is required', trigger: 'blur' },
     { type: 'email', message: 'Please enter a valid email', trigger: 'blur' },
-    { min: 1, message: 'Email cannot be empty spaces', trigger: 'blur' }
+    { min: 1, message: 'Email cannot be empty spaces', trigger: 'blur' },
   ],
   password: [
     { required: true, message: 'Password is required', trigger: 'blur' },
     { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' },
-    { pattern: /\S/, message: 'Password cannot be empty spaces', trigger: 'blur' }
-  ]
+    { pattern: /\S/, message: 'Password cannot be empty spaces', trigger: 'blur' },
+  ],
 })
 
 const handleSubmit = async (e: Event) => {
@@ -36,23 +36,20 @@ const handleSubmit = async (e: Event) => {
   if (loading.value) return
 
   loading.value = true
-  
+
   try {
     const isValid = await validateForm()
     if (!isValid) {
       ElMessage.error('Please check your input')
       return
     }
-    
+
     await authStore.login(form.email, form.password)
-    
-    await showSuccessModal(
-      'Login Successful',
-      'Welcome back to Keno Plus!'
-    )
-    
+
+    await showSuccessModal('Login Successful', 'Welcome back to Keno Plus!')
+
     // Get redirect path from query or default to home
-    const redirect = router.currentRoute.value.query.redirect as string || '/home'
+    const redirect = (router.currentRoute.value.query.redirect as string) || '/home'
     router.push(redirect)
   } catch (error: any) {
     ElMessage.error(error.message || 'An error occurred during login')
@@ -69,9 +66,12 @@ const handleSubmit = async (e: Event) => {
       <div class="content-wrapper">
         <div class="login-section">
           <h1 class="title">
-            <img src="@/assets/ChatGPT_Image_Apr_13__2025__12_28_24_PM-removebg-preview 1.png" alt="Unleash Your Inner Keno Master" />
+            <img
+              src="@/assets/ChatGPT_Image_Apr_13__2025__12_28_24_PM-removebg-preview 1.png"
+              alt="Unleash Your Inner Keno Master"
+            />
           </h1>
-          
+
           <div class="form-container">
             <el-form
               ref="formRef"
@@ -83,11 +83,7 @@ const handleSubmit = async (e: Event) => {
               <div class="form-group">
                 <label>Email</label>
                 <el-form-item prop="email">
-                  <el-input
-                    v-model.trim="form.email"
-                    placeholder="Enter your email"
-                    type="email"
-                  />
+                  <el-input v-model.trim="form.email" placeholder="Enter your email" type="email" />
                 </el-form-item>
               </div>
 
@@ -103,19 +99,12 @@ const handleSubmit = async (e: Event) => {
                 </el-form-item>
               </div>
 
-              <el-button
-                type="primary"
-                native-type="submit"
-                :loading="loading"
-                class="submit-btn"
-              >
+              <el-button type="primary" native-type="submit" :loading="loading" class="submit-btn">
                 Login
               </el-button>
 
               <div class="form-footer">
-                <router-link to="/register" class="register-link">
-                  Create Account
-                </router-link>
+                <router-link to="/register" class="register-link"> Create Account </router-link>
                 <router-link to="/forgot-password" class="forgot-link">
                   Forgot Password?
                 </router-link>
@@ -192,7 +181,7 @@ const handleSubmit = async (e: Event) => {
 
 .form-group label {
   display: block;
-  color: #FFFFFF;
+  color: #ffffff;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   margin-bottom: 8px;
@@ -207,7 +196,7 @@ const handleSubmit = async (e: Event) => {
 
 .login-form :deep(.el-input__inner) {
   height: 48px;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
   font-family: 'Inter', sans-serif;
   font-size: 16px;
   padding: 0 16px;
@@ -223,7 +212,7 @@ const handleSubmit = async (e: Event) => {
 .register-link,
 .forgot-link {
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.2s;
@@ -237,7 +226,7 @@ const handleSubmit = async (e: Event) => {
 .submit-btn {
   width: 100%;
   height: 48px;
-  background: #FFFFFF;
+  background: #ffffff;
   border: none;
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
@@ -251,7 +240,7 @@ const handleSubmit = async (e: Event) => {
 }
 
 .submit-btn:hover {
-  background: #F5F5F5;
+  background: #f5f5f5;
 }
 
 .keno-illustration {
@@ -306,12 +295,12 @@ const handleSubmit = async (e: Event) => {
     margin: 0 auto;
     padding-left: 0;
   }
-  
+
   .title {
     text-align: center;
     padding-left: 0;
   }
-  
+
   .title img {
     margin: 0 auto;
     max-width: 380px;
@@ -321,7 +310,7 @@ const handleSubmit = async (e: Event) => {
     max-width: 100%;
     margin-left: 0;
   }
-  
+
   .keno-illustration {
     position: absolute;
     opacity: 0.3;
@@ -334,7 +323,7 @@ const handleSubmit = async (e: Event) => {
   .content-wrapper {
     padding: 0 16px;
   }
-  
+
   .form-container {
     padding: 32px;
   }
@@ -348,7 +337,7 @@ const handleSubmit = async (e: Event) => {
   .content-wrapper {
     padding: 0 12px;
   }
-  
+
   .form-container {
     padding: 24px;
   }
