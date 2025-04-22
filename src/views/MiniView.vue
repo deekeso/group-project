@@ -1,8 +1,8 @@
 <template>
   <div class="background">
     <div class="grid-paytable-container">
-      <MiniGrid @number-selected="setSelectedNumbers" />
-      <PayTable :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px" />
+      <MiniGrid @number-selected="setSelectedNumbers"/>
+      <PayTable kenoType="mini" :selectedCellsCount :matchedCellsCount="0" style="padding-top: 24px;" />
       <GameButtons @playGame="startDraw" />
     </div>
     <!-- <el-button @click="startDraw" :disabled="drawnNumbers.length >= 49">Draw Number</el-button>
