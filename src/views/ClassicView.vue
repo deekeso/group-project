@@ -8,7 +8,11 @@
         :matchedCellsCount="matchedNumbers.length"
         style="padding-bottom: 24px"
       />
-      <ClassicGrid @number-selected="setSelectedNumbers" />
+      <div class="grid-sidebtn-container">
+        <ClassicGrid @number-selected="setSelectedNumbers" />
+        <GameSideButtons @clear="gameStore.resetGame" />
+      </div>
+
       <GameButtons @playGame="startDraw" />
     </div>
   </div>
@@ -17,6 +21,7 @@
 <script setup lang="ts">
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
+import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
@@ -70,6 +75,10 @@ function directToHome() {
 .grid-paytable-container {
   width: fit-content;
   margin: 0 auto;
+}
+.grid-sidebtn-container {
+  display: flex;
+  gap: 10px;
 }
 .background {
   height: 100vh;

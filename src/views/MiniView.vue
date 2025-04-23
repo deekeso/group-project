@@ -8,7 +8,11 @@
         :matchedCellsCount="matchedNumbers.length + 1"
         style="padding-bottom: 24px"
       />
-      <MiniGrid @number-selected="setSelectedNumbers" />
+      <div class="grid-sidebtn-container">
+        <MiniGrid @number-selected="setSelectedNumbers" />
+        <GameSideButtons @clear="clearGame" />
+      </div>
+
       <GameButtons @playGame="startDraw" />
     </div>
   </div>
@@ -24,6 +28,7 @@ import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -57,6 +62,10 @@ function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
 }
 
+function clearGame() {
+  gameStore.resetGame()
+}
+
 function directToHome() {
   router.push('/home')
 }
@@ -71,6 +80,10 @@ function directToHome() {
   width: fit-content;
   margin: 0 auto;
 }
+.grid-sidebtn-container {
+  display: flex;
+  gap: 10px;
+}
 .background {
   height: 100vh;
   width: 100%;
@@ -79,5 +92,8 @@ function directToHome() {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+.autopick {
+  height: 100%;
 }
 </style>
