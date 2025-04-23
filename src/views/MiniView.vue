@@ -1,6 +1,10 @@
 <template>
   <div class="background">
-    <HomeButton @home="directToHome" />
+    <div class="top-buttons">
+      <HomeButton @home="directToHome" />
+      <UserBalance />
+    </div>
+
     <div class="grid-paytable-container">
       <PayTable
         kenoType="mini"
@@ -29,6 +33,7 @@ import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
+import UserBalance from '@/components/UserBalance.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -72,9 +77,12 @@ function directToHome() {
 </script>
 
 <style scoped>
-.drawn-numbers {
+.top-buttons {
   display: flex;
-  margin-block: 10px;
+  justify-content: space-between;
+  align-self: flex-start;
+  margin-inline: 50px;
+  margin-block: 20px;
 }
 .grid-paytable-container {
   width: fit-content;

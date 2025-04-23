@@ -15,14 +15,11 @@
   color: black;
 }
 .button-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 30px;
   background: #ffffff;
   border-radius: 100px;
   padding-block: 10px;
   padding-inline: 40px;
+  width: fit-content;
 }
 .button-container:hover {
   background: rgba(255, 255, 255, 0.87);

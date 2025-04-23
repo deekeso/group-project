@@ -1,6 +1,10 @@
 <template>
   <div class="background">
-    <HomeButton @home="directToHome" />
+    <div class="top-buttons">
+      <HomeButton @home="directToHome" />
+      <UserBalance />
+    </div>
+
     <div class="grid-paytable-container">
       <PayTable
         kenoType="classic"
@@ -22,6 +26,7 @@
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
+import UserBalance from '@/components/UserBalance.vue'
 import HomeButton from '@/components/HomeButton.vue'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
@@ -68,6 +73,13 @@ function directToHome() {
 </script>
 
 <style scoped>
+.top-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-self: flex-start;
+  margin-inline: 50px;
+  margin-block: 20px;
+}
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
