@@ -34,6 +34,12 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/wallet',
+      name: 'wallet',
+      component: () => import('@/views/Wallet.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/classic-keno',
       name: 'classic',
       component: () => import('@/views/ClassicView.vue'),
