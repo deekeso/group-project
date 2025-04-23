@@ -39,6 +39,12 @@ const router = createRouter({
       component: () => import('@/views/ClassicView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/purchase-cards',
+      name: 'purchase',
+      component: () => import('@/views/PurchaseView.vue'),
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
