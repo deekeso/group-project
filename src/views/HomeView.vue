@@ -6,34 +6,30 @@ import { useRouter } from 'vue-router'
 
 import Navbar from '@/components/Navbar.vue'
 import GameModesCard from '@/components/GameModesCard.vue'
-import SloganSection from '@/components/SloganSection.vue'
 import SigninForm from '@/components/SigninForm.vue'
+import SignupForm from '@/components/SignupForm.vue'
 
-// import { ElMessageBox } from 'element-plus'
+const isSigninVisible = ref(false)
+const isSignupVisible = ref(false)
 
-// import userPointIcon from '@/assets/ChatGPT Image Apr 13, 2025, 11_51_57 AM - Copy.png'
-// import classicKenoImg from '@/assets/classic.png'
-// import miniKenoImg from '@/assets/mini.png'
-// import heroBgImg from '@/assets/cvbcvnfgnfgnfg 19.png'
+const showSigninModal = () => {
+  isSigninVisible.value = true
+  isSignupVisible.value = false
+}
+
+const showSignupModal = () => {
+  isSignupVisible.value = true
+  isSigninVisible.value = false
+}
 
 const router = useRouter()
 const authStore = useAuthStore()
 
 onBeforeMount(() => {
   if (!authStore.isAuthenticated) {
-    router.push('/login')
+    router.push('/home')
   }
 })
-
-const isSigninVisible = ref(false)
-
-const showSigninModal = () => {
-  isSigninVisible.value = true
-}
-
-const closeSigninModal = () => {
-  isSigninVisible.value = false
-}
 </script>
 
 <template>
@@ -47,10 +43,12 @@ const closeSigninModal = () => {
       <hr />
       <div class="gamemode-container">
         <GameModesCard @trigger-signin="showSigninModal" />
-        <SloganSection />
-
         <el-dialog v-model="isSigninVisible" style="background-color: transparent" center>
-          <SigninForm />
+          <SigninForm @open-signup="showSignupModal" />
+        </el-dialog>
+
+        <el-dialog v-model="isSignupVisible" style="background-color: transparent" center>
+          <SignupForm @open-signin="showSigninModal" />
         </el-dialog>
       </div>
     </div>
@@ -85,7 +83,7 @@ const closeSigninModal = () => {
 ::v-deep(.el-dialog__header) {
   display: none;
 }
-::v-deep(.el-dialocenter) {
+::v-deep(.el-dialogcenter) {
   display: none;
 }
 </style>

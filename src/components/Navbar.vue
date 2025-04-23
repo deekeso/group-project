@@ -21,7 +21,7 @@ const handleLogout = async () => {
     })
 
     authStore.logout()
-    router.push('/login')
+    router.push('/home')
   } catch {
     // User cancelled logout
   }
