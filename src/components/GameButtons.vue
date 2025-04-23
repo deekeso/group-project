@@ -9,14 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
-import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 const gameStore = useGameStore()
-const { balance } = storeToRefs(gameStore)
 const wager = ref(0)
+const balance = ref(2000)
 </script>
 
 <style scoped>
