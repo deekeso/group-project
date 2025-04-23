@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -6,6 +7,10 @@ import { useAuthStore } from '@/stores/auth'
 import type { FormRules } from 'element-plus'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useSuccessModal } from '@/composables/useSuccessModal'
+import SignupForm from './SignupForm.vue'
+
+const showSignupForm = ref(false)
+const showSigninForm = ref(true)
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -72,7 +77,7 @@ const handleSubmit = async (e: Event) => {
       <p class="text-end">Dont have an account?</p>
 
       <div class="signup-btn">
-        <el-button>Sign Up</el-button>
+        <el-button @click="showSignupForm = true">Sign Up</el-button>
       </div>
     </div>
     <div class="form-container">
@@ -118,6 +123,15 @@ const handleSubmit = async (e: Event) => {
       </div>
     </div>
   </div>
+
+  <el-dialog
+    v-model="showSignupForm"
+    @close="showSignupForm = false"
+    style="background-color: transparent"
+    center
+  >
+    <SignupForm @close="((showSignupForm = false), (showSigninForm = true))" />
+  </el-dialog>
 </template>
 <style scoped>
 .form-container {
@@ -224,5 +238,12 @@ const handleSubmit = async (e: Event) => {
   color: #060351;
   background-color: #f8ab00;
   border: none;
+}
+
+::v-deep(.el-dialog__header) {
+  display: none;
+}
+::v-deep(.el-dialocenter) {
+  display: none;
 }
 </style>
