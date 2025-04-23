@@ -1,4 +1,7 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable @typescript-eslint/no-unsafe-function-type -->
 <script setup lang="ts">
+import { ref } from 'vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -8,6 +11,10 @@ import { useFormValidation } from '@/composables/useFormValidation'
 import { useSuccessModal } from '@/composables/useSuccessModal'
 import { watch } from 'vue'
 
+import SigninForm from './SigninForm.vue'
+
+const showSignupForm = ref(true)
+const showSigninForm = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
 const { formRef, loading, validateForm } = useFormValidation()
@@ -150,7 +157,7 @@ const handleSubmit = async (e: Event) => {
       'Welcome to Keno Plus! Your account has been successfully created.',
     )
 
-    router.push('/home')
+    router.push('/login')
   } catch (error: any) {
     ElMessage.error(error.message)
   } finally {
@@ -170,7 +177,7 @@ const handleSubmit = async (e: Event) => {
       <p class="text-end">Have an account already?</p>
 
       <div class="signin-btn">
-        <el-button>Sign in</el-button>
+        <el-button @click="showSigninForm = true">Sign in</el-button>
       </div>
     </div>
     <div class="form-container">
@@ -278,6 +285,15 @@ const handleSubmit = async (e: Event) => {
       </div>
     </div>
   </div>
+
+  <el-dialog
+    v-model="showSigninForm"
+    @close="showSigninForm = false"
+    style="background-color: transparent"
+    center
+  >
+    <SigninForm @close="((showSignupForm = false), (showSigninForm = true))" />
+  </el-dialog>
 </template>
 <style scoped>
 .form-container {
@@ -390,5 +406,11 @@ const handleSubmit = async (e: Event) => {
   color: #060351;
   background-color: #f8ab00;
   border: none;
+}
+::v-deep(.el-dialog__header) {
+  display: none;
+}
+::v-deep(.el-dialocenter) {
+  display: none;
 }
 </style>
