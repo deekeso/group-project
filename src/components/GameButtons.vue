@@ -10,11 +10,13 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
+import { useWalletStore } from '@/stores/wallet'
 import { ref } from 'vue'
 
 const gameStore = useGameStore()
+const wallet = useWalletStore()
 const wager = ref(0)
-const balance = ref(2000)
+const balance = wallet.balance
 </script>
 
 <style scoped>
