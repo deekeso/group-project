@@ -1,14 +1,13 @@
 <template>
   <div class="btn-container">
     <div class="wager-container">
-      <div class="wager-btn">
+      <div class="wager-btn" @click="gameStore.decreaseWager">
         <svg class="wager-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
           <path fill="currentColor" d="M128 544h768a32 32 0 1 0 0-64H128a32 32 0 0 0 0 64"></path>
         </svg>
       </div>
-
       <span class="wager-txt">{{ wager }}</span>
-      <div class="wager-btn">
+      <div class="wager-btn" @click="gameStore.increaseWager">
         <svg class="wager-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
           <path
             fill="currentColor"
@@ -17,18 +16,17 @@
         </svg>
       </div>
     </div>
-    <!-- <el-text class="blue-btn btn">Auto Pick</el-text> -->
-    <!-- <el-text class="blue-btn btn" @click="gameStore.resetGame">Clear</el-text> -->
-    <el-text class="yellow-btn btn">{{ bet }}X</el-text>
+    <el-text class="yellow-btn btn">x{{ bet }}</el-text>
     <el-text class="yellow-btn btn play-btn" @click="$emit('playGame')">Play</el-text>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
 
-const wager = ref(20)
-const bet = ref(2)
+const gameStore = useGameStore()
+const { wager, bet } = storeToRefs(gameStore)
 </script>
 
 <style scoped>

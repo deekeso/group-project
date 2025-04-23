@@ -5,10 +5,12 @@ export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
+  const wager = ref<number>(20)
+  const bet = ref<number>(1)
 
   //autosave to local storage
   watch(
-    [selectedNumbers, drawnNumbers, matchedNumbers],
+    [selectedNumbers, drawnNumbers, matchedNumbers, wager],
     () => {
       localStorage.setItem(
         'keno-game',
@@ -16,6 +18,7 @@ export const useGameStore = defineStore('game', () => {
           selected: selectedNumbers.value,
           drawn: matchedNumbers.value,
           matches: matchedNumbers.value,
+          wager: wager.value,
         }),
       )
     },
@@ -34,6 +37,17 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  // wager counter
+  function increaseWager() {
+    const maxWager = 500
+    if (wager.value < maxWager) wager.value++
+  }
+
+  function decreaseWager() {
+    const minWager = 20
+    if (wager.value > minWager) wager.value--
+  }
+
   function setDrawnNumbers(numbers: number[]) {
     drawnNumbers.value = numbers
     matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
@@ -49,6 +63,10 @@ export const useGameStore = defineStore('game', () => {
     selectedNumbers,
     drawnNumbers,
     matchedNumbers,
+    wager,
+    bet,
+    increaseWager,
+    decreaseWager,
     setDrawnNumbers,
     resetGame,
     loadFromStorage,

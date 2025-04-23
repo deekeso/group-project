@@ -1,9 +1,11 @@
 <template>
   <div class="autopick-container">
     <div class="number-container">
-      <div class="number" v-for="number in 10" :key="number">{{ number }}</div>
+      <div class="number" v-for="number in 10" :key="number">
+        {{ number }}
+      </div>
     </div>
-    <div class="autopick-btn">
+    <div class="autopick-btn" @click="$emit('autopick')">
       <img src="../../assets/Shuffle.png" alt="shuffle icon" />
     </div>
   </div>
@@ -17,7 +19,6 @@
   max-width: 80px;
   width: 100%;
   border-radius: 10px;
-  overflow: hidden;
 }
 .number-container {
   background: #846ccf;
@@ -34,7 +35,15 @@
   text-align: center;
   height: 100%;
   max-height: 300px;
-  overflow: hidden;
+  overflow: scroll;
+
+  /* Hide scrollbar for IE, Edge, and Firefox */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+/* Hide scrollbar for Chrome, Safari, and Opera */
+.number-container::-webkit-scrollbar {
+  display: none;
 }
 .number {
   font-size: 2rem;

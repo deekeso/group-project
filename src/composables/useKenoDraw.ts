@@ -8,11 +8,11 @@ export function useKenoDraw() {
   const drawnNumbers = ref<number[]>([])
 
   // Maximum number in the Keno game
-  const maxNumber = 49
+  // const maxNumber = 49
 
   // Function to draw a random number (without duplicates)
-  function drawNumber(): void {
-    if (drawnNumbers.value.length >= 10) {
+  function drawNumber(drawSize: number, maxNumber: number): void {
+    if (drawnNumbers.value.length >= drawSize) {
       resetDraw()
     }
 
@@ -29,6 +29,14 @@ export function useKenoDraw() {
     gameStore.setDrawnNumbers([...drawnNumbers.value])
   }
 
+  function classicKenoDraw() {
+    return drawNumber(20, 80)
+  }
+
+  function miniKenoDraw() {
+    return drawNumber(10, 49)
+  }
+
   // Function to reset the drawn numbers
   function resetDraw(): void {
     drawnNumbers.value = []
@@ -37,7 +45,8 @@ export function useKenoDraw() {
 
   return {
     drawnNumbers,
-    drawNumber,
+    classicKenoDraw,
+    miniKenoDraw,
     resetDraw,
   }
 }
