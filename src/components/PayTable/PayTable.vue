@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { onMounted, ref, watch } from 'vue';
 import payTable from './payTable.json'
 
 const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
@@ -7,135 +8,112 @@ const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
   kenoType: 'mini' | 'classic'
 }>()
 
-// PROTOTYPE FOR CONTIGUOUS ZERO
-// function findContiguousZeros(arr: number[]) {
-//   let result = [];
-//   let start = -1;
+const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
 
-//   for (let i = 0; i < arr.length; i++) {
-//     if (arr[i] === 0 && start === -1) {
-//       // Mark the start of a zero sequence
-//       start = i;
-//     } else if (arr[i] !== 0 && start !== -1) {
-//       // Mark the end of a zero sequence
-//       result.push([start, i - 1]);
-//       start = -1;
-//     }
-//   }
 
-//   // Handle the case where the array ends with zeros
-//   if (start !== -1) {
-//     result.push([start, arr.length - 1]);
-//   }
+/* TODO: convert payTable.json to contain only the values
+ * and have this function do the processing:
+ * find zero indices,
+ * automatically generate the hit labels
+ * i.e.
+ * const values = payTable[kenoType][selectedCellsCount - 1]['values']
+ * const zeros = findZeros(values)
+ * const hits = generateHitLabels(values)
+*/
 
-//   return result[0];
-// }
+function updatePayTableData() {
+  if (selectedCellsCount < 1) {
+      return
+    }
+    const values = payTable[kenoType][selectedCellsCount - 1]['values']
+    const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
+    const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
 
-// const zeroIndices = ref<number[]>([])
-// watch(
-//   () => selectedCellsCount,
-//   (newCount) => {
-//     const [start, end] = findContiguousZeros(payTable[kenoType][newCount-1]);
+    console.log(Array.from(new Set(values)).length === hits.length)
 
-//     let indices: number[] = [];
-//     for (let i = start; i <= end; i++) {
-//       indices.push(i);
-//     }
+    let result: any[] = []
 
-//     zeroIndices.value = indices; // Update zeroIndices
-//   },
-//   { immediate: true }
-// )
+    const numberFormatter = Intl.NumberFormat("en-US", { notation: "compact" })
+
+    Array.from(new Set(values)).forEach((value, index) => {
+      result.push({
+        pays: value > 999 ? numberFormatter.format(value) : value.toString(),
+        hit: hits[index],
+      })
+    })
+
+    for (let index = 0; index < values.length - zeros.length + 1; index++) {
+      if (index === zeros[0]) {
+        result[index] = {...result[index], startIndex: zeros[0]}
+      } else {
+        if (index < zeros[0]) {
+          result[index] = {...result[index], startIndex: index}
+        } else {
+          result[index] = {...result[index], startIndex: index + zeros.length - 1}
+        }
+      }
+    }
+
+    payTableData.value = result
+}
+
+watch(
+  () => selectedCellsCount,
+  updatePayTableData
+)
+
+updatePayTableData()
+
 </script>
 
 <template>
   <div v-if="selectedCellsCount > 0" class="pay-table">
-    <div class="label-container">
-      <div class="label">
-        <el-text tag="p" size="large">Multiplier</el-text>
-      </div>
-      <div class="label">
-        <el-text tag="p" size="large">Hits</el-text>
-      </div>
-    </div>
+    
 
     <div class="cells-container">
-      <div v-for="n in selectedCellsCount + 1" class="pay-data">
-        <div class="multiplier-cell-tight" :class="{ hit: matchedCellsCount >= n }">
-          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n - 1] }}</el-text>
+      <div class="label-container">
+        <div class="label">
+          <el-text tag="p" size="large">Pays</el-text>
+        </div>
+        <div class="label">
+          <el-text tag="p" size="large">Hits</el-text>
+        </div>
+      </div>
+      <div v-for="data in payTableData" class="pay-data">
+        <div 
+          class="multiplier-cell-tight" 
+          :class="{ hit: matchedCellsCount >= data.startIndex }">
+          <el-text size="large">x{{ data.pays }}</el-text>
+        </div>
+        <div 
+        class="selected-count-cell"
+        :class="{ hit: matchedCellsCount >= data.startIndex }"
+        >
+          <el-text size="large">{{ data.hit }}</el-text>
         </div>
 
-        <div class="selected-count-cell-tight" :class="{ hit: matchedCellsCount >= n }">
-          <el-text size="large">{{ n - 1 }}</el-text>
-        </div>
-
-        <!-- <div v-else class="multiplier-cell" :class="{ hit: matchedCellsCount >= n}">
-          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n-1] }}</el-text>
-        </div>
-        <div v-else class="selected-count-cell" :class="{ hit: matchedCellsCount >= n}">
-          <el-text size="large">{{ n-1 }} hit</el-text>
-        </div> -->
       </div>
 
-      <!-- PROTOTYPE FOR CONTIGUOUS ZEROS -->
-      <!-- <div v-for="indices in zeroIndices" :key="indices">
-        {{ indices }}
-      </div> -->
-      <!-- Elements before zeroIndices -->
-      <!-- <div
-        v-for="n in zeroIndices[0] > 0 ? Array.from({ length: zeroIndices[0] }, (_, i) => i + 1) : []"
-        :key="n"
-        class="pay-data"
-      >
-        <div class="multiplier-cell">
-          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n - 1] }}x</el-text>
-        </div>
-        <div class="selected-count-cell">
-          <el-text size="large">{{ n - 1 }}</el-text>
-        </div>
-      </div> -->
-
-      <!-- Single element for all zeroIndices -->
-      <!-- <div v-if="zeroIndices.length > 0" class="pay-data">
-        <div class="multiplier-cell">
-          <el-text size="large">0x</el-text>
-        </div>
-        <div v-if="zeroIndices[0]===zeroIndices[zeroIndices.length-1]" class="selected-count-cell">
-          <el-text size="large">0</el-text>
-        </div>
-        <div v-else="zeroIndices[0]===zeroIndices[zeroIndices.length]-1" class="selected-count-cell">
-          <el-text size="large">{{ zeroIndices[0] }}:{{ zeroIndices[zeroIndices.length - 1] }}</el-text>
-        </div>
-      </div> -->
-
-      <!-- Elements after zeroIndices -->
-      <!-- <div
-        v-for="n in zeroIndices.length > 0
-          ? Array.from({ length: selectedCellsCount - zeroIndices[zeroIndices.length - 1] }, (_, i) =>
-              zeroIndices[zeroIndices.length - 1] + i + 1
-            )
-          : []"
-        :key="n"
-        class="pay-data"
-      >
-        <div class="multiplier-cell" :class="{ hit: matchedCellsCount >= n }">
-          <el-text size="large">{{ payTable[kenoType][selectedCellsCount - 1][n - 1] }}x</el-text>
-        </div>
-        <div class="selected-count-cell" :class="{ hit: matchedCellsCount >= n }">
-          <el-text size="large">{{ n - 1 }}</el-text>
-        </div>
-      </div> -->
+    
     </div>
   </div>
 
   <div v-else class="pay-table">
     <div class="cells-container">
+      <div class="label-container">
+        <div class="label">
+          <el-text tag="p" size="large">Pays</el-text>
+        </div>
+        <div class="label">
+          <el-text tag="p" size="large">Hits</el-text>
+        </div>
+      </div>
       <div class="pay-data">
         <div class="placeholder-cell">
-          <el-text size="large">Multiplier goes here.</el-text>
+          <el-text size="large">:-)</el-text>
         </div>
         <div class="placeholder-cell">
-          <el-text size="large">Hit cells goes here.</el-text>
+          <el-text size="large">&nbsp;</el-text>
         </div>
       </div>
     </div>
@@ -149,13 +127,9 @@ const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
-  position: relative;
 }
 
 .label-container {
-  position: absolute;
-  bottom: 0;
-  left: -80px;
   display: flex;
   flex-direction: column;
   align-items: end;
