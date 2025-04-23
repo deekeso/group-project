@@ -1,6 +1,6 @@
 <template>
   <div class="side-buttons">
-    <AutopickButton />
+    <AutopickButton @autopick="$emit('autopick')" />
     <ClearButton class="clear-btn" @click="$emit('clear')" />
   </div>
 </template>

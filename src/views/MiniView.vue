@@ -38,7 +38,7 @@ import UserBalance from '@/components/UserBalance.vue'
 const router = useRouter()
 const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
-const { drawNumber } = useKenoDraw()
+const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
@@ -53,7 +53,7 @@ function startDraw() {
   let count = 0
 
   const interval = setInterval(() => {
-    drawNumber()
+    miniKenoDraw()
     count++
 
     if (count >= 10 || drawnNumbers.value.length >= 49) {

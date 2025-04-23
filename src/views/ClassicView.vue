@@ -38,7 +38,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
-const { drawNumber } = useKenoDraw()
+const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
@@ -53,10 +53,10 @@ function startDraw() {
   let count = 0
 
   const interval = setInterval(() => {
-    drawNumber()
+    classicKenoDraw()
     count++
 
-    if (count >= 10 || drawnNumbers.value.length >= 49) {
+    if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
     }

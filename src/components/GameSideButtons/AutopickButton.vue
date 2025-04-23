@@ -3,7 +3,7 @@
     <div class="number-container">
       <div class="number" v-for="number in 10" :key="number">{{ number }}</div>
     </div>
-    <div class="autopick-btn">
+    <div class="autopick-btn" @click="$emit('autopick')">
       <img src="../../assets/Shuffle.png" alt="shuffle icon" />
     </div>
   </div>
