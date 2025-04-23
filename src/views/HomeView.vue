@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import Navbar from '@/components/Navbar.vue'
-import GameModesCard from '@/components/GameModesCard.vue'
-import SloganSection from '@/components/SloganSection.vue'
-
+import { ref } from 'vue'
 import { onBeforeMount } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+
+import Navbar from '@/components/Navbar.vue'
+import GameModesCard from '@/components/GameModesCard.vue'
+import SloganSection from '@/components/SloganSection.vue'
+import SigninForm from '@/components/SigninForm.vue'
+
 // import { ElMessageBox } from 'element-plus'
 
 // import userPointIcon from '@/assets/ChatGPT Image Apr 13, 2025, 11_51_57 AM - Copy.png'
@@ -22,33 +25,33 @@ onBeforeMount(() => {
   }
 })
 
-// const handleLogout = async () => {
-//   try {
-//     await ElMessageBox.confirm('Are you sure you want to log out?', 'Confirm Logout', {
-//       confirmButtonText: 'Yes, Log Out',
-//       cancelButtonText: 'Cancel',
-//       type: 'warning',
-//     })
+const isSigninVisible = ref(false)
 
-//     authStore.logout()
-//     router.push('/login')
-//   } catch {
-//     // User cancelled logout
-//   }
-// }
+const showSigninModal = () => {
+  isSigninVisible.value = true
+}
+
+const closeSigninModal = () => {
+  isSigninVisible.value = false
+}
 </script>
 
 <template>
   <div class="background">
     <div class="home">
       <Navbar />
+
       <div class="heading">
         <h1>Game Modes</h1>
       </div>
       <hr />
       <div class="gamemode-container">
-        <GameModesCard />
+        <GameModesCard @trigger-signin="showSigninModal" />
         <SloganSection />
+
+        <el-dialog v-model="isSigninVisible" style="background-color: transparent" center>
+          <SigninForm />
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -77,5 +80,12 @@ onBeforeMount(() => {
   display: flex;
   justify-content: center;
   margin-inline: 2rem;
+}
+
+::v-deep(.el-dialog__header) {
+  display: none;
+}
+::v-deep(.el-dialocenter) {
+  display: none;
 }
 </style>
