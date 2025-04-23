@@ -6,6 +6,7 @@ interface User {
   username?: string
   dateOfBirth?: Date
   password: string
+  balance?: number
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -17,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     const foundUser = users.value.find(
       u => u.email === email && u.password === password
     )
-    
+
     if (!foundUser) {
       throw new Error('Invalid email or password')
     }
@@ -42,8 +43,8 @@ export const useAuthStore = defineStore('auth', () => {
       throw new Error('Username already taken')
     }
 
-    users.value.push(userData)
-    user.value = userData
+    users.value.push({...userData, balance: 0})
+    user.value = {...userData, balance: 0}
     isAuthenticated.value = true
   }
 
