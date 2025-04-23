@@ -3,7 +3,7 @@
     <HomeButton @home="directToHome" />
     <div class="grid-paytable-container">
       <PayTable
-        kenoType="mini"
+        kenoType="classic"
         :selectedCellsCount="selectedNumbers.length"
         :matchedCellsCount="matchedNumbers.length"
         style="padding-bottom: 24px"

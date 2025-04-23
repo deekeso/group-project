@@ -37,7 +37,7 @@ function toggleNumber(number: number): void {
   const index = selectedNumbers.value.indexOf(number)
   if (index > -1) {
     selectedNumbers.value.splice(index, 1)
-  } else if (selectedNumbers.value.length < 10) {
+  } else if (selectedNumbers.value.length < 15) {
     selectedNumbers.value.push(number)
   }
   emit('numberSelected', selectedNumbers.value)
