@@ -8,6 +8,7 @@ import Navbar from '@/components/Navbar.vue'
 import GameModesCard from '@/components/GameModesCard.vue'
 import SloganSection from '@/components/SloganSection.vue'
 import SigninForm from '@/components/SigninForm.vue'
+import SignupForm from '@/components/SignupForm.vue'
 
 // import { ElMessageBox } from 'element-plus'
 
@@ -50,7 +51,7 @@ const closeSigninModal = () => {
         <SloganSection />
 
         <el-dialog v-model="isSigninVisible" style="background-color: transparent" center>
-          <SigninForm />
+          <SignupForm />
         </el-dialog>
       </div>
     </div>
