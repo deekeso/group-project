@@ -32,7 +32,7 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -41,6 +41,10 @@ const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
+
+onMounted(() => {
+  gameStore.setGameMode('classic')
+})
 
 function startDraw() {
   gameStore.setDrawnNumbers([])

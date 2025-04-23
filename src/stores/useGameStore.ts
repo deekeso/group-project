@@ -1,24 +1,28 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
+export type GameMode = 'classic' | 'mini'
+
 export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
   const wager = ref<number>(20)
   const bet = ref<number>(1)
+  const mode = ref<GameMode>('classic') // NEW: game mode
 
-  //autosave to local storage
+  // autosave to local storage
   watch(
-    [selectedNumbers, drawnNumbers, matchedNumbers, wager],
+    [selectedNumbers, drawnNumbers, matchedNumbers, wager, mode],
     () => {
       localStorage.setItem(
         'keno-game',
         JSON.stringify({
           selected: selectedNumbers.value,
-          drawn: matchedNumbers.value,
-          matches: matchedNumbers.value,
+          drawn: drawnNumbers.value,
+          matched: matchedNumbers.value,
           wager: wager.value,
+          mode: mode.value,
         }),
       )
     },
@@ -34,6 +38,8 @@ export const useGameStore = defineStore('game', () => {
       selectedNumbers.value = parsed.selected || []
       drawnNumbers.value = parsed.drawn || []
       matchedNumbers.value = parsed.matched || []
+      wager.value = parsed.wager || 20
+      mode.value = parsed.mode || 'classic'
     }
   }
 
@@ -59,16 +65,24 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers.value = []
   }
 
+  // NEW: change mode
+  function setGameMode(newMode: GameMode) {
+    mode.value = newMode
+    resetGame() // optional: reset when changing mode
+  }
+
   return {
     selectedNumbers,
     drawnNumbers,
     matchedNumbers,
     wager,
     bet,
+    mode,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
     resetGame,
     loadFromStorage,
+    setGameMode,
   }
 })
