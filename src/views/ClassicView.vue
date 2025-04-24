@@ -44,7 +44,7 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 
@@ -60,6 +60,12 @@ const showModal = ref(false)
 
 onMounted(() => {
   gameStore.setGameMode('classic')
+})
+
+onUnmounted(() => {
+  gameStore.resetGame()
+  useKenoDraw().resetDraw
+  console.log('unmounted')
 })
 
 function startDraw() {
@@ -81,8 +87,7 @@ function startDraw() {
 
       calculatePayout()
       evaluateGame()
-      gameStore.isPlayingToggle()
-      showModal.value = true
+      displayResult()
     }
   }, 150)
 }
@@ -93,6 +98,12 @@ function setSelectedNumbers(numbers: number[]) {
 
 function directToHome() {
   router.push('/home')
+}
+
+function displayResult() {
+  setTimeout(() => {
+    showModal.value = true
+  }, 1000)
 }
 </script>
 
