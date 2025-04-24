@@ -12,6 +12,7 @@ export const useGameStore = defineStore('game', () => {
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
   const mode = ref<GameMode>('classic') // NEW: game mode
+  const isPlaying = ref<boolean>(false)
 
   // autosave to local storage
   watch(
@@ -90,6 +91,10 @@ export const useGameStore = defineStore('game', () => {
     winnings.value = 0
   }
 
+  function isPlayingToggle() {
+    isPlaying.value = !isPlaying.value
+  }
+
   return {
     selectedNumbers,
     drawnNumbers,
@@ -99,6 +104,7 @@ export const useGameStore = defineStore('game', () => {
     winnings,
     result,
     mode,
+    isPlaying,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
@@ -108,5 +114,6 @@ export const useGameStore = defineStore('game', () => {
     addWinnings,
     setResult,
     resetWinnings,
+    isPlayingToggle,
   }
 })

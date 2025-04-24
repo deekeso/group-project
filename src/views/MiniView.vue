@@ -9,7 +9,7 @@
       <PayTable
         kenoType="mini"
         :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length + 1"
+        :matchedCellsCount="matchedNumbers.length"
         style="padding-bottom: 24px"
       />
       <div class="grid-sidebtn-container">
@@ -19,11 +19,8 @@
 
       <GameButtons @playGame="startDraw" />
 
-      <GameDialog v-if="showModal">
-        <h2>{{ result }}</h2>
-        <p>Payout: {{ winValue }}</p>
-        <p>Total Winnings: {{ winnings }}</p>
-      </GameDialog>
+      <WithWin v-if="result === 'win' && showModal"></WithWin>
+      <NoWin v-if="result === 'lose' && showModal"></NoWin>
     </div>
   </div>
 </template>
@@ -42,10 +39,13 @@ import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import { useKenoResult } from '@/composables/useKenoResult'
 import GameDialog from '@/components/GameDialog.vue'
+import WithWin from '@/components/WithWin.vue'
+import NoWin from '@/components/NoWin.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings } = storeToRefs(gameStore)
+const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings, isPlaying } =
+  storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
@@ -58,9 +58,9 @@ onMounted(() => {
 })
 
 function startDraw() {
-  gameStore.setDrawnNumbers([])
   useKenoDraw().resetDraw()
-  matchedNumbers.value = []
+
+  gameStore.isPlayingToggle()
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -77,11 +77,9 @@ function startDraw() {
 
       calculatePayout()
       evaluateGame()
+      gameStore.isPlayingToggle()
 
       showModal.value = true
-      setTimeout(() => {
-        showModal.value = false
-      }, 2000)
     }
   }, 150)
 }
