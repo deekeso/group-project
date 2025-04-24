@@ -19,6 +19,8 @@ const props = defineProps<{
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
+
 h1 {
   color: #f8ab00;
   text-transform: uppercase;
@@ -71,5 +73,4 @@ p {
 .collect-btn:hover {
   background: #ffc13a;
 }
-@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
 </style>
