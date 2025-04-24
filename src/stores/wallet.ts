@@ -12,13 +12,11 @@ export const useWalletStore = defineStore('wallet', () => {
   function updateUserBalance(amount: number, operation: 'deposit' | 'withdraw') {
     if (!auth.user) return
 
-    const index = auth.users.findIndex(u => u.email === auth.user!.email)
+    const index = auth.users.findIndex((u) => u.email === auth.user!.email)
     if (index === -1) return
 
     const currentBalance = auth.user.balance ?? 0
-    const newBalance = operation === 'deposit'
-      ? currentBalance + amount
-      : currentBalance - amount
+    const newBalance = operation === 'deposit' ? currentBalance + amount : currentBalance - amount
 
     // Update in user ref
     auth.user.balance = newBalance
@@ -39,9 +37,23 @@ export const useWalletStore = defineStore('wallet', () => {
     updateUserBalance(amount, 'withdraw')
   }
 
+  function deductLostBet(amount: number) {
+    try {
+      withdraw(amount)
+    } catch (error) {
+      console.error('Failed to deduct bet:', error)
+    }
+  }
+
+  function addPayout(amount: number) {
+    updateUserBalance(amount, 'deposit')
+  }
+
   return {
     balance,
     deposit,
-    withdraw
+    withdraw,
+    deductLostBet,
+    addPayout,
   }
 })

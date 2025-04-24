@@ -1,5 +1,9 @@
 <template>
-  <button class="button-container" @click="$emit('wallet')" :title="`Go to wallet.\nRemaining balance: ₱${balance}`">
+  <button
+    class="button-container"
+    @click="$emit('wallet')"
+    :title="`Go to wallet.\nRemaining balance: ₱${balance}`"
+  >
     <el-icon size="25" color="black">
       <WalletFilled />
     </el-icon>
@@ -10,9 +14,10 @@
 <script setup lang="ts">
 import { useWalletStore } from '@/stores/wallet'
 import { WalletFilled } from '@element-plus/icons-vue'
+import { computed } from 'vue'
 
 const wallet = useWalletStore()
-const balance = wallet.balance
+const balance = computed(() => wallet.balance)
 </script>
 
 <style scoped>
@@ -31,7 +36,7 @@ const balance = wallet.balance
   transition: all 100ms;
 }
 .button-container:hover {
- transform: scale(1.05); 
+  transform: scale(1.05);
 }
 .user-balance {
   background: #ffffff;

@@ -1,30 +1,45 @@
 <template>
-
-    <el-container>
-      <el-header>
-        <HomeButton @home="directToHome" />
-        <UserBalance @wallet="directToWallet"/>
-      </el-header>
-      <el-main>
-        <div class="grid-paytable-container">
-          <PayTable
-            kenoType="classic"
-            :selectedCellsCount="selectedNumbers.length"
-            :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-            style="padding-bottom: 24px"
+  <el-container>
+    <el-header>
+      <HomeButton @home="directToHome" />
+      <UserBalance @wallet="directToWallet" />
+    </el-header>
+    <el-main>
+      <div class="grid-paytable-container">
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+          style="padding-bottom: 24px"
+        />
+        <div class="grid-sidebtn-container">
+          <ClassicGrid
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
           />
-          <div class="grid-sidebtn-container">
-            <ClassicGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound"/>
-            <GameSideButtons @clear="gameStore.resetGame" />
-          </div>
-    
-          <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+          <GameSideButtons @clear="gameStore.resetGame" />
         </div>
-      </el-main>
-    </el-container>
+
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        <WithWin
+          v-if="result === 'win' && showModal"
+          :winValue="winnings"
+          @close="showModal = false"
+        />
+        <NoWin
+          v-if="result === 'lose' && showModal"
+          @close="showModal = false"
+          @home="directToHome"
+        />
+      </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script setup lang="ts">
+import WithWin from '@/components/WithWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -34,22 +49,48 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useKenoResult } from '@/composables/useKenoResult'
+import { ElNotification } from 'element-plus'
+import { useWalletStore } from '@/stores/wallet'
+import { useSyncGameMode } from '@/composables/useSyncGameMode'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
+const walletStore = useWalletStore()
+const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
+const { calculatePayout, evaluateGame } = useKenoResult('classic')
+const showModal = ref(false)
+
+// onMounted(() => {
+//   gameStore.setGameMode('classic')
+// })
+
+useSyncGameMode('classic')
+
 function startDraw() {
-  gameStore.setDrawnNumbers([])
+  // Check balance before playing
+  if (walletStore.balance < gameStore.wager) {
+    ElNotification({
+      title: 'Insufficient Balance',
+      message: 'Please top up your wallet or adjust your wager.',
+      type: 'error',
+      position: 'top-right',
+      duration: 3000,
+      showClose: true,
+    })
+    return
+  }
+
   useKenoDraw().resetDraw()
-  matchedNumbers.value = []
+  gameStore.isPlayingToggle()
   displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
@@ -65,6 +106,9 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
       isRoundFinished.value = true
+
+      evaluateGame()
+      displayResult()
     }
   }, 150)
 }
@@ -86,10 +130,17 @@ function directToHome() {
 function directToWallet() {
   router.push('/wallet')
 }
+
+function displayResult() {
+  setTimeout(() => {
+    calculatePayout()
+    showModal.value = true
+  }, 1000)
+  showModal.value = false
+}
 </script>
 
 <style scoped>
-
 .el-header {
   display: flex;
   justify-content: space-between;

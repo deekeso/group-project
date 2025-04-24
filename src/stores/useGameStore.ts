@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
+export type GameMode = 'classic' | 'mini'
+
 const MIN_WAGER = 20
 const MAX_WAGER = 500
 
@@ -10,18 +12,25 @@ export const useGameStore = defineStore('game', () => {
   const matchedNumbers = ref<number[]>([])
   const wager = ref<number>(MIN_WAGER)
   const bet = ref<number>(1)
+  const winnings = ref<number>(0)
+  const result = ref<'win' | 'lose' | ''>('')
+  const mode = ref<GameMode>('classic') // NEW: game mode
+  const isPlaying = ref<boolean>(false)
 
-  //autosave to local storage
+  // autosave to local storage
   watch(
-    [selectedNumbers, drawnNumbers, matchedNumbers, wager],
+    [selectedNumbers, drawnNumbers, matchedNumbers, wager, mode],
     () => {
       localStorage.setItem(
         'keno-game',
         JSON.stringify({
           selected: selectedNumbers.value,
-          drawn: matchedNumbers.value,
-          matches: matchedNumbers.value,
+          drawn: drawnNumbers.value,
+          matched: matchedNumbers.value,
           wager: wager.value,
+          winnings: winnings.value,
+          result: result.value,
+          mode: mode.value,
         }),
       )
     },
@@ -37,9 +46,12 @@ export const useGameStore = defineStore('game', () => {
       selectedNumbers.value = parsed.selected || []
       drawnNumbers.value = parsed.drawn || []
       matchedNumbers.value = parsed.matched || []
+      wager.value = parsed.wager || 20
+      winnings.value = parsed.winnings || 0
+      result.value = parsed.result || ''
+      mode.value = parsed.mode || 'classic'
     }
   }
-  
 
   // wager counter
   function increaseWager() {
@@ -66,6 +78,37 @@ export const useGameStore = defineStore('game', () => {
     }
     drawnNumbers.value = []
     matchedNumbers.value = []
+    winnings.value = 0
+  }
+
+  //mode switcher
+  function setGameMode(newMode: GameMode) {
+    if (mode.value !== newMode) {
+      resetGame()
+    }
+
+    // Handle trimming after reset so selectedNumbers is guaranteed fresh
+    if (newMode === 'mini' && selectedNumbers.value.length > 10) {
+      selectedNumbers.value = selectedNumbers.value.slice(0, 10)
+    }
+
+    mode.value = newMode
+  }
+
+  function addWinnings(amount: number) {
+    winnings.value += amount
+  }
+
+  function setResult(status: 'win' | 'lose') {
+    result.value = status
+  }
+
+  function resetWinnings() {
+    winnings.value = 0
+  }
+
+  function isPlayingToggle() {
+    isPlaying.value = !isPlaying.value
   }
 
   return {
@@ -76,11 +119,20 @@ export const useGameStore = defineStore('game', () => {
     bet,
     MIN_WAGER,
     MAX_WAGER,
+    winnings,
+    result,
+    mode,
+    isPlaying,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
     resetGame,
     loadFromStorage,
-    doubleWager
+    doubleWager,
+    setGameMode,
+    addWinnings,
+    setResult,
+    resetWinnings,
+    isPlayingToggle,
   }
 })

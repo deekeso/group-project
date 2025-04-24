@@ -9,7 +9,7 @@
     <h1>DO YOU WANT TO CASHOUT YOUR WINNINGS?</h1>
 
     <div>
-      <img src="/src/assets/KenoMaster.png" alt="">
+      <img src="/src/assets/KenoMaster.png" alt="" />
     </div>
     <button class="yes-btn">Yes</button>
     <button class="no-btn">No</button>
@@ -21,6 +21,8 @@ import GameDialog from '../components/GameDialog.vue'
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
+
 h1 {
   color: #f8ab00;
   text-transform: uppercase;
@@ -29,11 +31,10 @@ h1 {
   font-weight: 700;
   font-size: 40px;
   text-align: center;
-  background: linear-gradient(111.32deg, #F8AC38 26.41%, #E68339 96.3%);
+  background: linear-gradient(111.32deg, #f8ac38 26.41%, #e68339 96.3%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
   text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
 }
 .close-icon {
@@ -56,7 +57,7 @@ h1 {
   margin-right: 10px;
 }
 .yes-btn:hover {
-  background: #ffc13a ;
+  background: #ffc13a;
 }
 .no-btn {
   width: 48%;
@@ -71,5 +72,4 @@ h1 {
 .no-btn:hover {
   background: #f0f0f0;
 }
-@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
 </style>

@@ -39,7 +39,4 @@ body {
   padding: 0;
   margin: 0;
 }
-
-/* Import fonts properly */
-
 </style>
