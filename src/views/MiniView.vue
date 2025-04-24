@@ -9,7 +9,7 @@
         <PayTable
           kenoType="mini"
           :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="matchedNumbers.length"
+          :matchedCellsCount="isRoundStarted ? matchedNumbers.length : -1"
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
@@ -63,6 +63,7 @@ const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings } = stor
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
+const isRoundStarted = ref(false)
 const errorMessage = ref('')
 const miniGridSelectedNumbers = ref<number[]>([])
 
@@ -75,6 +76,7 @@ onBeforeMount(() => {
 // useSyncGameMode('mini')
 
 function startDraw() {
+  isRoundStarted.value = true
   // Check balance before playing
   if (walletStore.balance < gameStore.wager) {
     ElNotification({
@@ -107,6 +109,7 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
       isRoundFinished.value = true
+      isRoundStarted.value = false
 
       evaluateGame()
       gameStore.isPlayingToggle()
