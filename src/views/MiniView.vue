@@ -47,13 +47,16 @@ import UserBalance from '@/components/UserBalance.vue'
 import { useKenoResult } from '@/composables/useKenoResult'
 import WithWin from '@/components/WithWin.vue'
 import NoWin from '@/components/NoWin.vue'
+import { useWalletStore } from '@/stores/wallet'
+import { ElNotification } from 'element-plus'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings, isPlaying } =
-  storeToRefs(gameStore)
+const walletStore = useWalletStore()
+const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings } = storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const errorMessage = ref('')
 const miniGridSelectedNumbers = ref<number[]>([])
 
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
@@ -69,6 +72,21 @@ onUnmounted(() => {
 })
 
 function startDraw() {
+  // Check balance before playing
+  if (walletStore.balance < gameStore.wager) {
+    ElNotification({
+      title: 'Insufficient Balance',
+      message: 'Please top up your wallet before starting a game.',
+      type: 'error',
+      position: 'top-right',
+      duration: 3000,
+      showClose: true,
+    })
+    return
+  }
+
+  errorMessage.value = '' // Clear previous error if any
+
   useKenoDraw().resetDraw()
 
   gameStore.isPlayingToggle()
@@ -86,7 +104,6 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
 
-      calculatePayout()
       evaluateGame()
       gameStore.isPlayingToggle()
       displayResult()
@@ -108,8 +125,10 @@ function directToHome() {
 
 function displayResult() {
   setTimeout(() => {
+    calculatePayout()
     showModal.value = true
   }, 1000)
+  showModal.value = false
 }
 </script>
 

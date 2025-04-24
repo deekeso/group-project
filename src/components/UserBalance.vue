@@ -7,9 +7,10 @@
 
 <script setup lang="ts">
 import { useWalletStore } from '@/stores/wallet'
+import { computed } from 'vue'
 
 const wallet = useWalletStore()
-const balance = wallet.balance
+const balance = computed(() => wallet.balance)
 </script>
 
 <style scoped>
