@@ -22,7 +22,6 @@ const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
 */
 
 function updatePayTableData() {
-  let scc = selectedCellsCount
   if (selectedCellsCount < 1) {
       return
     }
@@ -30,8 +29,6 @@ function updatePayTableData() {
     const values = [...payTable[kenoType][selectedCellsCount - 1]['values']] 
     const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
     const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
-
-    console.log(Array.from(new Set(values)).length === hits.length)
 
     let result: any[] = []
 
@@ -48,7 +45,7 @@ function updatePayTableData() {
       })
     })
 
-    for (let index = 0; index < values.length - zeros.length + 1; index++) {
+    for (let index = 0; index < values.length; index++) {
       if (index === zeros[0]) {
         result[index] = {...result[index], startIndex: zeros[0]}
       } else {
@@ -64,7 +61,7 @@ function updatePayTableData() {
 }
 
 watch(
-  () => selectedCellsCount,
+  () => [selectedCellsCount, matchedCellsCount],
   updatePayTableData
 )
 
@@ -75,7 +72,6 @@ updatePayTableData()
 <template>
   <div v-if="selectedCellsCount > 0" class="pay-table">
     
-
     <div class="cells-container">
       <div class="label-container">
         <div class="label">
@@ -133,6 +129,7 @@ updatePayTableData()
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
+  user-select: none;
 }
 
 .label-container {

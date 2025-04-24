@@ -1,25 +1,26 @@
 <template>
-  <div class="background">
-    <div class="top-buttons">
-      <HomeButton @home="directToHome" />
-      <UserBalance />
-    </div>
-
-    <div class="grid-paytable-container">
-      <PayTable
-        kenoType="mini"
-        :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length + 1"
-        style="padding-bottom: 24px"
-      />
-      <div class="grid-sidebtn-container">
-        <MiniGrid @number-selected="setSelectedNumbers" />
-        <GameSideButtons @clear="clearGame" />
-      </div>
-
-      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-    </div>
-  </div>
+  <el-container>
+      <el-header>
+        <HomeButton @home="directToHome" />
+        <UserBalance @wallet="directToWallet"/>
+      </el-header>
+      <el-main>
+        <div class="grid-paytable-container">
+          <PayTable
+            kenoType="mini"
+            :selectedCellsCount="selectedNumbers.length"
+            :matchedCellsCount="matchedNumbers.length"
+            style="padding-bottom: 24px"
+          />
+          <div class="grid-sidebtn-container">
+            <MiniGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound"/>
+            <GameSideButtons @clear="gameStore.resetGame" />
+          </div>
+    
+          <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        </div>
+      </el-main>
+    </el-container>
 </template>
 
 <script setup lang="ts">
@@ -40,6 +41,7 @@ const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const isRoundFinished = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 function startDraw() {
@@ -59,6 +61,7 @@ function startDraw() {
     if (count >= 10 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+      isRoundFinished.value = true
     }
   }, 150)
 }
@@ -67,22 +70,30 @@ function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
 }
 
-function clearGame() {
-  gameStore.resetGame()
+function resetRound() {
+  gameStore.resetGame(true)
+  isRoundFinished.value = false
 }
 
 function directToHome() {
   router.push('/home')
 }
+
+function directToWallet() {
+  router.push('/wallet')
+}
 </script>
 
 <style scoped>
-.top-buttons {
+.el-header {
   display: flex;
   justify-content: space-between;
-  align-self: flex-start;
-  margin-inline: 50px;
-  margin-block: 20px;
+  padding-top: 20px;
+}
+
+.el-main {
+  display: grid;
+  place-items: center;
 }
 .grid-paytable-container {
   width: fit-content;
