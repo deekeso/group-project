@@ -78,6 +78,7 @@ function toggleNumber(number: number): void {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
+  user-select: none;
 }
 
 .cell:hover {
