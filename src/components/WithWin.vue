@@ -6,20 +6,18 @@
         d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"
       ></path>
     </svg>
-    <h1>Purchase Cards</h1>
+    <p>YOU WON</p>
+    <h1>₱50.00</h1> <!-- Sample Win -->
 
-    <div class="flex-group">
-      <SingleCard />
-      <MultipleCard />
+    <div>
+      <img src="/src/assets/gold-trunk-win.png" alt="">
     </div>
-    <button class="select-btn">Select</button>
+    <button class="collect-btn">Collect</button>
   </GameDialog>
 </template>
 
 <script setup lang="ts">
 import GameDialog from '../components/GameDialog.vue'
-import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
-import SingleCard from '../components/PurchaseCard/SingleCard.vue'
 </script>
 
 <style scoped>
@@ -29,7 +27,7 @@ h1 {
   font-family: 'Mukta Mahee';
   font-style: normal;
   font-weight: 700;
-  font-size: 40px;
+  font-size: 100px;
   text-align: center;
   background: linear-gradient(111.32deg, #F8AC38 26.41%, #E68339 96.3%);
   -webkit-background-clip: text;
@@ -37,7 +35,21 @@ h1 {
   background-clip: text;
   text-fill-color: transparent;
   text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
-
+}
+p{
+  color: #f8ab00;
+  text-transform: uppercase;
+  font-family: 'Mukta Mahee';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 30px;
+  text-align: center;
+  background: linear-gradient(111.32deg, #F8AC38 26.41%, #E68339 96.3%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
 }
 .close-icon {
   height: 25px;
@@ -47,13 +59,7 @@ h1 {
 .close-icon:hover {
   color: #ffcf68;
 }
-.flex-group {
-  display: flex;
-  gap: 50px;
-  margin-block: 15px;
-  box-sizing: border-box;
-}
-.select-btn {
+.collect-btn {
   width: 100%;
   border-radius: 100px;
   background: #f8ab00;
@@ -62,9 +68,10 @@ h1 {
   font-weight: bold;
   border: none;
   padding-block: 10px;
+
 }
-.select-btn:hover {
-  background: #ffc13a;
+.collect-btn:hover {
+  background: #ffc13a ;
 }
 @import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
 </style>

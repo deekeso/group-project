@@ -6,20 +6,18 @@
         d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"
       ></path>
     </svg>
-    <h1>Purchase Cards</h1>
+    <h1>INSUFFICIENT BALANCE!</h1>
 
-    <div class="flex-group">
-      <SingleCard />
-      <MultipleCard />
+    <div>
+      <img src="/src/assets/KenoMaster.png" alt="">
     </div>
-    <button class="select-btn">Select</button>
+    <button class="deposit-btn">Deposit</button>
+    <button class="cancel-btn">Cancel</button>
   </GameDialog>
 </template>
 
 <script setup lang="ts">
 import GameDialog from '../components/GameDialog.vue'
-import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
-import SingleCard from '../components/PurchaseCard/SingleCard.vue'
 </script>
 
 <style scoped>
@@ -47,14 +45,8 @@ h1 {
 .close-icon:hover {
   color: #ffcf68;
 }
-.flex-group {
-  display: flex;
-  gap: 50px;
-  margin-block: 15px;
-  box-sizing: border-box;
-}
-.select-btn {
-  width: 100%;
+.deposit-btn {
+  width: 48%;
   border-radius: 100px;
   background: #f8ab00;
   color: #000000;
@@ -62,8 +54,22 @@ h1 {
   font-weight: bold;
   border: none;
   padding-block: 10px;
+  margin-right: 10px;
 }
-.select-btn:hover {
+.cancel-btn:hover {
+  background: #f0f0f0 ;
+}
+.cancel-btn {
+  width: 48%;
+  border-radius: 100px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  padding-block: 10px;
+}
+.deposit-btn:hover {
   background: #ffc13a;
 }
 @import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
