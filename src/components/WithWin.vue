@@ -42,7 +42,6 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
   text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
 }
 p {
@@ -57,7 +56,6 @@ p {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
   text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
 }
 .close-icon {
