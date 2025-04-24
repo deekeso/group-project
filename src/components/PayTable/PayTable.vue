@@ -23,6 +23,7 @@ const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
 
 function updatePayTableData() {
   let scc = selectedCellsCount
+  let mcc = matchedCellsCount
   if (selectedCellsCount < 1) {
       return
     }
@@ -48,7 +49,7 @@ function updatePayTableData() {
       })
     })
 
-    for (let index = 0; index < values.length - zeros.length + 1; index++) {
+    for (let index = 0; index < values.length; index++) {
       if (index === zeros[0]) {
         result[index] = {...result[index], startIndex: zeros[0]}
       } else {
@@ -64,7 +65,7 @@ function updatePayTableData() {
 }
 
 watch(
-  () => selectedCellsCount,
+  () => [selectedCellsCount, matchedCellsCount],
   updatePayTableData
 )
 
