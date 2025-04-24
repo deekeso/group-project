@@ -9,6 +9,8 @@ export const useGameStore = defineStore('game', () => {
   const matchedNumbers = ref<number[]>([])
   const wager = ref<number>(20)
   const bet = ref<number>(1)
+  const winnings = ref<number>(0)
+  const result = ref<'win' | 'lose' | ''>('')
   const mode = ref<GameMode>('classic') // NEW: game mode
 
   // autosave to local storage
@@ -22,6 +24,8 @@ export const useGameStore = defineStore('game', () => {
           drawn: drawnNumbers.value,
           matched: matchedNumbers.value,
           wager: wager.value,
+          winnings: winnings.value,
+          result: result.value,
           mode: mode.value,
         }),
       )
@@ -39,6 +43,8 @@ export const useGameStore = defineStore('game', () => {
       drawnNumbers.value = parsed.drawn || []
       matchedNumbers.value = parsed.matched || []
       wager.value = parsed.wager || 20
+      winnings.value = parsed.winnings || 0
+      result.value = parsed.result || ''
       mode.value = parsed.mode || 'classic'
     }
   }
@@ -68,7 +74,19 @@ export const useGameStore = defineStore('game', () => {
   // NEW: change mode
   function setGameMode(newMode: GameMode) {
     mode.value = newMode
-    resetGame() // optional: reset when changing mode
+    // resetGame() // optional: reset when changing mode
+  }
+
+  function addWinnings(amount: number) {
+    winnings.value += amount
+  }
+
+  function setResult(status: 'win' | 'lose') {
+    result.value = status
+  }
+
+  function resetWinnings() {
+    winnings.value = 0
   }
 
   return {
@@ -77,6 +95,8 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers,
     wager,
     bet,
+    winnings,
+    result,
     mode,
     increaseWager,
     decreaseWager,
@@ -84,5 +104,8 @@ export const useGameStore = defineStore('game', () => {
     resetGame,
     loadFromStorage,
     setGameMode,
+    addWinnings,
+    setResult,
+    resetWinnings,
   }
 })

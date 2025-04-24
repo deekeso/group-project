@@ -18,6 +18,12 @@
       </div>
 
       <GameButtons @playGame="startDraw" />
+
+      <GameDialog v-if="showModal">
+        <p>{{ gameOutcome?.result }}</p>
+        <p>{{ gameOutcome?.winnings }}</p>
+        <p>{{ gameOutcome?.payout }}</p>
+      </GameDialog>
     </div>
   </div>
 </template>
@@ -34,6 +40,8 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
+import { useKenoResult } from '@/composables/useKenoResult'
+import GameDialog from '@/components/GameDialog.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -41,6 +49,10 @@ const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
+
+const { evaluateGame } = useKenoResult()
+const gameOutcome = ref<{ payout: number; winnings: number; result: string } | null>(null)
+const showModal = ref(false)
 
 onMounted(() => {
   gameStore.setGameMode('mini')
@@ -63,6 +75,12 @@ function startDraw() {
     if (count >= 10 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+
+      gameOutcome.value = evaluateGame()
+      showModal.value = true
+      setTimeout(() => {
+        showModal.value = false
+      }, 2000)
     }
   }, 150)
 }

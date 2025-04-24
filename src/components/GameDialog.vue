@@ -17,12 +17,12 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background: white;
   padding: 10px;
   align-content: center;
   justify-items: center;
   text-align: center;
-  background-image: url(src/assets/game-background.png);
+  background-color: rgba(0, 0, 0, 0.329);
+  /* background-image: url(src/assets/game-background.png); */
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
