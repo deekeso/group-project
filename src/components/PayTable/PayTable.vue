@@ -76,7 +76,6 @@ updatePayTableData()
 <template>
   <div v-if="selectedCellsCount > 0" class="pay-table">
     
-
     <div class="cells-container">
       <div class="label-container">
         <div class="label">
@@ -134,6 +133,7 @@ updatePayTableData()
   justify-content: space-between;
   align-items: center;
   font-weight: bold;
+  user-select: none;
 }
 
 .label-container {
