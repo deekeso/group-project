@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
+const MIN_WAGER = 20
+const MAX_WAGER = 500
+
 export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
-  const wager = ref<number>(20)
+  const wager = ref<number>(MIN_WAGER)
   const bet = ref<number>(1)
 
   //autosave to local storage
@@ -36,16 +39,20 @@ export const useGameStore = defineStore('game', () => {
       matchedNumbers.value = parsed.matched || []
     }
   }
+  
 
   // wager counter
   function increaseWager() {
-    const maxWager = 500
-    if (wager.value < maxWager) wager.value++
+    if (wager.value < MAX_WAGER) wager.value++
   }
 
   function decreaseWager() {
-    const minWager = 20
-    if (wager.value > minWager) wager.value--
+    if (wager.value > MIN_WAGER) wager.value--
+  }
+
+  function doubleWager() {
+    const newWager = wager.value * 2
+    wager.value = newWager >= MAX_WAGER ? MAX_WAGER : newWager
   }
 
   function setDrawnNumbers(numbers: number[]) {
@@ -65,10 +72,13 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers,
     wager,
     bet,
+    MIN_WAGER,
+    MAX_WAGER,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
     resetGame,
     loadFromStorage,
+    doubleWager
   }
 })

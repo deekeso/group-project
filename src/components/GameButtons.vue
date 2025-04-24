@@ -1,32 +1,114 @@
 <template>
   <div class="btn-container">
-    <div class="wager-container">
-      <div class="wager-btn" @click="gameStore.decreaseWager">
-        <svg class="wager-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-          <path fill="currentColor" d="M128 544h768a32 32 0 1 0 0-64H128a32 32 0 0 0 0 64"></path>
-        </svg>
-      </div>
-      <span class="wager-txt">{{ wager }}</span>
-      <div class="wager-btn" @click="gameStore.increaseWager">
-        <svg class="wager-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-          <path
-            fill="currentColor"
-            d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64z"
-          ></path>
-        </svg>
-      </div>
+    <div class="wager-container" :class="{ disabled: isDrawing }">
+      <button class="wager-btn" @click="gameStore.decreaseWager" :disabled="isDrawing || wager <= gameStore.MIN_WAGER" @mousedown="startDecreaseHold" @mouseup="stopDecreaseHold" @mouseleave="stopDecreaseHold">
+        <el-icon size="large" color="black">
+          <Minus />
+        </el-icon>
+      </button>
+      <span class="wager-txt">Wager: ₱{{ wager }}</span>
+      <button class="wager-btn" @click="gameStore.increaseWager" :disabled="isDrawing || wager >= gameStore.MAX_WAGER" @mousedown="startIncreaseHold" @mouseup="stopIncreaseHold" @mouseleave="stopIncreaseHold">
+        <el-icon size="large" color="black">
+          <Plus />
+        </el-icon>
+      </button>
     </div>
-    <el-text class="yellow-btn btn">x{{ bet }}</el-text>
-    <el-text class="yellow-btn btn play-btn" @click="$emit('playGame')">Play</el-text>
+    <!-- <el-text class="yellow-btn btn">x{{ bet }}</el-text> -->
+    <button @click="doubleWager" class="yellow-btn btn" :disabled="isDrawing || wager >= gameStore.MAX_WAGER">x2</button>
+    <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing">Play</button>
   </div>
 </template>
 
 <script setup lang="ts">
   import { useGameStore } from '@/stores/useGameStore'
   import { storeToRefs } from 'pinia'
+  import { ref, watch } from 'vue';
+  import { Plus, Minus } from '@element-plus/icons-vue'
+import MultipleCard from './PurchaseCard/MultipleCard.vue';
 
   const gameStore = useGameStore()
   const { wager, bet } = storeToRefs(gameStore)
+  
+  const { gameIsDrawing } = defineProps<{
+    gameIsDrawing: boolean
+  }>()
+  const isDrawing = ref(gameIsDrawing)
+
+  watch(
+    () => gameIsDrawing,
+    () => {
+      isDrawing.value = gameIsDrawing
+    }
+  )
+
+  let holdDecreaseTimeout: number;
+  let repeatDecreaseInterval: number;
+  let holdIncreaseTimeout: number;
+  let repeatIncreaseInterval: number;
+
+  const BUTTON_HOLD_THRESHOLD = 500;
+  const BASE_HOLD_INTERVAL = 100;
+  const MIN_INTERVAL = 1; // Prevent too fast execution
+  let multiplier = 1;
+
+  function startDecreaseHold() {
+    if (gameStore.wager <= 20) return;
+
+    holdDecreaseTimeout = setTimeout(() => {
+      repeatDecreaseInterval = setInterval(runDecrease, BASE_HOLD_INTERVAL);
+    }, BUTTON_HOLD_THRESHOLD);
+  }
+
+  function runDecrease() {
+    if (gameStore.wager <= 20) {
+      stopDecreaseHold();
+      return;
+    }
+
+    gameStore.decreaseWager();
+    multiplier *= 0.9;
+
+    clearInterval(repeatDecreaseInterval);
+    repeatDecreaseInterval = setInterval(runDecrease, Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier));
+  }
+
+  function stopDecreaseHold() {
+    clearTimeout(holdDecreaseTimeout);
+    clearInterval(repeatDecreaseInterval);
+    multiplier = 1;
+  }
+
+  function startIncreaseHold() {
+    if (gameStore.wager >= 500) return;
+
+    holdIncreaseTimeout = setTimeout(() => {
+      repeatIncreaseInterval = setInterval(runIncrease, BASE_HOLD_INTERVAL);
+    }, BUTTON_HOLD_THRESHOLD);
+  }
+
+  function runIncrease() {
+    if (gameStore.wager >= 500) {
+      stopIncreaseHold();
+      return;
+    }
+
+    gameStore.increaseWager();
+    multiplier *= 0.9;
+
+    clearInterval(repeatIncreaseInterval);
+    repeatIncreaseInterval = setInterval(runIncrease, Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier));
+  }
+
+  function stopIncreaseHold() {
+    clearTimeout(holdIncreaseTimeout);
+    clearInterval(repeatIncreaseInterval);
+    multiplier = 1;
+  }
+
+  function doubleWager() {
+    gameStore.doubleWager()
+  }
+
 </script>
 
 <style scoped>
@@ -37,12 +119,27 @@
     margin-block: 10px;
     gap: 5px;
   }
+
   .btn {
     font-size: 1rem;
     text-align: center;
     font-weight: bold;
     border-radius: 100px;
     padding-block: 0.5rem;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .btn, .wager-container, .wager-btn {
+    transition: transform 0ms, opacity 1000ms, background 300ms;
+  }
+  
+  .btn:disabled, .disabled {
+    opacity: .7;
+  }
+
+  .btn:disabled:hover, .wager-btn:disabled:hover {
+    cursor: not-allowed;
   }
 
   .yellow-btn {
@@ -51,6 +148,7 @@
     border: 4px solid #ffe387;
     padding-inline: 20px;
   }
+  
   .wager-container {
     background: #f8ab00;
     color: #050505;
@@ -63,22 +161,39 @@
     justify-content: space-between;
     align-items: center;
     overflow: hidden;
+    border: 4px solid #ffe387;
   }
+  
   .wager-btn {
     background: #f8ab00;
     border: none;
-    padding-inline: 20px;
+    padding-inline: 15px;
     height: 100%;
     font-weight: bold;
     align-content: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  .wager-btn:hover {
-    background: #ffb619;
+
+  .wager-btn:enabled:hover, .btn:enabled:hover {
+    background: #ffe387;
   }
+  .btn:enabled:hover:active {
+    transform: translateY(2px);
+    background-color: #ffedc8;
+  }
+
+  .wager-btn:enabled:hover:active {
+    background: #ffedc8;
+  }
+
   .wager-btn,
   .wager-txt {
     font-size: 1.2rem;
     font-weight: 550;
+    user-select: none;
   }
   .wager-icon {
     fill: black;
