@@ -17,7 +17,7 @@
         <GameSideButtons @clear="clearGame" />
       </div>
 
-      <GameButtons @playGame="startDraw" />
+      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
     </div>
   </div>
 </template>
