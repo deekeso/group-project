@@ -19,8 +19,12 @@
 
       <GameButtons @playGame="startDraw" />
 
-      <WithWin v-if="result === 'win' && showModal"></WithWin>
-      <NoWin v-if="result === 'lose' && showModal"></NoWin>
+      <WithWin
+        v-if="result === 'win' && showModal"
+        :winValue="winnings"
+        @close="showModal = false"
+      ></WithWin>
+      <NoWin v-if="result === 'lose' && showModal" @close="showModal = false"></NoWin>
     </div>
   </div>
 </template>

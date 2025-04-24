@@ -1,6 +1,11 @@
 <template>
   <GameDialog>
-    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+    <svg
+      class="close-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1024 1024"
+      @click="$emit('close')"
+    >
       <path
         fill="currentColor"
         d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"
@@ -10,7 +15,7 @@
     <h1>DO YOU WANT TO PLAY AGAIN?</h1>
 
     <div>
-      <img src="/src/assets/luckycat-clover.png" alt="">
+      <img src="/src/assets/luckycat-clover.png" alt="" />
     </div>
     <button class="yes-btn">Yes</button>
     <button class="no-btn">No</button>
@@ -30,7 +35,7 @@ h1 {
   font-weight: 700;
   font-size: 40px;
   text-align: center;
-  background: linear-gradient(111.32deg, #F8AC38 26.41%, #E68339 96.3%);
+  background: linear-gradient(111.32deg, #f8ac38 26.41%, #e68339 96.3%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -38,7 +43,7 @@ h1 {
   text-shadow: 0px 4px 10px rgba(202, 134, 33, 0.25);
 }
 
-p{
+p {
   color: #f8ab00;
   text-transform: uppercase;
   font-family: 'Mukta Mahee';
@@ -46,7 +51,7 @@ p{
   font-weight: 700;
   font-size: 30px;
   text-align: center;
-  background: linear-gradient(111.32deg, #F8AC38 26.41%, #E68339 96.3%);
+  background: linear-gradient(111.32deg, #f8ac38 26.41%, #e68339 96.3%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -73,7 +78,7 @@ p{
   margin-right: 10px;
 }
 .yes-btn:hover {
-  background: #ffc13a ;
+  background: #ffc13a;
 }
 .no-btn {
   width: 48%;
