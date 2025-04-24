@@ -17,7 +17,7 @@
         <GameSideButtons @clear="gameStore.resetGame" />
       </div>
 
-      <GameButtons @playGame="startDraw" />
+      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
       <WithWin
         v-if="result === 'win' && showModal"
         :winValue="winnings"
