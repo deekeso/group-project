@@ -22,10 +22,12 @@ const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
 */
 
 function updatePayTableData() {
+  let scc = selectedCellsCount
   if (selectedCellsCount < 1) {
       return
     }
-    const values = payTable[kenoType][selectedCellsCount - 1]['values']
+    // use spread to copy values array, as we modify the reference later on using splice()
+    const values = [...payTable[kenoType][selectedCellsCount - 1]['values']] 
     const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
     const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
 
@@ -35,7 +37,11 @@ function updatePayTableData() {
 
     const numberFormatter = Intl.NumberFormat("en-US", { notation: "compact" })
 
-    Array.from(new Set(values)).forEach((value, index) => {
+    for (let i = 0; i < zeros.length - 1; i++) {
+      values.splice(zeros[0], 1) // splice() method modifies the referenced array, that's why we made a copy
+    }
+
+    values.forEach((value, index) => {
       result.push({
         pays: value > 999 ? numberFormatter.format(value) : value.toString(),
         hit: hits[index],
