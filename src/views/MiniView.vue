@@ -23,8 +23,12 @@
         v-if="result === 'win' && showModal"
         :winValue="winnings"
         @close="showModal = false"
-      ></WithWin>
-      <NoWin v-if="result === 'lose' && showModal" @close="showModal = false"></NoWin>
+      />
+      <NoWin
+        v-if="result === 'lose' && showModal"
+        @close="showModal = false"
+        @home="directToHome"
+      />
     </div>
   </div>
 </template>

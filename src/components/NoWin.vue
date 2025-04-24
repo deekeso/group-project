@@ -17,8 +17,8 @@
     <div>
       <img src="/src/assets/luckycat-clover.png" alt="" />
     </div>
-    <button class="yes-btn">Yes</button>
-    <button class="no-btn">No</button>
+    <button class="yes-btn" @click="$emit('close')">Yes</button>
+    <button class="no-btn" @click="$emit('home')">No</button>
   </GameDialog>
 </template>
 
@@ -27,6 +27,8 @@ import GameDialog from '../components/GameDialog.vue'
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
+
 h1 {
   color: #f8ab00;
   text-transform: uppercase;
@@ -91,5 +93,4 @@ p {
 .no-btn:hover {
   background: #f0f0f0;
 }
-@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
 </style>
