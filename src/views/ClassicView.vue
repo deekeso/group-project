@@ -18,11 +18,19 @@
       </div>
 
       <GameButtons @playGame="startDraw" />
+      <WithWin
+        v-if="result === 'win' && showModal"
+        :winValue="winnings"
+        @close="showModal = false"
+      ></WithWin>
+      <NoWin v-if="result === 'lose' && showModal" @close="showModal = false"></NoWin>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import WithWin from '@/components/WithWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -34,22 +42,25 @@ import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useKenoResult } from '@/composables/useKenoResult'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
+const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
+
+const { calculatePayout, evaluateGame } = useKenoResult('classic')
+const showModal = ref(false)
 
 onMounted(() => {
   gameStore.setGameMode('classic')
 })
 
 function startDraw() {
-  gameStore.setDrawnNumbers([])
   useKenoDraw().resetDraw()
-  matchedNumbers.value = []
+  gameStore.isPlayingToggle()
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -63,6 +74,11 @@ function startDraw() {
     if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+
+      calculatePayout()
+      evaluateGame()
+      gameStore.isPlayingToggle()
+      showModal.value = true
     }
   }, 150)
 }

@@ -42,7 +42,6 @@ import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import { useKenoResult } from '@/composables/useKenoResult'
-import GameDialog from '@/components/GameDialog.vue'
 import WithWin from '@/components/WithWin.vue'
 import NoWin from '@/components/NoWin.vue'
 
@@ -54,7 +53,7 @@ const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
-const { winValue, calculatePayout, evaluateGame } = useKenoResult('mini')
+const { calculatePayout, evaluateGame } = useKenoResult('mini')
 const showModal = ref(false)
 
 onMounted(() => {
