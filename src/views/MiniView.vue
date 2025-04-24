@@ -40,7 +40,7 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
@@ -49,6 +49,7 @@ import WithWin from '@/components/WithWin.vue'
 import NoWin from '@/components/NoWin.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
+import { useSyncGameMode } from '@/composables/useSyncGameMode'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -62,21 +63,17 @@ const miniGridSelectedNumbers = ref<number[]>([])
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
 const showModal = ref(false)
 
-onMounted(() => {
-  gameStore.setGameMode('mini')
-})
-
-onUnmounted(() => {
-  gameStore.resetGame()
-  useKenoDraw().resetDraw
-})
+// onMounted(() => {
+//   gameStore.setGameMode('mini')
+// })
+useSyncGameMode('mini')
 
 function startDraw() {
   // Check balance before playing
   if (walletStore.balance < gameStore.wager) {
     ElNotification({
       title: 'Insufficient Balance',
-      message: 'Please top up your wallet before starting a game.',
+      message: 'Please top up your wallet or adjust your wager.',
       type: 'error',
       position: 'top-right',
       duration: 3000,

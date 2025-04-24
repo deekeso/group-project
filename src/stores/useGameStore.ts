@@ -79,10 +79,10 @@ export const useGameStore = defineStore('game', () => {
     winnings.value = 0
   }
 
-  // NEW: change mode
+  //mode switcher
   function setGameMode(newMode: GameMode) {
+    if (mode.value != newMode) resetGame()
     mode.value = newMode
-    // resetGame() // optional: reset when changing mode
   }
 
   function addWinnings(amount: number) {

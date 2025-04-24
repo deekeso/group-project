@@ -49,6 +49,7 @@ import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { ElNotification } from 'element-plus'
 import { useWalletStore } from '@/stores/wallet'
+import { useSyncGameMode } from '@/composables/useSyncGameMode'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -61,15 +62,11 @@ const miniGridSelectedNumbers = ref<number[]>([])
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
 
-onMounted(() => {
-  gameStore.setGameMode('classic')
-})
+// onMounted(() => {
+//   gameStore.setGameMode('classic')
+// })
 
-onUnmounted(() => {
-  gameStore.resetGame()
-  useKenoDraw().resetDraw
-  console.log('unmounted')
-})
+useSyncGameMode('classic')
 
 function startDraw() {
   // Check balance before playing
