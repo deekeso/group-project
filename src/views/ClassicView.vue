@@ -14,7 +14,7 @@
             style="padding-bottom: 24px"
           />
           <div class="grid-sidebtn-container">
-            <ClassicGrid @number-selected="setSelectedNumbers" />
+            <ClassicGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound"/>
             <GameSideButtons @clear="gameStore.resetGame" />
           </div>
     
@@ -42,6 +42,7 @@ const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const isRoundFinished = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 function startDraw() {
@@ -61,8 +62,14 @@ function startDraw() {
     if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+      isRoundFinished.value = true
     }
   }, 150)
+}
+
+function resetRound() {
+  gameStore.resetGame(true)
+  isRoundFinished.value = false
 }
 
 function setSelectedNumbers(numbers: number[]) {

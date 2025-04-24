@@ -22,8 +22,6 @@ const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
 */
 
 function updatePayTableData() {
-  let scc = selectedCellsCount
-  let mcc = matchedCellsCount
   if (selectedCellsCount < 1) {
       return
     }
@@ -31,8 +29,6 @@ function updatePayTableData() {
     const values = [...payTable[kenoType][selectedCellsCount - 1]['values']] 
     const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
     const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
-
-    console.log(Array.from(new Set(values)).length === hits.length)
 
     let result: any[] = []
 
