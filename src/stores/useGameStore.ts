@@ -83,7 +83,15 @@ export const useGameStore = defineStore('game', () => {
 
   //mode switcher
   function setGameMode(newMode: GameMode) {
-    if (mode.value != newMode) resetGame()
+    if (mode.value !== newMode) {
+      resetGame()
+    }
+
+    // Handle trimming after reset so selectedNumbers is guaranteed fresh
+    if (newMode === 'mini' && selectedNumbers.value.length > 10) {
+      selectedNumbers.value = selectedNumbers.value.slice(0, 10)
+    }
+
     mode.value = newMode
   }
 
