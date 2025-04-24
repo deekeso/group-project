@@ -1,25 +1,27 @@
 <template>
-  <div class="background">
-    <div class="top-buttons">
-      <HomeButton @home="directToHome" />
-      <UserBalance />
-    </div>
 
-    <div class="grid-paytable-container">
-      <PayTable
-        kenoType="classic"
-        :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length"
-        style="padding-bottom: 24px"
-      />
-      <div class="grid-sidebtn-container">
-        <ClassicGrid @number-selected="setSelectedNumbers" />
-        <GameSideButtons @clear="gameStore.resetGame" />
-      </div>
-
-      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-    </div>
-  </div>
+    <el-container>
+      <el-header>
+        <HomeButton @home="directToHome" />
+        <UserBalance @wallet="directToWallet"/>
+      </el-header>
+      <el-main>
+        <div class="grid-paytable-container">
+          <PayTable
+            kenoType="classic"
+            :selectedCellsCount="selectedNumbers.length"
+            :matchedCellsCount="matchedNumbers.length"
+            style="padding-bottom: 24px"
+          />
+          <div class="grid-sidebtn-container">
+            <ClassicGrid @number-selected="setSelectedNumbers" />
+            <GameSideButtons @clear="gameStore.resetGame" />
+          </div>
+    
+          <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        </div>
+      </el-main>
+    </el-container>
 </template>
 
 <script setup lang="ts">
@@ -70,15 +72,23 @@ function setSelectedNumbers(numbers: number[]) {
 function directToHome() {
   router.push('/home')
 }
+
+function directToWallet() {
+  router.push('/wallet')
+}
 </script>
 
 <style scoped>
-.top-buttons {
+
+.el-header {
   display: flex;
   justify-content: space-between;
-  align-self: flex-start;
-  margin-inline: 50px;
-  margin-block: 20px;
+  padding-top: 20px;
+}
+
+.el-main {
+  display: grid;
+  place-items: center;
 }
 .drawn-numbers {
   display: flex;
