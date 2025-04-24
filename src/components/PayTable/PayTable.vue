@@ -8,7 +8,7 @@ const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
   kenoType: 'mini' | 'classic'
 }>()
 
-const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
+const payTableData = ref<{pays: string, hit: string, startIndex: number, endIndex?: number}[]>()
 
 
 /* TODO: convert payTable.json to contain only the values
@@ -47,7 +47,7 @@ function updatePayTableData() {
 
     for (let index = 0; index < values.length; index++) {
       if (index === zeros[0]) {
-        result[index] = {...result[index], startIndex: zeros[0]}
+        result[index] = {...result[index], startIndex: zeros[0], endIndex: zeros[zeros.length - 1]}
       } else {
         if (index < zeros[0]) {
           result[index] = {...result[index], startIndex: index}
@@ -82,17 +82,48 @@ updatePayTableData()
         </div>
       </div>
       <div v-for="data in payTableData" class="pay-data">
-        <div 
+        
+        <!-- PAY CELL -->
+        <div
+          v-if="data.endIndex != null" 
           class="multiplier-cell-tight" 
-          :class="{ hit: matchedCellsCount >= data.startIndex }">
+          :class="{ 
+            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+            hide: !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) && matchedCellsCount > -1
+          }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
+        <div
+          v-else
+          class="multiplier-cell-tight" 
+          :class="{ 
+            hit: matchedCellsCount === data.startIndex,
+            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1
+          }">
+          <el-text size="large">x{{ data.pays }}</el-text>
+        </div>
+        <!-- END OF PAY CELL -->
+         
+        <!-- HIT CELL -->
         <div 
-        class="selected-count-cell"
-        :class="{ hit: matchedCellsCount >= data.startIndex }"
-        >
+          v-if="data.endIndex != null" 
+          class="selected-count-cell"
+          :class="{ 
+            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+            hide: !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) && matchedCellsCount > -1
+          }">
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
+        <div 
+          v-else
+          class="selected-count-cell"
+          :class="{ 
+            hit: matchedCellsCount === data.startIndex,
+            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1
+          }">
+          <el-text size="large">{{ data.hit }}</el-text>
+        </div>
+        <!-- END OF HIT CELL -->
 
       </div>
 
@@ -157,6 +188,10 @@ updatePayTableData()
   gap: 10px;
 }
 
+.pay-data:hover > .hide {
+  opacity: 1;
+}
+
 .multiplier-cell,
 .multiplier-cell-tight {
   background-color: #524de0;
@@ -209,6 +244,11 @@ updatePayTableData()
 
 .hit {
   border: 2px solid greenyellow;
+  animation: scaleUpDown 300ms ease-in-out; /* Adjust duration as needed */
+}
+
+.hide {
+  opacity: 0.6;
 }
 
 .multiplier-cell-tight,
@@ -222,5 +262,17 @@ updatePayTableData()
 .el-text {
   color: #ffffff;
   font-weight: bold;
+}
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
