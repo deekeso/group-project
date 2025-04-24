@@ -47,10 +47,16 @@ h1 {
   -webkit-box-shadow: inset 0px 0px 20px 6px rgba(104, 63, 234, 0.56);
   -moz-box-shadow: inset 0px 0px 20px 6px rgba(104, 63, 234, 0.56);
   box-shadow: inset 0px 0px 20px 6px rgba(104, 63, 234, 0.56);
+
 }
 .dialog {
   background-color: #060351;
   border-radius: 28px;
   padding: 20px;
+  background: #060351;
+  box-shadow: 0px 0px 25px #F8AB00;
+  border-radius: 28px;
+  background-image: url(src/assets/game-modals-bg.png);
+
 }
 </style>

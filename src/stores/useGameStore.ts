@@ -69,6 +69,7 @@ export const useGameStore = defineStore('game', () => {
     selectedNumbers.value = []
     drawnNumbers.value = []
     matchedNumbers.value = []
+    winnings.value = 0
   }
 
   // NEW: change mode

@@ -1,44 +1,55 @@
-import { computed } from 'vue'
-import { useGameStore } from '@/stores/useGameStore'
+import { computed, watch } from 'vue'
 import paytable from '../components/PayTable/payTable.json'
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
 
-export function useKenoResult() {
-  const game = useGameStore()
+export function useKenoResult(mode: 'mini' | 'classic') {
+  const kenoPayout = paytable as Paytable
+  const kenoTable = computed<PaytableEntry[]>(() => kenoPayout[mode])
 
-  const totalSelected = computed(() => game.selectedNumbers.length)
-  const hits = computed(() => game.matchedNumbers.length)
-  const currentPaytable = computed(() => paytable[game.mode])
+  const gameStore = useGameStore()
+  const { selectedNumbers, matchedNumbers, bet, wager } = storeToRefs(gameStore)
 
-  // Find the correct paytable row based on how many numbers the user selected
-  function getPayEntry(): number | null {
-    const table = currentPaytable.value
-    if (!table) return null
+  //find the paytable row for the number of selected numbers
+  const tableEntry = computed(() => {
+    const selectionLength = selectedNumbers.value.length
+    return kenoTable.value[selectionLength - 1] // paytable is 0-indexed
+  })
 
-    // Find entry that matches the selected amount
-    const entry = table.find((p) => p.zeros.includes(totalSelected.value - 1))
-    if (!entry) return 0
-
-    // Use matched count (hits) directly as index
-    const payout = entry.values[hits.value] ?? 0
-    return payout
-  }
+  // Get the win value based on number of matched numbers
+  const winValue = computed(() => {
+    const entry = tableEntry.value
+    return entry.values[matchedNumbers.value.length]
+  })
 
   function evaluateGame() {
-    const payout = getPayEntry() ?? 0
-    const winnings = payout * game.wager
-    const isWin = winnings > 0
+    const isWin = winValue.value > 0
+    gameStore.setResult(isWin ? 'win' : 'lose')
+  }
 
-    game.addWinnings(winnings)
-    game.setResult(isWin ? 'win' : 'lose')
+  function calculatePayout() {
+    if (winValue.value <= 0) return
 
-    return {
-      payout,
-      winnings,
-      result: isWin ? 'win' : 'lose',
-    }
+    const payout = wager.value * bet.value * winValue.value
+    console.log(payout)
+    gameStore.addWinnings(payout)
   }
 
   return {
+    tableEntry,
+    winValue,
     evaluateGame,
+    calculatePayout,
   }
+}
+
+export interface PaytableEntry {
+  hits: string[]
+  zeros: number[]
+  values: number[]
+}
+
+export interface Paytable {
+  mini: PaytableEntry[]
+  classic: PaytableEntry[]
 }
