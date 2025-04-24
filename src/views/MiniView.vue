@@ -13,7 +13,7 @@
             style="padding-bottom: 24px"
           />
           <div class="grid-sidebtn-container">
-            <MiniGrid @number-selected="setSelectedNumbers" />
+            <MiniGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound"/>
             <GameSideButtons @clear="gameStore.resetGame" />
           </div>
     
@@ -41,6 +41,7 @@ const gameStore = useGameStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const isRoundFinished = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 function startDraw() {
@@ -60,6 +61,7 @@ function startDraw() {
     if (count >= 10 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+      isRoundFinished.value = true
     }
   }, 150)
 }
@@ -68,8 +70,9 @@ function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
 }
 
-function clearGame() {
-  gameStore.resetGame()
+function resetRound() {
+  gameStore.resetGame(true)
+  isRoundFinished.value = false
 }
 
 function directToHome() {
