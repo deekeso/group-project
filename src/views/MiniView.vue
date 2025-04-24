@@ -9,7 +9,7 @@
           <PayTable
             kenoType="mini"
             :selectedCellsCount="selectedNumbers.length"
-            :matchedCellsCount="matchedNumbers.length"
+            :matchedCellsCount="isRoundStarted ? matchedNumbers.length : -1"
             style="padding-bottom: 24px"
           />
           <div class="grid-sidebtn-container">
@@ -42,9 +42,11 @@ const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { miniKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
+const isRoundStarted = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 function startDraw() {
+  isRoundStarted.value = true
   gameStore.setDrawnNumbers([])
   useKenoDraw().resetDraw()
   matchedNumbers.value = []
@@ -62,6 +64,7 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
       isRoundFinished.value = true
+      isRoundStarted.value = false
     }
   }, 150)
 }

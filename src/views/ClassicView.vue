@@ -10,7 +10,7 @@
           <PayTable
             kenoType="classic"
             :selectedCellsCount="selectedNumbers.length"
-            :matchedCellsCount="matchedNumbers.length"
+            :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
             style="padding-bottom: 24px"
           />
           <div class="grid-sidebtn-container">
@@ -43,12 +43,14 @@ const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
+const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 function startDraw() {
   gameStore.setDrawnNumbers([])
   useKenoDraw().resetDraw()
   matchedNumbers.value = []
+  displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -70,6 +72,7 @@ function startDraw() {
 function resetRound() {
   gameStore.resetGame(true)
   isRoundFinished.value = false
+  displayMatching.value = false
 }
 
 function setSelectedNumbers(numbers: number[]) {
