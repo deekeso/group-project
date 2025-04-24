@@ -1,35 +1,40 @@
 <template>
-  <div class="background">
-    <div class="top-buttons">
+  <el-container>
+    <el-header>
       <HomeButton @home="directToHome" />
-      <UserBalance />
-    </div>
+      <UserBalance @wallet="directToWallet" />
+    </el-header>
+    <el-main>
+      <div class="grid-paytable-container">
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="matchedNumbers.length"
+          style="padding-bottom: 24px"
+        />
+        <div class="grid-sidebtn-container">
+          <ClassicGrid
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
+          />
+          <GameSideButtons @clear="gameStore.resetGame" />
+        </div>
 
-    <div class="grid-paytable-container">
-      <PayTable
-        kenoType="classic"
-        :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length"
-        style="padding-bottom: 24px"
-      />
-      <div class="grid-sidebtn-container">
-        <ClassicGrid @number-selected="setSelectedNumbers" />
-        <GameSideButtons @clear="gameStore.resetGame" />
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        <WithWin
+          v-if="result === 'win' && showModal"
+          :winValue="winnings"
+          @close="showModal = false"
+        />
+        <NoWin
+          v-if="result === 'lose' && showModal"
+          @close="showModal = false"
+          @home="directToHome"
+        />
       </div>
-
-      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-      <WithWin
-        v-if="result === 'win' && showModal"
-        :winValue="winnings"
-        @close="showModal = false"
-      />
-      <NoWin
-        v-if="result === 'lose' && showModal"
-        @close="showModal = false"
-        @home="directToHome"
-      />
-    </div>
-  </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script setup lang="ts">
@@ -57,6 +62,7 @@ const walletStore = useWalletStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const isRoundFinished = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
@@ -97,11 +103,17 @@ function startDraw() {
     if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+      isRoundFinished.value = true
 
       evaluateGame()
       displayResult()
     }
   }, 150)
+}
+
+function resetRound() {
+  gameStore.resetGame(true)
+  isRoundFinished.value = false
 }
 
 function setSelectedNumbers(numbers: number[]) {
@@ -110,6 +122,10 @@ function setSelectedNumbers(numbers: number[]) {
 
 function directToHome() {
   router.push('/home')
+}
+
+function directToWallet() {
+  router.push('/wallet')
 }
 
 function displayResult() {
@@ -122,12 +138,15 @@ function displayResult() {
 </script>
 
 <style scoped>
-.top-buttons {
+.el-header {
   display: flex;
   justify-content: space-between;
-  align-self: flex-start;
-  margin-inline: 50px;
-  margin-block: 20px;
+  padding-top: 20px;
+}
+
+.el-main {
+  display: grid;
+  place-items: center;
 }
 .drawn-numbers {
   display: flex;

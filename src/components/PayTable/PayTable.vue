@@ -30,8 +30,6 @@ function updatePayTableData() {
   const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
   const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
 
-  console.log(Array.from(new Set(values)).length === hits.length)
-
   let result: any[] = []
 
   const numberFormatter = Intl.NumberFormat('en-US', { notation: 'compact' })
@@ -47,7 +45,7 @@ function updatePayTableData() {
     })
   })
 
-  for (let index = 0; index < values.length - zeros.length + 1; index++) {
+  for (let index = 0; index < values.length; index++) {
     if (index === zeros[0]) {
       result[index] = { ...result[index], startIndex: zeros[0] }
     } else {
@@ -62,7 +60,7 @@ function updatePayTableData() {
   payTableData.value = result
 }
 
-watch(() => selectedCellsCount, updatePayTableData)
+watch(() => [selectedCellsCount, matchedCellsCount], updatePayTableData)
 
 updatePayTableData()
 </script>

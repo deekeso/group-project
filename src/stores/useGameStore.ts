@@ -72,8 +72,10 @@ export const useGameStore = defineStore('game', () => {
     matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
   }
 
-  function resetGame() {
-    selectedNumbers.value = []
+  function resetGame(preserveSelectedNumbers: boolean = false) {
+    if (!preserveSelectedNumbers) {
+      selectedNumbers.value = []
+    }
     drawnNumbers.value = []
     matchedNumbers.value = []
     winnings.value = 0
