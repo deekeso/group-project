@@ -1,5 +1,4 @@
 import { useGameStore } from '@/stores/useGameStore'
-import { useWalletStore } from '@/stores/wallet'
 import { ref } from 'vue'
 
 // Composable to handle Keno drawing logic

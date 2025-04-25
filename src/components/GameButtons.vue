@@ -1,202 +1,234 @@
 <template>
   <div class="btn-container">
     <div class="wager-container" :class="{ disabled: isDrawing }">
-      <button class="wager-btn" @click="gameStore.decreaseWager" :disabled="isDrawing || wager <= gameStore.MIN_WAGER" @mousedown="startDecreaseHold" @mouseup="stopDecreaseHold" @mouseleave="stopDecreaseHold">
+      <button
+        class="wager-btn"
+        @click="gameStore.decreaseWager"
+        :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
+        @mousedown="startDecreaseHold"
+        @mouseup="stopDecreaseHold"
+        @mouseleave="stopDecreaseHold"
+      >
         <el-icon size="large" color="black">
           <Minus />
         </el-icon>
       </button>
       <span class="wager-txt">Wager: ₱{{ wager }}</span>
-      <button class="wager-btn" @click="gameStore.increaseWager" :disabled="isDrawing || wager >= gameStore.MAX_WAGER" @mousedown="startIncreaseHold" @mouseup="stopIncreaseHold" @mouseleave="stopIncreaseHold">
+      <button
+        class="wager-btn"
+        @click="gameStore.increaseWager"
+        :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
+        @mousedown="startIncreaseHold"
+        @mouseup="stopIncreaseHold"
+        @mouseleave="stopIncreaseHold"
+      >
         <el-icon size="large" color="black">
           <Plus />
         </el-icon>
       </button>
     </div>
     <!-- <el-text class="yellow-btn btn">x{{ bet }}</el-text> -->
-    <button @click="doubleWager" class="yellow-btn btn" :disabled="isDrawing || wager >= gameStore.MAX_WAGER">x2</button>
+    <button
+      @click="doubleWager"
+      class="yellow-btn btn"
+      :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
+    >
+      x2
+    </button>
     <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing">Play</button>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useGameStore } from '@/stores/useGameStore'
-  import { storeToRefs } from 'pinia'
-  import { ref, watch } from 'vue';
-  import { Plus, Minus } from '@element-plus/icons-vue'
-import MultipleCard from './PurchaseCard/MultipleCard.vue';
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
+import { ref, watch } from 'vue'
+import { Plus, Minus } from '@element-plus/icons-vue'
 
-  const gameStore = useGameStore()
-  const { wager, bet } = storeToRefs(gameStore)
-  
-  const { gameIsDrawing } = defineProps<{
-    gameIsDrawing: boolean
-  }>()
-  const isDrawing = ref(gameIsDrawing)
+const gameStore = useGameStore()
+const { wager } = storeToRefs(gameStore)
 
-  watch(
-    () => gameIsDrawing,
-    () => {
-      isDrawing.value = gameIsDrawing
-    }
+const { gameIsDrawing } = defineProps<{
+  gameIsDrawing: boolean
+}>()
+const isDrawing = ref(gameIsDrawing)
+
+watch(
+  () => gameIsDrawing,
+  () => {
+    isDrawing.value = gameIsDrawing
+  },
+)
+
+let holdDecreaseTimeout: number
+let repeatDecreaseInterval: number
+let holdIncreaseTimeout: number
+let repeatIncreaseInterval: number
+
+const BUTTON_HOLD_THRESHOLD = 500
+const BASE_HOLD_INTERVAL = 100
+const MIN_INTERVAL = 1 // Prevent too fast execution
+let multiplier = 1
+
+function startDecreaseHold() {
+  if (gameStore.wager <= 20) return
+
+  holdDecreaseTimeout = setTimeout(() => {
+    repeatDecreaseInterval = setInterval(runDecrease, BASE_HOLD_INTERVAL)
+  }, BUTTON_HOLD_THRESHOLD)
+}
+
+function runDecrease() {
+  if (gameStore.wager <= 20) {
+    stopDecreaseHold()
+    return
+  }
+
+  gameStore.decreaseWager()
+  multiplier *= 0.9
+
+  clearInterval(repeatDecreaseInterval)
+  repeatDecreaseInterval = setInterval(
+    runDecrease,
+    Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier),
   )
+}
 
-  let holdDecreaseTimeout: number;
-  let repeatDecreaseInterval: number;
-  let holdIncreaseTimeout: number;
-  let repeatIncreaseInterval: number;
+function stopDecreaseHold() {
+  clearTimeout(holdDecreaseTimeout)
+  clearInterval(repeatDecreaseInterval)
+  multiplier = 1
+}
 
-  const BUTTON_HOLD_THRESHOLD = 500;
-  const BASE_HOLD_INTERVAL = 100;
-  const MIN_INTERVAL = 1; // Prevent too fast execution
-  let multiplier = 1;
+function startIncreaseHold() {
+  if (gameStore.wager >= 500) return
 
-  function startDecreaseHold() {
-    if (gameStore.wager <= 20) return;
+  holdIncreaseTimeout = setTimeout(() => {
+    repeatIncreaseInterval = setInterval(runIncrease, BASE_HOLD_INTERVAL)
+  }, BUTTON_HOLD_THRESHOLD)
+}
 
-    holdDecreaseTimeout = setTimeout(() => {
-      repeatDecreaseInterval = setInterval(runDecrease, BASE_HOLD_INTERVAL);
-    }, BUTTON_HOLD_THRESHOLD);
+function runIncrease() {
+  if (gameStore.wager >= 500) {
+    stopIncreaseHold()
+    return
   }
 
-  function runDecrease() {
-    if (gameStore.wager <= 20) {
-      stopDecreaseHold();
-      return;
-    }
+  gameStore.increaseWager()
+  multiplier *= 0.9
 
-    gameStore.decreaseWager();
-    multiplier *= 0.9;
+  clearInterval(repeatIncreaseInterval)
+  repeatIncreaseInterval = setInterval(
+    runIncrease,
+    Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier),
+  )
+}
 
-    clearInterval(repeatDecreaseInterval);
-    repeatDecreaseInterval = setInterval(runDecrease, Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier));
-  }
+function stopIncreaseHold() {
+  clearTimeout(holdIncreaseTimeout)
+  clearInterval(repeatIncreaseInterval)
+  multiplier = 1
+}
 
-  function stopDecreaseHold() {
-    clearTimeout(holdDecreaseTimeout);
-    clearInterval(repeatDecreaseInterval);
-    multiplier = 1;
-  }
-
-  function startIncreaseHold() {
-    if (gameStore.wager >= 500) return;
-
-    holdIncreaseTimeout = setTimeout(() => {
-      repeatIncreaseInterval = setInterval(runIncrease, BASE_HOLD_INTERVAL);
-    }, BUTTON_HOLD_THRESHOLD);
-  }
-
-  function runIncrease() {
-    if (gameStore.wager >= 500) {
-      stopIncreaseHold();
-      return;
-    }
-
-    gameStore.increaseWager();
-    multiplier *= 0.9;
-
-    clearInterval(repeatIncreaseInterval);
-    repeatIncreaseInterval = setInterval(runIncrease, Math.max(MIN_INTERVAL, BASE_HOLD_INTERVAL * multiplier));
-  }
-
-  function stopIncreaseHold() {
-    clearTimeout(holdIncreaseTimeout);
-    clearInterval(repeatIncreaseInterval);
-    multiplier = 1;
-  }
-
-  function doubleWager() {
-    gameStore.doubleWager()
-  }
-
+function doubleWager() {
+  gameStore.doubleWager()
+}
 </script>
 
 <style scoped>
-  .btn-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-block: 10px;
-    gap: 5px;
-  }
+.btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-block: 10px;
+  gap: 5px;
+}
 
-  .btn {
-    font-size: 1rem;
-    text-align: center;
-    font-weight: bold;
-    border-radius: 100px;
-    padding-block: 0.5rem;
-    user-select: none;
-    cursor: pointer;
-  }
+.btn {
+  font-size: 1rem;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 100px;
+  padding-block: 0.5rem;
+  user-select: none;
+  cursor: pointer;
+}
 
-  .btn, .wager-container, .wager-btn {
-    transition: transform 0ms, opacity 1000ms, background 300ms;
-  }
-  
-  .btn:disabled, .disabled {
-    opacity: .7;
-  }
+.btn,
+.wager-container,
+.wager-btn {
+  transition:
+    transform 0ms,
+    opacity 1000ms,
+    background 300ms;
+}
 
-  .btn:disabled:hover, .wager-btn:disabled:hover {
-    cursor: not-allowed;
-  }
+.btn:disabled,
+.disabled {
+  opacity: 0.7;
+}
 
-  .yellow-btn {
-    background: #f8ab00;
-    color: #050505;
-    border: 4px solid #ffe387;
-    padding-inline: 20px;
-  }
-  
-  .wager-container {
-    background: #f8ab00;
-    color: #050505;
-    font-weight: bolder;
-    border-radius: 100px;
-    flex: 1;
-    padding-block: 0;
+.btn:disabled:hover,
+.wager-btn:disabled:hover {
+  cursor: not-allowed;
+}
 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
-    border: 4px solid #ffe387;
-  }
-  
-  .wager-btn {
-    background: #f8ab00;
-    border: none;
-    padding-inline: 15px;
-    height: 100%;
-    font-weight: bold;
-    align-content: center;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.yellow-btn {
+  background: #f8ab00;
+  color: #050505;
+  border: 4px solid #ffe387;
+  padding-inline: 20px;
+}
 
-  .wager-btn:enabled:hover, .btn:enabled:hover {
-    background: #ffe387;
-  }
-  .btn:enabled:hover:active {
-    transform: translateY(2px);
-    background-color: #ffedc8;
-  }
+.wager-container {
+  background: #f8ab00;
+  color: #050505;
+  font-weight: bolder;
+  border-radius: 100px;
+  flex: 1;
+  padding-block: 0;
 
-  .wager-btn:enabled:hover:active {
-    background: #ffedc8;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  border: 4px solid #ffe387;
+}
 
-  .wager-btn,
-  .wager-txt {
-    font-size: 1.2rem;
-    font-weight: 550;
-    user-select: none;
-  }
-  .wager-icon {
-    fill: black;
-    height: 1.2rem;
-  }
+.wager-btn {
+  background: #f8ab00;
+  border: none;
+  padding-inline: 15px;
+  height: 100%;
+  font-weight: bold;
+  align-content: center;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wager-btn:enabled:hover,
+.btn:enabled:hover {
+  background: #ffe387;
+}
+.btn:enabled:hover:active {
+  transform: translateY(2px);
+  background-color: #ffedc8;
+}
+
+.wager-btn:enabled:hover:active {
+  background: #ffedc8;
+}
+
+.wager-btn,
+.wager-txt {
+  font-size: 1.2rem;
+  font-weight: 550;
+  user-select: none;
+}
+.wager-icon {
+  fill: black;
+  height: 1.2rem;
+}
 </style>
