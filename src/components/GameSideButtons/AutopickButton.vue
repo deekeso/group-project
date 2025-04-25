@@ -1,5 +1,8 @@
 <template>
   <div class="autopick-container">
+    <!-- <div class="carousel" @scroll="console.log('wow')">
+      <div class="filler-item"></div>
+      <div class="item" v-for="number in 10" :key="number"></div> -->
     <div class="number-container">
       <div
         v-for="number in numbers"
@@ -10,6 +13,7 @@
       >
         {{ number }}
       </div>
+      <!-- <div class="filler-item"></div> -->
     </div>
     <div class="autopick-btn" @click="$emit('autopick')">
       <img src="../../assets/Shuffle.png" alt="shuffle icon" />
@@ -43,6 +47,7 @@ const selectNumber = (number: number, event: Event) => {
   width: 100%;
   border-radius: 10px;
 }
+
 .number-container {
   background: #846ccf;
   background: linear-gradient(
@@ -53,29 +58,48 @@ const selectNumber = (number: number, event: Event) => {
   );
   border: 5px solid #e7cfff;
   border-bottom: none;
-  border-radius: 10px 10px 0 0;
+  border-radius: 8px 10px 0 0;
   width: 100%;
-  text-align: center;
-  height: 100%;
-  max-height: 300px;
-  overflow: scroll;
+  height: 300px;
+  
+
+  overflow: auto;
+  scroll-snap-type: y mandatory;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  --scroll-gap: 5px;
+  padding: var(--scroll-gap) 0;
 
   /* Hide scrollbar for IE, Edge, and Firefox */
-  scrollbar-width: none; /* Firefox */
+  /*scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
+
 /* Hide scrollbar for Chrome, Safari, and Opera */
 .number-container::-webkit-scrollbar {
-  display: none;
+  /* display: none; */
 }
+
 .number {
   font-size: 2rem;
   color: #ffff;
-  padding-inline: 10px;
   font-weight: 600;
+  height: 50px;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: calc(100px - 3 *var(--scroll-gap));
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
 }
 .selected {
-  background-color: #ffcc00;
+  background-color: #d4a0ff;
   font-weight: bold;
 }
 .autopick-btn {
