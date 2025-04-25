@@ -9,8 +9,19 @@
     <h1>Purchase Cards</h1>
 
     <div class="flex-group">
-      <SingleCard />
-      <MultipleCard />
+      <SingleCard :isSelected="selectionMode === 'single'" @select="setSelectionMode('single')" />
+      <MultipleCard
+        :isSelected="selectionMode === 'multiple'"
+        @select="setSelectionMode('multiple')"
+      />
+    </div>
+
+    <div v-if="selectionMode === 'multiple'" class="counter">
+      <button class="counter-btn" @click="decrementCounter">-</button>
+      <p>
+        Number of cards: <strong>{{ numberOfCards }}</strong>
+      </p>
+      <button class="counter-btn" @click="incrementCounter">+</button>
     </div>
     <button class="select-btn">Select</button>
   </GameDialog>
@@ -20,6 +31,28 @@
 import GameDialog from '../components/GameDialog.vue'
 import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
 import SingleCard from '../components/PurchaseCard/SingleCard.vue'
+import { ref } from 'vue'
+
+const selectionMode = ref<'single' | 'multiple'>('single')
+const numberOfCards = ref<number>(0)
+const MIN_NUM = 2
+const MAX_NUM = 5
+
+function setSelectionMode(mode: 'single' | 'multiple') {
+  selectionMode.value = mode
+}
+
+function decrementCounter() {
+  if (numberOfCards.value > MIN_NUM) {
+    numberOfCards.value--
+  }
+}
+
+function incrementCounter() {
+  if (numberOfCards.value < MAX_NUM) {
+    numberOfCards.value++
+  }
+}
 </script>
 
 <style scoped>
@@ -65,5 +98,32 @@ h1 {
 }
 .select-btn:hover {
   background: #ffc13a;
+}
+.counter {
+  background-color: #ffff;
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block: 0px;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 2rem;
+  margin-bottom: 10px;
+}
+.counter-btn {
+  font-size: large;
+  padding-inline: 20px;
+  height: 100%;
+  border: none;
+}
+.counter-btn:hover {
+  background: #a47cf377;
+}
+.counter-btn:active {
+  background: #e9deff;
+}
+strong {
+  font-weight: 600;
 }
 </style>
