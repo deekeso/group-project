@@ -49,7 +49,7 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { ElNotification } from 'element-plus'
@@ -68,10 +68,6 @@ const miniGridSelectedNumbers = ref<number[]>([])
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
-
-// onMounted(() => {
-//   gameStore.setGameMode('classic')
-// })
 
 useSyncGameMode('classic')
 

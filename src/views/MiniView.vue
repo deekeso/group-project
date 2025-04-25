@@ -45,7 +45,7 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
@@ -54,7 +54,6 @@ import WithWin from '@/components/WithWin.vue'
 import NoWin from '@/components/NoWin.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
-import { useSyncGameMode } from '@/composables/useSyncGameMode'
 
 const router = useRouter()
 const gameStore = useGameStore()

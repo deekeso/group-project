@@ -1,4 +1,4 @@
-import { computed, watch } from 'vue'
+import { computed } from 'vue'
 import paytable from '../components/PayTable/payTable.json'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
@@ -10,7 +10,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
 
   const gameStore = useGameStore()
   const walletStore = useWalletStore()
-  const { selectedNumbers, matchedNumbers, bet, wager } = storeToRefs(gameStore)
+  const { selectedNumbers, matchedNumbers, wager } = storeToRefs(gameStore)
 
   //find the paytable row for the number of selected numbers
   const tableEntry = computed(() => {
