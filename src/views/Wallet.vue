@@ -1,4 +1,5 @@
 <template>
+  <el-header><HomeButton @home="directToHome" /></el-header>
   <div class="wallet-page">
     <el-container class="wallet-box">
       <div class="wallet-header">
@@ -78,6 +79,9 @@ import Withdraw from '@/components/Withdraw.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
+import HomeButton from '@/components/HomeButton.vue'
+import router from '@/router'
+
 
 const wallet = useWalletStore()
 const auth = useAuthStore()
@@ -122,6 +126,10 @@ function handleConfirmedDeposit() {
   value.value = ''
   showConfirmDeposit.value = false
 }
+function directToHome() {
+  router.push('/home')
+}
+
 
 </script>
 
@@ -264,6 +272,11 @@ font-size: 16px; /* Increase font size */
   width: 100%;
   height: 3rem;
   margin-top: 1.5rem;
+}
+.el-header {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
 }
 </style>
 

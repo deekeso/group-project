@@ -157,7 +157,7 @@ const handleSubmit = async (e: Event) => {
       'Welcome to Keno Plus! Your account has been successfully created.',
     )
 
-    router.push('/login')
+    router.push('/home')
   } catch (error: any) {
     ElMessage.error(error.message)
   } finally {
