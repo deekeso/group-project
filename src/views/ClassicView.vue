@@ -1,28 +1,45 @@
 <template>
-  <div class="background">
-    <div class="top-buttons">
+  <el-container>
+    <el-header>
       <HomeButton @home="directToHome" />
-      <UserBalance />
-    </div>
+      <UserBalance @wallet="directToWallet" />
+    </el-header>
+    <el-main>
+      <div class="grid-paytable-container">
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+          style="padding-bottom: 24px"
+        />
+        <div class="grid-sidebtn-container">
+          <ClassicGrid
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
+          />
+          <GameSideButtons @clear="gameStore.resetGame" />
+        </div>
 
-    <div class="grid-paytable-container">
-      <PayTable
-        kenoType="classic"
-        :selectedCellsCount="selectedNumbers.length"
-        :matchedCellsCount="matchedNumbers.length"
-        style="padding-bottom: 24px"
-      />
-      <div class="grid-sidebtn-container">
-        <ClassicGrid @number-selected="setSelectedNumbers" />
-        <GameSideButtons @clear="gameStore.resetGame" />
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        <WithWin
+          v-if="result === 'win' && showModal"
+          :winValue="winnings"
+          @close="showModal = false"
+        />
+        <NoWin
+          v-if="result === 'lose' && showModal"
+          @close="showModal = false"
+          @home="directToHome"
+        />
       </div>
-
-      <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-    </div>
-  </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script setup lang="ts">
+import WithWin from '@/components/WithWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -32,20 +49,49 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useKenoResult } from '@/composables/useKenoResult'
+import { ElNotification } from 'element-plus'
+import { useWalletStore } from '@/stores/wallet'
+import { useSyncGameMode } from '@/composables/useSyncGameMode'
 
 const router = useRouter()
 const gameStore = useGameStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers } = storeToRefs(gameStore)
+const walletStore = useWalletStore()
+const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw } = useKenoDraw()
 const isDrawing = ref(false)
+const isRoundFinished = ref(false)
+const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
+const { calculatePayout, evaluateGame } = useKenoResult('classic')
+const showModal = ref(false)
+
+// onMounted(() => {
+//   gameStore.setGameMode('classic')
+// })
+
+useSyncGameMode('classic')
+
 function startDraw() {
-  gameStore.setDrawnNumbers([])
+  // Check balance before playing
+  if (walletStore.balance < gameStore.wager) {
+    ElNotification({
+      title: 'Insufficient Balance',
+      message: 'Please top up your wallet or adjust your wager.',
+      type: 'error',
+      position: 'top-right',
+      duration: 3000,
+      showClose: true,
+    })
+    return
+  }
+
   useKenoDraw().resetDraw()
-  matchedNumbers.value = []
+  gameStore.isPlayingToggle()
+  displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -59,8 +105,18 @@ function startDraw() {
     if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
+      isRoundFinished.value = true
+
+      evaluateGame()
+      displayResult()
     }
   }, 150)
+}
+
+function resetRound() {
+  gameStore.resetGame(true)
+  isRoundFinished.value = false
+  displayMatching.value = false
 }
 
 function setSelectedNumbers(numbers: number[]) {
@@ -70,15 +126,30 @@ function setSelectedNumbers(numbers: number[]) {
 function directToHome() {
   router.push('/home')
 }
+
+function directToWallet() {
+  router.push('/wallet')
+}
+
+function displayResult() {
+  setTimeout(() => {
+    calculatePayout()
+    showModal.value = true
+  }, 1000)
+  showModal.value = false
+}
 </script>
 
 <style scoped>
-.top-buttons {
+.el-header {
   display: flex;
   justify-content: space-between;
-  align-self: flex-start;
-  margin-inline: 50px;
-  margin-block: 20px;
+  padding-top: 20px;
+}
+
+.el-main {
+  display: grid;
+  place-items: center;
 }
 .drawn-numbers {
   display: flex;

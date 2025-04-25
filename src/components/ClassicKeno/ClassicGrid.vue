@@ -8,9 +8,9 @@
           class="keno-cell"
           :class="[
             'cell',
+            matchedNumbers.includes(number) ? 'matched' : 
+            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' : 
             selectedNumbers.includes(number) ? 'selected' : '',
-            matchedNumbers.includes(number) ? 'matched' : '',
-            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' : '',
           ]"
           @click="toggleNumber(number)"
         >
@@ -30,10 +30,20 @@ const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
 
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
+  (e: 'resetRound'): void
+}>()
+
+const { isRoundFinished } = defineProps<{
+  isRoundFinished: boolean
 }>()
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
+  if (isRoundFinished) {
+    matchedNumbers.value = []
+    drawnNumbers.value = []
+    emit('resetRound')
+  }
   const index = selectedNumbers.value.indexOf(number)
   if (index > -1) {
     selectedNumbers.value.splice(index, 1)
@@ -78,6 +88,7 @@ function toggleNumber(number: number): void {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
+  user-select: none;
 }
 
 .cell:hover {

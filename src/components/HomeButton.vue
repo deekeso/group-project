@@ -1,30 +1,27 @@
 <template>
-  <div class="button-container" @click="$emit('home')">
-    <svg class="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-      <path
-        fill="currentColor"
-        d="M512 128 128 447.936V896h255.936V640H640v256h255.936V447.936z"
-      ></path>
-    </svg>
-  </div>
+  <button class="button-container" @click="$emit('home')" title="Go to home page.">
+    <el-icon size="25" color="black">
+      <HomeFilled />
+    </el-icon>
+  </button>
 </template>
 
+<script lang="ts" setup>
+  import { HomeFilled } from '@element-plus/icons-vue'
+</script>
+
 <style scoped>
-.home-icon {
-  height: 30px;
-  color: black;
-}
 .button-container {
   background: #ffffff;
   border-radius: 100px;
-  padding-block: 10px;
-  padding-inline: 40px;
-  width: fit-content;
+  padding: 10px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 100ms;
 }
 .button-container:hover {
-  background: rgba(255, 255, 255, 0.87);
-}
-.button-container:active {
-  background: #ffe387;
+ transform: scale(1.05); 
 }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue'
 import payTable from './payTable.json'
 
 const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
@@ -8,8 +8,7 @@ const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
   kenoType: 'mini' | 'classic'
 }>()
 
-const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
-
+const payTableData = ref<{ pays: string; hit: string; startIndex: number; endIndex?: number }[]>()
 
 /* TODO: convert payTable.json to contain only the values
  * and have this function do the processing:
@@ -19,63 +18,55 @@ const payTableData = ref<{pays: string, hit: string, startIndex: number}[]>()
  * const values = payTable[kenoType][selectedCellsCount - 1]['values']
  * const zeros = findZeros(values)
  * const hits = generateHitLabels(values)
-*/
+ */
 
 function updatePayTableData() {
   let scc = selectedCellsCount
   if (selectedCellsCount < 1) {
-      return
-    }
-    // use spread to copy values array, as we modify the reference later on using splice()
-    const values = [...payTable[kenoType][selectedCellsCount - 1]['values']] 
-    const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
-    const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
+    return
+  }
+  // use spread to copy values array, as we modify the reference later on using splice()
+  const values = [...payTable[kenoType][selectedCellsCount - 1]['values']]
+  const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
+  const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
 
-    console.log(Array.from(new Set(values)).length === hits.length)
+  let result: any[] = []
 
-    let result: any[] = []
+  const numberFormatter = Intl.NumberFormat('en-US', { notation: 'compact' })
 
-    const numberFormatter = Intl.NumberFormat("en-US", { notation: "compact" })
+  for (let i = 0; i < zeros.length - 1; i++) {
+    values.splice(zeros[0], 1) // splice() method modifies the referenced array, that's why we made a copy
+  }
 
-    for (let i = 0; i < zeros.length - 1; i++) {
-      values.splice(zeros[0], 1) // splice() method modifies the referenced array, that's why we made a copy
-    }
-
-    values.forEach((value, index) => {
-      result.push({
-        pays: value > 999 ? numberFormatter.format(value) : value.toString(),
-        hit: hits[index],
-      })
+  values.forEach((value, index) => {
+    result.push({
+      pays: value > 999 ? numberFormatter.format(value) : value.toString(),
+      hit: hits[index],
     })
+  })
 
-    for (let index = 0; index < values.length - zeros.length + 1; index++) {
-      if (index === zeros[0]) {
-        result[index] = {...result[index], startIndex: zeros[0]}
+  for (let index = 0; index < values.length; index++) {
+    if (index === zeros[0]) {
+      result[index] = { ...result[index], startIndex: zeros[0], endIndex: zeros[zeros.length - 1] }
+    } else {
+      if (index < zeros[0]) {
+        result[index] = { ...result[index], startIndex: index }
       } else {
-        if (index < zeros[0]) {
-          result[index] = {...result[index], startIndex: index}
-        } else {
-          result[index] = {...result[index], startIndex: index + zeros.length - 1}
-        }
+        result[index] = { ...result[index], startIndex: index + zeros.length - 1 }
       }
     }
+  }
 
-    payTableData.value = result
+  payTableData.value = result
 }
 
-watch(
-  () => selectedCellsCount,
-  updatePayTableData
-)
+watch(() => [selectedCellsCount, matchedCellsCount], updatePayTableData)
 
 updatePayTableData()
-
 </script>
 
 <template>
   <div v-if="selectedCellsCount > 0" class="pay-table">
-    
-
     <div class="cells-container">
       <div class="label-container">
         <div class="label">
@@ -86,21 +77,56 @@ updatePayTableData()
         </div>
       </div>
       <div v-for="data in payTableData" class="pay-data">
-        <div 
-          class="multiplier-cell-tight" 
-          :class="{ hit: matchedCellsCount >= data.startIndex }">
+        <!-- PAY CELL -->
+        <div
+          v-if="data.endIndex != null"
+          class="multiplier-cell-tight"
+          :class="{
+            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+            hide:
+              !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
+              matchedCellsCount > -1,
+          }"
+        >
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
-        <div 
-        class="selected-count-cell"
-        :class="{ hit: matchedCellsCount >= data.startIndex }"
+        <div
+          v-else
+          class="multiplier-cell-tight"
+          :class="{
+            hit: matchedCellsCount === data.startIndex,
+            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+          }"
+        >
+          <el-text size="large">x{{ data.pays }}</el-text>
+        </div>
+        <!-- END OF PAY CELL -->
+
+        <!-- HIT CELL -->
+        <div
+          v-if="data.endIndex != null"
+          class="selected-count-cell"
+          :class="{
+            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+            hide:
+              !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
+              matchedCellsCount > -1,
+          }"
         >
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
-
+        <div
+          v-else
+          class="selected-count-cell"
+          :class="{
+            hit: matchedCellsCount === data.startIndex,
+            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+          }"
+        >
+          <el-text size="large">{{ data.hit }}</el-text>
+        </div>
+        <!-- END OF HIT CELL -->
       </div>
-
-    
     </div>
   </div>
 
@@ -160,6 +186,10 @@ updatePayTableData()
   gap: 10px;
 }
 
+.pay-data:hover > .hide {
+  opacity: 1;
+}
+
 .multiplier-cell,
 .multiplier-cell-tight {
   background-color: #524de0;
@@ -212,6 +242,11 @@ updatePayTableData()
 
 .hit {
   border: 2px solid greenyellow;
+  animation: scaleUpDown 300ms ease-in-out; /* Adjust duration as needed */
+}
+
+.hide {
+  opacity: 0.6;
 }
 
 .multiplier-cell-tight,
@@ -225,5 +260,17 @@ updatePayTableData()
 .el-text {
   color: #ffffff;
   font-weight: bold;
+}
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
