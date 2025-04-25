@@ -1,7 +1,13 @@
 <template>
   <div class="autopick-container">
     <div class="number-container">
-      <div class="number" v-for="number in 10" :key="number">
+      <div
+        v-for="number in numbers"
+        :key="number"
+        :class="['number', { selected: number === selectedNumber }]"
+        @click="selectNumber(number, $event)"
+        ref="numberRefs"
+      >
         {{ number }}
       </div>
     </div>
@@ -11,7 +17,24 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, nextTick } from 'vue'
+
+const numbers = ref<number[]>(Array.from({ length: 10 }, (_, i) => i + 1))
+const selectedNumber = ref<number | null>(null)
+const numberRefs = ref<(HTMLElement | null)[]>([])
+
+const selectNumber = (number: number, event: Event) => {
+  selectedNumber.value = number
+
+  nextTick(() => {
+    const target = event.target as HTMLElement
+    target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+
+    console.log(`User selected: ${selectedNumber.value}`)
+  })
+}
+</script>
 
 <style scoped>
 .autopick-container {
@@ -50,6 +73,10 @@
   color: #ffff;
   padding-inline: 10px;
   font-weight: 600;
+}
+.selected {
+  background-color: #ffcc00;
+  font-weight: bold;
 }
 .autopick-btn {
   background: #060041;
