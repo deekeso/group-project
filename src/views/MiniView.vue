@@ -138,7 +138,7 @@ function displayResult() {
   setTimeout(() => {
     calculatePayout()
     showModal.value = true
-  }, 1000)
+  }, 500)
   showModal.value = false
 }
 </script>
@@ -148,6 +148,11 @@ function displayResult() {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+}
+.el-alert {
+  position: absolute;
+  top: 0;
+  width: fit-content;
 }
 
 .el-main {
