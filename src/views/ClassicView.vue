@@ -22,11 +22,12 @@
         </div>
 
         <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-        ><WithWin
-          v-if="result === 'win' && showModal"
-          :winValue="winnings"
-          @close="showModal = false"
-        />
+        <Transition name="bounce"
+          ><WithWin
+            v-if="result === 'win' && showModal"
+            :winValue="winnings"
+            @close="showModal = false"
+        /></Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
     </el-main>
@@ -163,5 +164,23 @@ function displayResult() {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.4s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.4s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
