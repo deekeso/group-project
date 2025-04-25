@@ -9,7 +9,7 @@
         <PayTable
           kenoType="mini"
           :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="isRoundStarted ? matchedNumbers.length : -1"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
@@ -18,10 +18,20 @@
             :is-round-finished
             @reset-round="resetRound"
           />
-          <GameSideButtons @clear="gameStore.resetGame" />
+          <!-- TODO: Implement autopick logic -->
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable['mini'].length"
+            :game-is-drawing="isDrawing"
+          />
         </div>
 
-        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        <GameButtons
+          @playGame="startDraw"
+          :game-is-drawing="isDrawing"
+          :disabled="selectedNumbers.length < 1"
+        />
         <Transition name="bounce"
           ><WithWin
             v-if="result === 'win' && showModal"
@@ -51,16 +61,17 @@ import WithWin from '@/components/WithWin.vue'
 import NoWin from '@/components/NoWin.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
+import payTable from '@/components/PayTable/payTable.json'
 
 const router = useRouter()
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers, result, winnings } = storeToRefs(gameStore)
-const { miniKenoDraw } = useKenoDraw()
+const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { miniKenoDraw, resetAutopicked, resetDraw, kenoAutopick } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
-const isRoundStarted = ref(false)
 const errorMessage = ref('')
+const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
@@ -72,7 +83,6 @@ onBeforeMount(() => {
 // useSyncGameMode('mini')
 
 function startDraw() {
-  isRoundStarted.value = true
   // Check balance before playing
   if (walletStore.balance < gameStore.wager) {
     ElNotification({
@@ -88,9 +98,9 @@ function startDraw() {
 
   errorMessage.value = '' // Clear previous error if any
 
-  useKenoDraw().resetDraw()
-
+  resetDraw()
   gameStore.isPlayingToggle()
+  displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
@@ -105,10 +115,8 @@ function startDraw() {
       clearInterval(interval)
       isDrawing.value = false
       isRoundFinished.value = true
-      isRoundStarted.value = false
 
       evaluateGame()
-      gameStore.isPlayingToggle()
       displayResult()
     }
   }, 100)
@@ -118,9 +126,35 @@ function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
 }
 
+function startAutoPick(number: number) {
+  if (isDrawing.value) return
+  resetAutopicked()
+  isRoundFinished.value = true
+  let count = 0
+
+  const interval = setInterval(() => {
+    kenoAutopick(number, 'mini')
+    count++
+
+    if (count >= number) {
+      clearInterval(interval)
+    }
+  }, 10)
+  displayMatching.value = false
+}
+
+function autopickNumberSelected(number: number) {
+  startAutoPick(number)
+}
+
 function resetRound() {
   gameStore.resetGame(true)
   isRoundFinished.value = false
+}
+
+function resetGame() {
+  if (isDrawing.value) return
+  gameStore.resetGame()
 }
 
 function directToHome() {
