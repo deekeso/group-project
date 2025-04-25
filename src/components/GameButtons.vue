@@ -35,7 +35,9 @@
     >
       x2
     </button>
-    <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing">Play</button>
+    <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing || disabled">
+      Play
+    </button>
   </div>
 </template>
 
@@ -46,10 +48,11 @@ import { ref, watch } from 'vue'
 import { Plus, Minus } from '@element-plus/icons-vue'
 
 const gameStore = useGameStore()
-const { wager } = storeToRefs(gameStore)
+const { wager, bet } = storeToRefs(gameStore)
 
 const { gameIsDrawing } = defineProps<{
   gameIsDrawing: boolean
+  disabled: boolean
 }>()
 const isDrawing = ref(gameIsDrawing)
 
@@ -158,9 +161,9 @@ function doubleWager() {
 .wager-container,
 .wager-btn {
   transition:
-    transform 0ms,
+    transform 100ms,
     opacity 1000ms,
-    background 300ms;
+    background 100ms;
 }
 
 .btn:disabled,
@@ -212,6 +215,7 @@ function doubleWager() {
 .btn:enabled:hover {
   background: #ffe387;
 }
+
 .btn:enabled:hover:active {
   transform: translateY(2px);
   background-color: #ffedc8;
