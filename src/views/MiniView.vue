@@ -22,16 +22,13 @@
         </div>
 
         <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-        <WithWin
-          v-if="result === 'win' && showModal"
-          :winValue="winnings"
-          @close="showModal = false"
-        />
-        <NoWin
-          v-if="result === 'lose' && showModal"
-          @close="showModal = false"
-          @home="directToHome"
-        />
+        <Transition name="bounce"
+          ><WithWin
+            v-if="result === 'win' && showModal"
+            :winValue="winnings"
+            @close="showModal = false"
+        /></Transition>
+        <NoWin v-if="result === 'lose' && showModal" />
       </div>
     </el-main>
   </el-container>
@@ -114,7 +111,7 @@ function startDraw() {
       gameStore.isPlayingToggle()
       displayResult()
     }
-  }, 150)
+  }, 100)
 }
 
 function setSelectedNumbers(numbers: number[]) {
@@ -178,5 +175,23 @@ function displayResult() {
 }
 .autopick {
   height: 100%;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.4s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.4s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

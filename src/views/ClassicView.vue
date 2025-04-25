@@ -22,16 +22,12 @@
         </div>
 
         <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
-        <WithWin
+        ><WithWin
           v-if="result === 'win' && showModal"
           :winValue="winnings"
           @close="showModal = false"
         />
-        <NoWin
-          v-if="result === 'lose' && showModal"
-          @close="showModal = false"
-          @home="directToHome"
-        />
+        <NoWin v-if="result === 'lose' && showModal" />
       </div>
     </el-main>
   </el-container>
@@ -131,7 +127,7 @@ function displayResult() {
   setTimeout(() => {
     calculatePayout()
     showModal.value = true
-  }, 1000)
+  }, 150)
   showModal.value = false
 }
 </script>

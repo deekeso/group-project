@@ -21,7 +21,6 @@
   align-content: center;
   justify-items: center;
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.329);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
