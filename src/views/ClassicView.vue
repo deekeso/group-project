@@ -28,11 +28,11 @@
           :winValue="winnings"
           @close="showModal = false"
         />
-        <NoWin
+        <!-- <NoWin
           v-if="result === 'lose' && showModal"
           @close="showModal = false"
           @home="directToHome"
-        />
+        /> -->
       </div>
     </el-main>
   </el-container>
