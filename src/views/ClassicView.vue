@@ -18,10 +18,11 @@
             :is-round-finished
             @reset-round="resetRound"
           />
-          <GameSideButtons @clear="gameStore.resetGame" />
+          <!-- TODO: Implement autopick logic -->
+          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['classic'].length" :game-is-drawing="isDrawing"/>
         </div>
 
-        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" />
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1"  />
         <WithWin
           v-if="result === 'win' && showModal"
           :winValue="winnings"
@@ -49,18 +50,19 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { ElNotification } from 'element-plus'
 import { useWalletStore } from '@/stores/wallet'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
+import payTable from '@/components/PayTable/payTable.json'
 
 const router = useRouter()
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
-const { classicKenoDraw } = useKenoDraw()
+const { classicKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
@@ -89,7 +91,7 @@ function startDraw() {
     return
   }
 
-  useKenoDraw().resetDraw()
+  resetDraw()
   gameStore.isPlayingToggle()
   displayMatching.value = true
 
@@ -113,10 +115,35 @@ function startDraw() {
   }, 150)
 }
 
+function startAutoPick(number: number) {
+  if (isDrawing.value) return
+  resetAutopicked()
+  isRoundFinished.value = true
+  let count = 0
+
+  const interval = setInterval(() => {
+    kenoAutopick(number, 'classic')
+    count++
+
+    if (count >= number) {
+      clearInterval(interval)
+    }
+  }, 10)
+  displayMatching.value = false
+}
+
+function autopickNumberSelected(number: number) {
+  startAutoPick(number)
+}
+
 function resetRound() {
   gameStore.resetGame(true)
   isRoundFinished.value = false
-  displayMatching.value = false
+}
+
+function resetGame() {
+  if (isDrawing.value) return
+  gameStore.resetGame()
 }
 
 function setSelectedNumbers(numbers: number[]) {
