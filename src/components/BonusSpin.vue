@@ -46,7 +46,7 @@
       <div class="result-content">
         <h2>You Got:</h2>
         <div class="result-text">{{ result }}</div>
-        <el-button class="collect-btn" @click="collectReward">Collect</el-button>
+        <el-button class="collect-btn" @click="collectReward">Okay</el-button>
       </div>
     </el-dialog>
   </GameDialog>
@@ -123,6 +123,8 @@ const collectReward = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
 h1 {
   color: #f8ab00;
   text-transform: uppercase;
@@ -371,7 +373,4 @@ p {
     text-shadow: 0 0 10px rgba(254, 202, 67, 0.3);
   }
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Mukta+Mahee:wght@200;300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;900&display=swap');
 </style>
