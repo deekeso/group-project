@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
+import { User } from '@element-plus/icons-vue'
 
 const isMenuOpen = ref(false)
 
@@ -37,7 +38,7 @@ const handleLogout = async () => {
       <div class="profile-container">
         <el-dropdown>
           <div class="profile-icon">
-            <el-icon><User /></el-icon>
+            <el-icon size="large"><User /></el-icon>
           </div>
           <template #dropdown>
             <el-menu>
