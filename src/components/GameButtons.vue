@@ -24,11 +24,11 @@
   import { storeToRefs } from 'pinia'
   import { ref, watch } from 'vue';
   import { Plus, Minus } from '@element-plus/icons-vue'
-import MultipleCard from './PurchaseCard/MultipleCard.vue';
+// import MultipleCard from './PurchaseCard/MultipleCard.vue';
 
   const gameStore = useGameStore()
-  const { wager, bet } = storeToRefs(gameStore)
-  
+  const { wager } = storeToRefs(gameStore)
+
   const { gameIsDrawing } = defineProps<{
     gameIsDrawing: boolean
     disabled: boolean
@@ -134,7 +134,7 @@ import MultipleCard from './PurchaseCard/MultipleCard.vue';
   .btn, .wager-container, .wager-btn {
     transition: transform 100ms, opacity 1000ms, background 100ms;
   }
-  
+
   .btn:disabled, .disabled {
     opacity: .7;
   }
@@ -149,7 +149,7 @@ import MultipleCard from './PurchaseCard/MultipleCard.vue';
     border: 4px solid #ffe387;
     padding-inline: 20px;
   }
-  
+
   .wager-container {
     background: #f8ab00;
     color: #050505;
@@ -164,7 +164,7 @@ import MultipleCard from './PurchaseCard/MultipleCard.vue';
     overflow: hidden;
     border: 4px solid #ffe387;
   }
-  
+
   .wager-btn {
     background: #f8ab00;
     border: none;

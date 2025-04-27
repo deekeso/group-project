@@ -3,7 +3,7 @@
     <div class="gradient">
       <div></div>
     </div>
-    <div class="number-container" :style="{ pointerEvents: gameIsDrawing ? 'none' : 'auto', cursor: gameIsDrawing ? 'not-allowed' : 'pointer' }">
+    <div class="number-container" :style="{ pointerEvents: isDrawing ? 'none' : 'auto', cursor: isDrawing ? 'not-allowed' : 'pointer' }">
       <div class="number filler" :style="{ cursor: 'not-allowed' }"></div>
 
       <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
@@ -31,18 +31,20 @@
       </div>
       <div class="number filler"></div>
     </div>
-    <button class="autopick-btn" @click="emit('numberSelected', selectedNumber)" :disabled="gameIsDrawing">
+    <button class="autopick-btn" @click="emit('numberSelected', selectedNumber)" :disabled="isDrawing">
       <img src="../../assets/Shuffle.png" alt="shuffle icon" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useGameDrawing } from '@/composables/useGameDrawing';
 import { ref, nextTick, onMounted } from 'vue'
-const { maxNumber, gameIsDrawing } = defineProps<{
+const { maxNumber } = defineProps<{
   maxNumber: number
-  gameIsDrawing: boolean
 }>()
+
+const isDrawing = useGameDrawing()
 
 const emit = defineEmits<{
   (e: 'numberSelected', number: number): void
@@ -60,8 +62,10 @@ const selectNumber = (number: number | null) => {
 }
 
 // Debounce function to reduce scroll event calls
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 const debounce = (func: Function, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (...args: any[]) => {
     clearTimeout(timeout)
     timeout = setTimeout(() => func(...args), delay)
@@ -133,11 +137,11 @@ onMounted(() => {
 
   width: 100%;
   height: 300px;
-  
+
 
   overflow: auto;
   scroll-snap-type: y mandatory;
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;

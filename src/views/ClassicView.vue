@@ -19,7 +19,7 @@
             @reset-round="resetRound"
           />
           <!-- TODO: Implement autopick logic -->
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['classic'].length" :game-is-drawing="isDrawing"/>
+          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['classic'].length"/>
         </div>
 
         <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1"  />
@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import WithWin from '@/components/WithWin.vue'
-import NoWin from '@/components/NoWin.vue'
+// import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -50,13 +50,14 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { provide, readonly, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { ElNotification } from 'element-plus'
 import { useWalletStore } from '@/stores/wallet'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
+import { gameIsDrawingKey } from '@/composables/keys'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -74,6 +75,9 @@ const showModal = ref(false)
 // onMounted(() => {
 //   gameStore.setGameMode('classic')
 // })
+
+//
+provide(gameIsDrawingKey, readonly(isDrawing))
 
 useSyncGameMode('classic')
 
