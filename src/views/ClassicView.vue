@@ -65,6 +65,7 @@ const walletStore = useWalletStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
+// const isAutopicking = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
@@ -78,6 +79,7 @@ const showModal = ref(false)
 
 //
 provide(gameIsDrawingKey, readonly(isDrawing))
+// provide(isAutopickingKey, readonly(isAutopicking))
 
 useSyncGameMode('classic')
 
@@ -119,8 +121,9 @@ function startDraw() {
   }, 150)
 }
 
-function startAutoPick(number: number) {
+function autopickNumberSelected(number: number) {
   if (isDrawing.value) return
+  isDrawing.value = true
   resetAutopicked()
   isRoundFinished.value = true
   let count = 0
@@ -131,13 +134,10 @@ function startAutoPick(number: number) {
 
     if (count >= number) {
       clearInterval(interval)
+      isDrawing.value = false
     }
   }, 10)
   displayMatching.value = false
-}
-
-function autopickNumberSelected(number: number) {
-  startAutoPick(number)
 }
 
 function resetRound() {
