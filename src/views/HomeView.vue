@@ -4,7 +4,7 @@ import { onBeforeMount } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
-import Navbar from '@/components/Navbar.vue'
+import Navbar from '@/components/TheNavbar.vue'
 import GameModesCard from '@/components/GameModesCard.vue'
 import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'

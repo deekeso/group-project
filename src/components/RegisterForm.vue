@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import type { FormRules } from 'element-plus'
-import Navbar from './Navbar.vue'
+import Navbar from './TheNavbar.vue'
 import { useFormValidation } from '@/composables/useFormValidation'
 import { useSuccessModal } from '@/composables/useSuccessModal'
 
