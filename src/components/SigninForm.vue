@@ -9,6 +9,9 @@ import { useFormValidation } from '@/composables/useFormValidation'
 import { useSuccessModal } from '@/composables/useSuccessModal'
 import SignupForm from './SignupForm.vue'
 
+// Add emit definition
+const emit = defineEmits(['close', 'open-signup'])
+
 const showSignupForm = ref(false)
 const showSigninForm = ref(true)
 
@@ -49,19 +52,37 @@ const handleSubmit = async (e: Event) => {
     }
 
     await authStore.login(form.email, form.password)
-
     await showSuccessModal('Login Successful', 'Welcome back to Keno Plus!')
-
-    // Get redirect path from query or default to home
+    
+    // Emit close event after successful login
+    emit('close')
+    
     const redirect = (router.currentRoute.value.query.redirect as string) || '/home'
     router.push(redirect)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     ElMessage.error(error.message || 'An error occurred during login')
   } finally {
     loading.value = false
   }
 }
+
+// Add method to handle signup button click
+const handleSignupClick = () => {
+  emit('close')
+  emit('open-signup')
+}
+
+// Add resetForm method
+const resetForm = () => {
+  form.email = ''
+  form.password = ''
+  if (formRef.value) {
+    formRef.value.clearValidate()
+  }
+}
+
+// Expose resetForm method to parent
+defineExpose({ resetForm })
 </script>
 
 <template>
@@ -77,7 +98,7 @@ const handleSubmit = async (e: Event) => {
       <p class="text-end">Dont have an account?</p>
 
       <div class="signup-btn">
-        <el-button @click="showSignupForm = true">Sign Up</el-button>
+        <el-button @click="handleSignupClick">Sign Up</el-button>
       </div>
     </div>
     <div class="form-container">

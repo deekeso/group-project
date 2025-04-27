@@ -13,6 +13,9 @@ import { watch } from 'vue'
 
 import SigninForm from './SigninForm.vue'
 
+// Add emit definition
+const emit = defineEmits(['close', 'open-signin'])
+
 const showSignupForm = ref(true)
 const showSigninForm = ref(false)
 const router = useRouter()
@@ -156,6 +159,9 @@ const handleSubmit = async (e: Event) => {
       'Registration Successful',
       'Welcome to Keno Plus! Your account has been successfully created.',
     )
+    
+    // Emit close event after successful registration
+    emit('close')
 
     router.push('/home')
   } catch (error: any) {
@@ -164,6 +170,31 @@ const handleSubmit = async (e: Event) => {
     loading.value = false
   }
 }
+
+// Add method to handle signin button click
+const handleSigninClick = () => {
+  emit('close')  // Close signup form
+  emit('open-signin')  // Open signin form
+}
+
+// Add resetForm method
+const resetForm = () => {
+  form.firstname = ''
+  form.lastname = ''
+  form.email = ''
+  form.dateOfBirth = ''
+  form.age = ''
+  form.phoneNumber = ''
+  form.username = ''
+  form.password = ''
+  form.confirmPassword = ''
+  if (formRef.value) {
+    formRef.value.clearValidate()
+  }
+}
+
+// Expose resetForm method to parent
+defineExpose({ resetForm })
 </script>
 
 <template>
@@ -175,9 +206,8 @@ const handleSubmit = async (e: Event) => {
       <p class="text-body">Sign up to access exclusive game modes, and earn rewards!</p>
 
       <p class="text-end">Have an account already?</p>
-
       <div class="signin-btn">
-        <el-button @click="showSigninForm = true">Sign in</el-button>
+        <el-button @click="handleSigninClick">Sign in</el-button>
       </div>
     </div>
     <div class="form-container">

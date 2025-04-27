@@ -9,14 +9,11 @@ import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'
 const walletStore = useWalletStore()
 
-
 const isMenuOpen = ref(false)
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
-
-
 
 const handleLogout = async () => {
   try {
@@ -38,6 +35,9 @@ function directToWallet() {
 const isSigninVisible = ref(false)
 const isSignupVisible = ref(false)
 
+// Add ref for the signin form
+const signinFormRef = ref()
+
 const showSigninModal = () => {
   isSigninVisible.value = true
   isSignupVisible.value = false
@@ -48,9 +48,18 @@ const showSignupModal = () => {
   isSigninVisible.value = false
 }
 
+const handleLoginClick = () => {
+  isSigninVisible.value = true
+}
+
+// Handle signin to signup transition
+const handleOpenSignup = () => {
+  isSigninVisible.value = false
+  isSignupVisible.value = true
+}
+
 const router = useRouter()
 const authStore = useAuthStore()
-
 
 </script>
 
@@ -62,22 +71,55 @@ const authStore = useAuthStore()
       </div>
       <div class="profile-container">
         <div class="userbal-button" v-if="authStore.isAuthenticated">
-        <UserBalance @wallet="directToWallet" />
-      </div>
-        <el-dropdown >
+          <UserBalance @wallet="directToWallet" />
+        </div>
+        <el-dropdown>
           <div class="profile-icon">
             <el-icon><User /></el-icon>
           </div>
           <template #dropdown>
             <el-menu>
-              <el-menu-item index="1" @click="handleLogout" v-if="authStore.isAuthenticated">Logout</el-menu-item>
-              <el-menu-item index="2">Login</el-menu-item>
+              <template v-if="authStore.isAuthenticated">
+                <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
+              </template>
+              <template v-else>
+                <el-menu-item index="1" @click="handleLoginClick">Login</el-menu-item>
+              </template>
             </el-menu>
           </template>
         </el-dropdown>
       </div>
     </div>
   </nav>
+
+  <el-dialog
+    v-model="isSigninVisible"
+    style="background-color: transparent"
+    center
+    @close="signinFormRef?.resetForm()"
+  >
+    <SigninForm
+      ref="signinFormRef"
+      @close="isSigninVisible = false"
+      @open-signup="handleOpenSignup"
+    />
+  </el-dialog>
+
+  <el-dialog
+    v-model="isSignupVisible"
+    style="background-color: transparent"
+    center
+    @close="signupFormRef?.resetForm()"
+  >
+    <SignupForm
+      ref="signupFormRef"
+      @close="isSignupVisible = false"
+      @open-signin="() => {
+        isSignupVisible = false
+        isSigninVisible = true
+      }"
+    />
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -95,9 +137,9 @@ const authStore = useAuthStore()
   max-width: 1440px;
   margin: 0 auto;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0 40px;
 }
 
@@ -105,8 +147,8 @@ const authStore = useAuthStore()
   display: flex;
   align-items: center;
   height: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  grid-column: 2;
+  justify-content: center;
 }
 
 .logo {
@@ -119,15 +161,17 @@ const authStore = useAuthStore()
   display: flex;
   align-items: center;
   gap: 20px;
+  grid-column: 3;
+  justify-self: end;
 }
 
-.userbal-button .button-container{
+.userbal-button .button-container {
   width: 150px;
   justify-content: center;
   align-items: center;
-  justify-content: center;
   height: 35px;
 }
+
 .profile-icon {
   width: 40px;
   height: 40px;
@@ -137,5 +181,31 @@ const authStore = useAuthStore()
   align-items: center;
   justify-content: center;
   color: #1e1e1e;
+}
+
+::v-deep(.el-dialog__header) {
+  display: none;
+}
+
+::v-deep(.el-dialog__body) {
+  padding: 0;
+}
+
+/* Add these dialog-specific styles */
+:deep(.el-dialog) {
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  position: absolute;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+:deep(.el-dialog__body) {
+  padding: 0;
+  overflow: auto;
 }
 </style>

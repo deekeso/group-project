@@ -142,7 +142,7 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: url('/src/assets/anime-night-sky-illustration.jpg') no-repeat center center;
+  
   background-size: cover;
   min-height: 100dvh;
   padding: 2rem;
