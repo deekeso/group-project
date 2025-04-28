@@ -6,6 +6,7 @@
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
+        <TheLegend />
         <PayTable
           kenoType="mini"
           :selectedCellsCount="selectedNumbers.length"
@@ -64,6 +65,7 @@ import { ElNotification } from 'element-plus'
 // import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
+import TheLegend from '@/components/TheLegend.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
