@@ -8,8 +8,8 @@
           class="keno-cell"
           :class="[
             'cell',
-            matchedNumbers.includes(number) ? 'matched' : 
-            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' : 
+            matchedNumbers.includes(number) ? 'matched' :
+            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
             selectedNumbers.includes(number) ? 'selected' : '',
           ]"
           @click="toggleNumber(number)"
@@ -92,7 +92,7 @@ function toggleNumber(number: number): void {
 }
 
 .cell:hover {
-  background-color: hsla(270, 68%, 69%, 0.75);
+  background-color: hsl(270, 68%, 69%);
 }
 
 .cell.selected {
