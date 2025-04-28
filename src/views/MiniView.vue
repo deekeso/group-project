@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="mini-page">
     <el-header>
       <HomeButton @home="directToHome" />
       <UserBalance @wallet="directToWallet" />
@@ -180,10 +180,23 @@ function displayResult() {
 </script>
 
 <style scoped>
+.mini-page {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('@/assets/game-background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
 .el-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+  background: transparent;
 }
 .el-alert {
   position: absolute;
@@ -194,6 +207,7 @@ function displayResult() {
 .el-main {
   display: grid;
   place-items: center;
+  background: transparent;
 }
 .grid-paytable-container {
   width: fit-content;
