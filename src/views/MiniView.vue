@@ -19,12 +19,7 @@
             @reset-round="resetRound"
           />
           <!-- TODO: Implement autopick logic -->
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable['mini'].length"
-            :game-is-drawing="isDrawing"
-          />
+          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['mini'].length" />
         </div>
 
         <GameButtons
@@ -52,16 +47,18 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, provide, readonly, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import { useKenoResult } from '@/composables/useKenoResult'
 import WithWin from '@/components/WithWin.vue'
-import NoWin from '@/components/NoWin.vue'
+// import NoWin from '@/components/NoWin.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
+// import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
+import { gameIsDrawingKey } from '@/composables/keys'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -81,6 +78,7 @@ onBeforeMount(() => {
   gameStore.setGameMode('mini')
 })
 // useSyncGameMode('mini')
+provide(gameIsDrawingKey, readonly(isDrawing))
 
 function startDraw() {
   // Check balance before playing

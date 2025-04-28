@@ -1,7 +1,7 @@
 <template>
   <div class="side-buttons">
-    <AutopickButton @numberSelected="(number: number) => emit('numberSelected', number)" :max-number :game-is-drawing="gameIsDrawing" />
-    <ClearButton class="clear-btn" @click="$emit('clear')" :game-is-drawing="gameIsDrawing" />
+    <AutopickButton @numberSelected="(number: number) => emit('numberSelected', number)" :max-number />
+    <ClearButton class="clear-btn" @click="$emit('clear')" />
   </div>
 </template>
 
@@ -9,9 +9,8 @@
 import AutopickButton from './AutopickButton.vue'
 import ClearButton from './ClearButton.vue'
 
-const { maxNumber, gameIsDrawing } = defineProps<{
+const { maxNumber } = defineProps<{
   maxNumber: number
-  gameIsDrawing: boolean
 }>()
 
 const emit = defineEmits<{

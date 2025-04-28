@@ -75,7 +75,7 @@ const authStore = useAuthStore()
         </div>
         <el-dropdown>
           <div class="profile-icon">
-            <el-icon><User /></el-icon>
+            <el-icon size="large"><User /></el-icon>
           </div>
           <template #dropdown>
             <el-menu>
