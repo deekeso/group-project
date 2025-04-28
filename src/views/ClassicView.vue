@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import WithWin from '@/components/WithWin.vue'
-import NoWin from '@/components/NoWin.vue'
+// import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -56,13 +56,14 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { provide, readonly, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { ElNotification } from 'element-plus'
 import { useWalletStore } from '@/stores/wallet'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
+import { gameIsDrawingKey } from '@/composables/keys'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -70,12 +71,21 @@ const walletStore = useWalletStore()
 const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
 const { classicKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
+// const isAutopicking = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
+
+// onMounted(() => {
+//   gameStore.setGameMode('classic')
+// })
+
+//
+provide(gameIsDrawingKey, readonly(isDrawing))
+// provide(isAutopickingKey, readonly(isAutopicking))
 
 useSyncGameMode('classic')
 
@@ -117,8 +127,9 @@ function startDraw() {
   }, 150)
 }
 
-function startAutoPick(number: number) {
+function autopickNumberSelected(number: number) {
   if (isDrawing.value) return
+  isDrawing.value = true
   resetAutopicked()
   isRoundFinished.value = true
   let count = 0
@@ -129,13 +140,10 @@ function startAutoPick(number: number) {
 
     if (count >= number) {
       clearInterval(interval)
+      isDrawing.value = false
     }
   }, 10)
   displayMatching.value = false
-}
-
-function autopickNumberSelected(number: number) {
-  startAutoPick(number)
 }
 
 function resetRound() {

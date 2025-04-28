@@ -162,7 +162,9 @@ function doubleWager() {
 .wager-btn {
   transition:
     transform 100ms,
+    transform 100ms,
     opacity 1000ms,
+    background 100ms;
     background 100ms;
 }
 
@@ -174,6 +176,22 @@ function doubleWager() {
 .btn:disabled:hover,
 .wager-btn:disabled:hover {
   cursor: not-allowed;
+}
+
+.yellow-btn {
+  background: #f8ab00;
+  color: #050505;
+  border: 4px solid #ffe387;
+  padding-inline: 20px;
+}
+
+.wager-container {
+  background: #f8ab00;
+  color: #050505;
+  font-weight: bolder;
+  border-radius: 100px;
+  flex: 1;
+  padding-block: 0;
 }
 
 .yellow-btn {
@@ -231,6 +249,7 @@ function doubleWager() {
   font-weight: 550;
   user-select: none;
 }
+
 .wager-icon {
   fill: black;
   height: 1.2rem;

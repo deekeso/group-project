@@ -1,14 +1,13 @@
 <template>
-  <button class="clear-btn" :disabled="gameIsDrawing">
+  <button class="clear-btn" :disabled="isDrawing">
     <img src="../../assets/Trash.png" alt="clear icon" />
   </button>
 </template>
 
 <script setup lang="ts">
-  const { gameIsDrawing } = defineProps<{
-  gameIsDrawing: boolean
-}>()
+import { useGameDrawing } from '@/composables/useGameDrawing';
 
+  const isDrawing = useGameDrawing()
 </script>
 
 <style scoped>
