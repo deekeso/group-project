@@ -32,7 +32,7 @@
     padding: 4px 6px;
 
   }
-  
+
   .legend {
     display: flex;
     justify-content: center;
@@ -51,7 +51,7 @@
     color: white;
     font-weight: 600;
   }
-  
+
   .unselected {
     color: white;
     background-color: #846ccf;
@@ -65,14 +65,14 @@
   }
 
   .matched {
-    color: #246a72;
-    background-color: #4adff0;
-    border: 4px solid #00b6ca;
+    color: #094201;
+    background-color: #37eb1f;
+    border: 4px solid #37eb1f;
   }
 
   .missed {
     background: #ff7779;
-    color: #4b0405; 
+    color: #4b0405;
   }
 
 </style>
