@@ -6,6 +6,7 @@
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
+        <TheLegend />
         <PayTable
           kenoType="classic"
           :selectedCellsCount="selectedNumbers.length"
@@ -59,6 +60,7 @@ import { useWalletStore } from '@/stores/wallet'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
+import TheLegend from '@/components/TheLegend.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
