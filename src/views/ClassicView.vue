@@ -18,7 +18,6 @@
             :is-round-finished
             @reset-round="resetRound"
           />
-          <!-- TODO: Implement autopick logic -->
           <GameSideButtons
             @clear="resetGame"
             @number-selected="autopickNumberSelected"
@@ -46,7 +45,7 @@
 
 <script setup lang="ts">
 import WithWin from '@/components/WithWin.vue'
-// import NoWin from '@/components/NoWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'

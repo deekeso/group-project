@@ -48,7 +48,7 @@ import { ref, watch } from 'vue'
 import { Plus, Minus } from '@element-plus/icons-vue'
 
 const gameStore = useGameStore()
-const { wager, bet } = storeToRefs(gameStore)
+const { wager } = storeToRefs(gameStore)
 
 const { gameIsDrawing } = defineProps<{
   gameIsDrawing: boolean
@@ -164,7 +164,6 @@ function doubleWager() {
     transform 100ms,
     transform 100ms,
     opacity 1000ms,
-    background 100ms;
     background 100ms;
 }
 
