@@ -21,13 +21,16 @@
       />
     </div>
 
-    <div v-if="selectionMode === 'multiple'" class="counter">
-      <button class="counter-btn" @click="decrementCounter">-</button>
-      <p>
-        Number of cards: <strong>{{ numberOfCards }}</strong>
-      </p>
-      <button class="counter-btn" @click="incrementCounter">+</button>
-    </div>
+    <Transition name="bounce">
+      <div v-if="selectionMode === 'multiple'" class="counter">
+        <button class="counter-btn" @click="decrementCounter">-</button>
+        <p>
+          Number of cards: <strong>{{ numberOfCards }}</strong>
+        </p>
+        <button class="counter-btn" @click="incrementCounter">+</button>
+      </div>
+    </Transition>
+
     <button class="select-btn">Select</button>
   </GameDialog>
 </template>
@@ -133,5 +136,22 @@ h1 {
 }
 strong {
   font-weight: 600;
+}
+.bounce-enter-active {
+  animation: bounce-in 0.5s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.5s reverse;
+}
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
