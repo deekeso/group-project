@@ -1,5 +1,7 @@
 <template>
-  <Navbar />
+  <el-header>
+    <HomeButton @home="directToHome" />
+  </el-header>
   <el-space direction="vertical">
     <div class="card-container">
       <div v-for="(card, index) in cards" :key="index" class="card">
@@ -22,13 +24,22 @@
 </template>
 
 <script setup lang="ts">
-import Navbar from '@/components/Navbar.vue'
+import HomeButton from '@/components/HomeButton.vue'
+
 import tutorial_1 from '../assets/tutorial_1.png'
 import tutorial_2 from '../assets/tutorial_2.png'
 import tutorial_3_4 from '../assets/tutorial_3_4.png'
 import tutorial_5 from '../assets/tutorial_5.png'
 import tutorial_6 from '../assets/tutorial_6.png'
 import tutorial_7 from '../assets/tutorial_7.png'
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function directToHome() {
+  router.push('/home')
+}
 const cards = [
   {
     title: 'Select game mode',
@@ -69,9 +80,6 @@ const cards = [
 </script>
 
 <style scoped>
-.card-container {
-  margin-top: 150px;
-}
 .card {
   background: white;
   color: black;
@@ -124,5 +132,11 @@ const cards = [
 .card-body {
   font-size: 18px;
   padding: 26px;
+}
+
+.el-header {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
 }
 </style>
