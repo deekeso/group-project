@@ -7,6 +7,8 @@ import UserBalance from '@/components/UserBalance.vue'
 import { useWalletStore } from '@/stores/wallet'
 import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'
+import { User } from '@element-plus/icons-vue'
+
 const walletStore = useWalletStore()
 
 const isMenuOpen = ref(false)
