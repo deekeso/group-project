@@ -50,28 +50,20 @@ const router = createRouter({
 })
 
 // Navigation guard
-// router.beforeEach(async (to, from, next) => {
-//   const authStore = useAuthStore()
+router.beforeEach(async (to, from, next) => {
+const authStore = useAuthStore()
 
 //   // Check if route requires auth
-//   if (to.meta.requiresAuth) {
-//     if (!authStore.isAuthenticated) {
+if (to.meta.requiresAuth) {
+if (!authStore.isAuthenticated) {
 //       // Redirect to login with return path
-//       next({
-//         path: '/login',
-//         query: { redirect: to.fullPath },
-//       })
-//       return
-//     }
-//   }
-
-//   // If trying to access login/register while authenticated
-//   if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
-//     next('/home')
-//     return
-//   }
-
-//   next()
-// })
-
+next({
+path: '/home',
+query: { redirect: to.fullPath },
+})
+return
+}
+}
+next()
+})
 export default router
