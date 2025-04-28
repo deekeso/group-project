@@ -9,10 +9,15 @@
     <h1>Purchase Cards</h1>
 
     <div class="flex-group">
-      <SingleCard :isSelected="selectionMode === 'single'" @select="setSelectionMode('single')" />
+      <SingleCard
+        :isSelected="selectionMode === 'single'"
+        @select="setSelectionMode('single')"
+        class="flex-item"
+      />
       <MultipleCard
         :isSelected="selectionMode === 'multiple'"
         @select="setSelectionMode('multiple')"
+        class="flex-item"
       />
     </div>
 
@@ -85,6 +90,9 @@ h1 {
   gap: 50px;
   margin-block: 15px;
   box-sizing: border-box;
+}
+.flex-item {
+  width: 50%;
 }
 .select-btn {
   width: 100%;
