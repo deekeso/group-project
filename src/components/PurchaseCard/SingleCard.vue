@@ -3,8 +3,7 @@
     <div class="single-card option" :class="{ selected: isSelected }">
       <h2>Single Card</h2>
       <div class="image-container">
-        <img src="../../assets/single-card/card.png" alt="keno card" class="card-img" />
-        <img src="../../assets/single-card/ball.png" alt="keno ball" class="ball-img sb" />
+        <img src="../../assets/single-card-img.png" alt="" class="selection-img" />
       </div>
     </div>
   </div>
@@ -29,8 +28,10 @@ h2 {
   font-family: SuperDream, sans-serif;
   font-size: 30px;
   letter-spacing: 2px;
+  line-height: 2rem;
   color: #f8ab00;
   font-weight: bold;
+  max-width: 5ch;
 }
 .option {
   background-color: #00004d;
@@ -38,6 +39,7 @@ h2 {
   border-radius: 15px;
   box-sizing: border-box;
   height: 100%;
+  justify-items: center;
 }
 .option-shadow {
   border-radius: 15px;
@@ -57,15 +59,8 @@ h2 {
   position: relative;
   width: 100%;
 }
-.card-img {
-  height: 175px;
-}
-.ball-img {
-  height: 90px;
-}
-.sb {
-  position: absolute;
-  bottom: 0;
-  left: 40px;
+.selection-img {
+  width: 100%;
+  max-width: 162.17px;
 }
 </style>
