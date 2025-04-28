@@ -3,14 +3,17 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ElMessageBox } from 'element-plus'
+import UserBalance from '@/components/UserBalance.vue'
+import { useWalletStore } from '@/stores/wallet'
+import SigninForm from '@/components/SigninForm.vue'
+import SignupForm from '@/components/SignupForm.vue'
+const walletStore = useWalletStore()
 
 const isMenuOpen = ref(false)
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
-const router = useRouter()
-const authStore = useAuthStore()
 
 const handleLogout = async () => {
   try {
@@ -26,6 +29,38 @@ const handleLogout = async () => {
     // User cancelled logout
   }
 }
+function directToWallet() {
+  router.push('/wallet')
+}
+const isSigninVisible = ref(false)
+const isSignupVisible = ref(false)
+
+// Add ref for the signin form
+const signinFormRef = ref()
+
+const showSigninModal = () => {
+  isSigninVisible.value = true
+  isSignupVisible.value = false
+}
+
+const showSignupModal = () => {
+  isSignupVisible.value = true
+  isSigninVisible.value = false
+}
+
+const handleLoginClick = () => {
+  isSigninVisible.value = true
+}
+
+// Handle signin to signup transition
+const handleOpenSignup = () => {
+  isSigninVisible.value = false
+  isSignupVisible.value = true
+}
+
+const router = useRouter()
+const authStore = useAuthStore()
+
 </script>
 
 <template>
@@ -35,26 +70,56 @@ const handleLogout = async () => {
         <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       </div>
       <div class="profile-container">
+        <div class="userbal-button" v-if="authStore.isAuthenticated">
+          <UserBalance @wallet="directToWallet" />
+        </div>
         <el-dropdown>
           <div class="profile-icon">
             <el-icon><User /></el-icon>
           </div>
           <template #dropdown>
             <el-menu>
-              <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
-              <el-menu-item index="2">About</el-menu-item>
+              <template v-if="authStore.isAuthenticated">
+                <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
+              </template>
+              <template v-else>
+                <el-menu-item index="1" @click="handleLoginClick">Login</el-menu-item>
+              </template>
             </el-menu>
           </template>
         </el-dropdown>
-
-        <button class="hamburger" :class="{ active: isMenuOpen }" @click="toggleMenu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </div>
     </div>
   </nav>
+
+  <el-dialog
+    v-model="isSigninVisible"
+    style="background-color: transparent"
+    center
+    @close="signinFormRef?.resetForm()"
+  >
+    <SigninForm
+      ref="signinFormRef"
+      @close="isSigninVisible = false"
+      @open-signup="handleOpenSignup"
+    />
+  </el-dialog>
+
+  <el-dialog
+    v-model="isSignupVisible"
+    style="background-color: transparent"
+    center
+    @close="signupFormRef?.resetForm()"
+  >
+    <SignupForm
+      ref="signupFormRef"
+      @close="isSignupVisible = false"
+      @open-signin="() => {
+        isSignupVisible = false
+        isSigninVisible = true
+      }"
+    />
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -72,9 +137,9 @@ const handleLogout = async () => {
   max-width: 1440px;
   margin: 0 auto;
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0 40px;
 }
 
@@ -82,8 +147,8 @@ const handleLogout = async () => {
   display: flex;
   align-items: center;
   height: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  grid-column: 2;
+  justify-content: center;
 }
 
 .logo {
@@ -96,6 +161,15 @@ const handleLogout = async () => {
   display: flex;
   align-items: center;
   gap: 20px;
+  grid-column: 3;
+  justify-self: end;
+}
+
+.userbal-button .button-container {
+  width: 150px;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
 }
 
 .profile-icon {
@@ -109,94 +183,29 @@ const handleLogout = async () => {
   color: #1e1e1e;
 }
 
-.hamburger {
+::v-deep(.el-dialog__header) {
   display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 30px;
-  height: 21px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+}
+
+::v-deep(.el-dialog__body) {
   padding: 0;
-  z-index: 1100;
 }
 
-.hamburger span {
-  width: 100%;
-  height: 3px;
-  background-color: #ffffff;
-  border-radius: 3px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Add these dialog-specific styles */
+:deep(.el-dialog) {
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+  position: absolute;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  max-height: 90vh;
+  max-width: 90vw;
 }
 
-@media (max-width: 991px) {
-  .nav-links {
-    position: fixed;
-    top: 100px;
-    left: 0;
-    width: 100%;
-    background: rgba(6, 3, 81, 0.95);
-    flex-direction: column;
-    padding: 20px 0;
-    gap: 20px;
-    transform: translateY(-100%);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 999;
-    backdrop-filter: blur(8px);
-  }
-
-  .nav-links-active {
-    transform: translateY(0);
-  }
-
-  .nav-link {
-    font-size: 18px;
-    padding: 8px 0;
-    position: relative;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.3s ease;
-  }
-
-  .nav-links-active .nav-link {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .hamburger span {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hamburger.active span:nth-child(1) {
-    transform: translateY(9px) rotate(45deg);
-  }
-
-  .hamburger.active span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .hamburger.active span:nth-child(3) {
-    transform: translateY(-9px) rotate(-45deg);
-  }
-
-  .hamburger {
-    display: flex;
-  }
-}
-
-@media (max-width: 576px) {
-  .nav-content {
-    padding: 0 20px;
-  }
-
-  .search-box {
-    display: none;
-  }
-
-  .logo {
-    height: 120px;
-    margin-top: 20px;
-  }
+:deep(.el-dialog__body) {
+  padding: 0;
+  overflow: auto;
 }
 </style>

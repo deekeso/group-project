@@ -25,7 +25,7 @@ body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-image: url('./assets/Menu Background.png');
+  background-image: url('./assets/anime-night-sky-illustration.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
