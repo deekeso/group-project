@@ -1,5 +1,8 @@
 <template>
   <div class="legend-container">
+    <div class="legend title">
+      <span>Legend:</span>
+    </div>
     <div class="legend unselected">
       <span>Unselected</span>
     </div>
@@ -17,13 +20,17 @@
 
 <style scoped>
   .legend-container {
-    width: 100%;
+    width: fit-content;
+    margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 24px;
     user-select: none;
+    border-radius: 8px;
+    padding: 4px 6px;
+
   }
   
   .legend {
@@ -37,6 +44,11 @@
   }
 
   .legend span {
+    font-weight: 600;
+  }
+
+  .title {
+    color: white;
     font-weight: 600;
   }
   
