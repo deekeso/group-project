@@ -92,7 +92,7 @@ function toggleNumber(number: number): void {
 }
 
 .cell:hover {
-  background-color: hsla(270, 68%, 69%, 0.75);
+  background-color: hsl(270, 68%, 69%);
 }
 
 .cell.selected {
