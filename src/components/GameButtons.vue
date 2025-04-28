@@ -1,22 +1,40 @@
 <template>
   <div class="btn-container">
+    <button @click="halfWager" class="yellow-btn btn" :disabled="isDrawing">/2</button>
     <div class="wager-container" :class="{ disabled: isDrawing }">
-      <button class="wager-btn" @click="gameStore.decreaseWager" :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
-        @mousedown="startDecreaseHold" @mouseup="stopDecreaseHold" @mouseleave="stopDecreaseHold">
+      <button
+        class="wager-btn"
+        @click="gameStore.decreaseWager"
+        :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
+        @mousedown="startDecreaseHold"
+        @mouseup="stopDecreaseHold"
+        @mouseleave="stopDecreaseHold"
+      >
         <el-icon size="large" color="black">
           <Minus />
         </el-icon>
       </button>
       <span class="wager-txt">Wager: ₱{{ wager }}</span>
-      <button class="wager-btn" @click="gameStore.increaseWager" :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
-        @mousedown="startIncreaseHold" @mouseup="stopIncreaseHold" @mouseleave="stopIncreaseHold">
+      <button
+        class="wager-btn"
+        @click="gameStore.increaseWager"
+        :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
+        @mousedown="startIncreaseHold"
+        @mouseup="stopIncreaseHold"
+        @mouseleave="stopIncreaseHold"
+      >
         <el-icon size="large" color="black">
           <Plus />
         </el-icon>
       </button>
     </div>
     <!-- <el-text class="yellow-btn btn">x{{ bet }}</el-text> -->
-    <button @click="doubleWager" class="yellow-btn btn" :disabled="isDrawing || wager >= gameStore.MAX_WAGER">
+
+    <button
+      @click="doubleWager"
+      class="yellow-btn btn"
+      :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
+    >
       x2
     </button>
     <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing || disabled">
@@ -28,7 +46,7 @@
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import { Plus, Minus } from '@element-plus/icons-vue'
 // import MultipleCard from './PurchaseCard/MultipleCard.vue';
 
@@ -120,6 +138,10 @@ function stopIncreaseHold() {
 
 function doubleWager() {
   gameStore.doubleWager()
+}
+
+function halfWager() {
+  gameStore.halfWager()
 }
 </script>
 
