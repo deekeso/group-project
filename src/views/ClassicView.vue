@@ -83,7 +83,9 @@ const showModal = ref(false)
 // onMounted(() => {
 //   gameStore.setGameMode('classic')
 // })
-
+gameStore.setLoseStreakEffect(() => {
+  alert("You lost 20 times. Here's a free spin!")
+})
 //
 provide(gameIsDrawingKey, readonly(isDrawing))
 // provide(isAutopickingKey, readonly(isAutopicking))
@@ -105,7 +107,6 @@ function startDraw() {
   }
 
   resetDraw()
-  gameStore.isPlayingToggle()
   displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
