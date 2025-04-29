@@ -298,6 +298,6 @@ input[type='range'] {
   width: 0px; /* 1 */
   height: 40px;
   box-shadow: -200px 0 0 200px #c28400; /* 2 */
-  border: 8px solid #fff;
+  border: 4px solid #fff;
 }
 </style>
