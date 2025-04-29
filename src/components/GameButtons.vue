@@ -20,7 +20,17 @@
           <Minus />
         </el-icon>
       </button>
-      <span class="wager-txt">Wager: ₱{{ wager }}</span>
+      <input
+        type="range"
+        v-model="wager"
+        :min="gameStore.MIN_WAGER"
+        :max="gameStore.MAX_WAGER"
+        :step="1"
+        :disabled="isDrawing"
+      />
+
+      <span class="wager-txt"> Wager: ₱{{ wager }}</span>
+
       <button
         class="wager-btn"
         @click="gameStore.increaseWager"
@@ -260,9 +270,34 @@ function halfWager() {
   font-weight: 550;
   user-select: none;
 }
+.wager-txt {
+  position: absolute;
+  transform: translateX(150px);
+  user-select: none;
+}
 
 .wager-icon {
   fill: black;
   height: 1.2rem;
+}
+input[type='range'] {
+  margin: auto;
+  -webkit-appearance: none;
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+  width: 340px;
+  cursor: pointer;
+  border-radius: 0; /* iOS */
+}
+::-webkit-slider-runnable-track {
+  background: #f8ab00;
+}
+::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 0px; /* 1 */
+  height: 40px;
+  box-shadow: -200px 0 0 200px #c28400; /* 2 */
+  border: 8px solid #fff;
 }
 </style>
