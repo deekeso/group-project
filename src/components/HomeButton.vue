@@ -1,6 +1,6 @@
 <template>
   <button class="button-container" @click="$emit('home')" title="Go to home page.">
-    <el-icon size="25" color="black">
+    <el-icon size="25" color="white">
       <HomeFilled />
     </el-icon>
   </button>
@@ -12,7 +12,7 @@
 
 <style scoped>
 .button-container {
-  background: #ffffff;
+  background: #ffffff34;
   border-radius: 100px;
   padding: 10px 20px;
   cursor: pointer;
@@ -22,6 +22,6 @@
   transition: all 100ms;
 }
 .button-container:hover {
- transform: scale(1.05); 
+ transform: scale(1.05);
 }
 </style>
