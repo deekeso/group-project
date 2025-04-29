@@ -3,10 +3,7 @@
     <div class="multiple-card option" :class="{ selected: isSelected }">
       <h2>Multiple Cards</h2>
       <div class="image-container">
-        <img src="../../assets/multiple-card/card1.png" alt="keno card" class="card-img mc1" />
-        <img src="../../assets/multiple-card/card2.png" alt="keno card" class="card-img mc2" />
-        <img src="../../assets/multiple-card/ball1.png" alt="keno card" class="ball-img mb1" />
-        <img src="../../assets/multiple-card/ball2.png" alt="keno card" class="ball-img mb2" />
+        <img src="../../assets/multiple-card-img.png" alt="" class="selection-img" />
       </div>
       <el-text class="p">₱20.00+</el-text>
     </div>
@@ -37,8 +34,10 @@ h2,
 .p {
   color: #f8ab00;
   font-weight: bold;
+  line-height: 2rem;
 }
 .p {
+  float: right;
   text-align: right;
   width: 100%;
 }
@@ -67,24 +66,8 @@ h2,
   position: relative;
   width: 100%;
 }
-.card-img {
-  height: 175px;
-}
-.ball-img {
-  height: 90px;
-}
-.mc2 {
-  margin-left: -70px;
-}
-.mb1,
-.mb2 {
-  position: absolute;
-  bottom: 0;
-}
-.mb1 {
-  left: 20px;
-}
-.mb2 {
-  left: 90px;
+.selection-img {
+  width: 100%;
+  max-width: 196.27px;
 }
 </style>

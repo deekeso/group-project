@@ -62,7 +62,6 @@ const handleOpenSignup = () => {
 
 const router = useRouter()
 const authStore = useAuthStore()
-
 </script>
 
 <template>
@@ -75,21 +74,20 @@ const authStore = useAuthStore()
         <div class="userbal-button" v-if="authStore.isAuthenticated">
           <UserBalance @wallet="directToWallet" />
         </div>
-        <el-dropdown>
+        <!-- If authenticated, show the user icon inside el-dropdown -->
+        <el-dropdown v-if="authStore.isAuthenticated">
           <div class="profile-icon">
-            <el-icon size="large"><User /></el-icon>
+            <el-icon size="large" class="profile-icon">
+              <User />
+            </el-icon>
           </div>
           <template #dropdown>
             <el-menu>
-              <template v-if="authStore.isAuthenticated">
-                <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
-              </template>
-              <template v-else>
-                <el-menu-item index="1" @click="handleLoginClick">Login</el-menu-item>
-              </template>
+              <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
             </el-menu>
           </template>
         </el-dropdown>
+        <el-button v-else class="signin-button" @click="showSigninModal">Sign In</el-button>
       </div>
     </div>
   </nav>
@@ -116,10 +114,12 @@ const authStore = useAuthStore()
     <SignupForm
       ref="signupFormRef"
       @close="isSignupVisible = false"
-      @open-signin="() => {
-        isSignupVisible = false
-        isSigninVisible = true
-      }"
+      @open-signin="
+        () => {
+          isSignupVisible = false
+          isSigninVisible = true
+        }
+      "
     />
   </el-dialog>
 </template>
@@ -166,14 +166,6 @@ const authStore = useAuthStore()
   grid-column: 3;
   justify-self: end;
 }
-
-.userbal-button .button-container {
-  width: 150px;
-  justify-content: center;
-  align-items: center;
-  height: 35px;
-}
-
 .profile-icon {
   width: 40px;
   height: 40px;
@@ -185,6 +177,24 @@ const authStore = useAuthStore()
   color: #1e1e1e;
 }
 
+.signin-button {
+  background-color: #f8ab00;
+  border: none;
+  font-family: Inter, sans-serif;
+  font-variation-settings: 'wght' 700;
+  color: #060351;
+  height: 40px;
+  width: 100px;
+  border-radius: 30px;
+}
+
+.userbal-button .button-container {
+  width: 150px;
+  justify-content: center;
+  align-items: center;
+  height: 35px;
+}
+
 ::v-deep(.el-dialog__header) {
   display: none;
 }
@@ -193,7 +203,6 @@ const authStore = useAuthStore()
   padding: 0;
 }
 
-/* Add these dialog-specific styles */
 :deep(.el-dialog) {
   display: flex;
   flex-direction: column;

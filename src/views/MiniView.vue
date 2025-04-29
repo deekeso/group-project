@@ -1,11 +1,12 @@
 <template>
-  <el-container>
+  <el-container class="mini-page">
     <el-header>
       <HomeButton @home="directToHome" />
       <UserBalance @wallet="directToWallet" />
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
+        <TheLegend />
         <PayTable
           kenoType="mini"
           :selectedCellsCount="selectedNumbers.length"
@@ -19,7 +20,12 @@
             @reset-round="resetRound"
           />
           <!-- TODO: Implement autopick logic -->
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['mini'].length" />
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable['mini'].length"
+            :game-is-drawing="isDrawing"
+          />
         </div>
 
         <GameButtons
@@ -53,12 +59,13 @@ import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import { useKenoResult } from '@/composables/useKenoResult'
 import WithWin from '@/components/WithWin.vue'
-// import NoWin from '@/components/NoWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
 // import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
+import TheLegend from '@/components/TheLegend.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -173,10 +180,23 @@ function displayResult() {
 </script>
 
 <style scoped>
+.mini-page {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('@/assets/game-background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
 .el-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+  background: transparent;
 }
 .el-alert {
   position: absolute;
@@ -187,6 +207,7 @@ function displayResult() {
 .el-main {
   display: grid;
   place-items: center;
+  background: transparent;
 }
 .grid-paytable-container {
   width: fit-content;
