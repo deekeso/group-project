@@ -1,6 +1,6 @@
 <template>
   <div class="btn-container">
-    <button @click="halfWager" class="yellow-btn btn" :disabled="isDrawing">/2</button>
+    <button @click="halfWager" class="yellow-btn btn" :disabled="isDrawing">÷2</button>
     <div class="wager-container" :class="{ disabled: isDrawing }">
       <button
         class="wager-btn"
@@ -35,7 +35,7 @@
       class="yellow-btn btn"
       :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
     >
-      x2
+      ×2
     </button>
     <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing || disabled">
       Play
