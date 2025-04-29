@@ -189,9 +189,6 @@ const authStore = useAuthStore()
 }
 
 .userbal-button .button-container {
-  width: 200px;
-  justify-content: center;
-  align-items: center;
   height: 38px;
 }
 
