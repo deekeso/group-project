@@ -166,7 +166,12 @@ function directToHome() {
 }
 
 function directToWallet() {
-  router.push('/wallet')
+  router.push({
+    name: 'wallet',
+    query: {
+      redirect: 'classic'
+    }
+  })
 }
 
 function displayResult() {
