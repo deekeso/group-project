@@ -159,6 +159,7 @@ function resetGame() {
 
 function setSelectedNumbers(numbers: number[]) {
   miniGridSelectedNumbers.value = numbers
+  displayMatching.value = false
 }
 
 function directToHome() {
