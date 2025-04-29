@@ -67,6 +67,11 @@ export const useGameStore = defineStore('game', () => {
     wager.value = newWager >= MAX_WAGER ? MAX_WAGER : newWager
   }
 
+  function halfWager() {
+    const newWager = wager.value / 2
+    wager.value = Math.max(newWager, MIN_WAGER)
+  }
+
   function setDrawnNumbers(numbers: number[]) {
     drawnNumbers.value = numbers
     matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
@@ -129,6 +134,7 @@ export const useGameStore = defineStore('game', () => {
     resetGame,
     loadFromStorage,
     doubleWager,
+    halfWager,
     setGameMode,
     addWinnings,
     setResult,

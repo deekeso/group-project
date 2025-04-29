@@ -1,5 +1,6 @@
 <template>
   <div class="btn-container">
+    <button @click="halfWager" class="yellow-btn btn" :disabled="isDrawing">/2</button>
     <div class="wager-container" :class="{ disabled: isDrawing }">
       <button
         class="wager-btn"
@@ -28,6 +29,7 @@
       </button>
     </div>
     <!-- <el-text class="yellow-btn btn">x{{ bet }}</el-text> -->
+
     <button
       @click="doubleWager"
       class="yellow-btn btn"
@@ -135,6 +137,10 @@ function stopIncreaseHold() {
 
 function doubleWager() {
   gameStore.doubleWager()
+}
+
+function halfWager() {
+  gameStore.halfWager()
 }
 </script>
 
