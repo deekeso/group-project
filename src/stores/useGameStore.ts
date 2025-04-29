@@ -5,6 +5,7 @@ export type GameMode = 'classic' | 'mini'
 
 const MIN_WAGER = 20
 const MAX_WAGER = 500
+const LOSE_STREAK_THRESHOLD = 20
 
 export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
@@ -111,7 +112,7 @@ export const useGameStore = defineStore('game', () => {
   function setResult(status: 'win' | 'lose') {
     if (status === 'lose') {
       loseStreak.value++
-      if (loseStreak.value >= 20) {
+      if (loseStreak.value >= LOSE_STREAK_THRESHOLD) {
         loseStreak.value = 0
         loseStreakCallback()
       }
