@@ -5,6 +5,7 @@ export type GameMode = 'classic' | 'mini'
 
 const MIN_WAGER = 20
 const MAX_WAGER = 500
+const LOSE_STREAK_THRESHOLD = 20
 
 export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
@@ -15,7 +16,9 @@ export const useGameStore = defineStore('game', () => {
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
   const mode = ref<GameMode>('classic') // NEW: game mode
-  const isPlaying = ref<boolean>(false)
+  const loseStreak = ref(0)
+
+  let loseStreakCallback: () => void = function() {}
 
   // autosave to local storage
   watch(
@@ -31,6 +34,7 @@ export const useGameStore = defineStore('game', () => {
           winnings: winnings.value,
           result: result.value,
           mode: mode.value,
+          loseStreak: loseStreak.value
         }),
       )
     },
@@ -50,6 +54,7 @@ export const useGameStore = defineStore('game', () => {
       winnings.value = parsed.winnings || 0
       result.value = parsed.result || ''
       mode.value = parsed.mode || 'classic'
+      loseStreak.value = parsed.loseStreak
     }
   }
 
@@ -105,15 +110,27 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function setResult(status: 'win' | 'lose') {
+    if (status === 'lose') {
+      loseStreak.value++
+      if (loseStreak.value >= LOSE_STREAK_THRESHOLD) {
+        loseStreak.value = 0
+        loseStreakCallback()
+      }
+    }
+    
+    if (status === 'win') {
+      loseStreak.value = 0
+    }
+
     result.value = status
+  }
+
+  function setLoseStreakEffect(callback: () => void) {
+    loseStreakCallback = callback
   }
 
   function resetWinnings() {
     winnings.value = 0
-  }
-
-  function isPlayingToggle() {
-    isPlaying.value = !isPlaying.value
   }
 
   return {
@@ -127,7 +144,7 @@ export const useGameStore = defineStore('game', () => {
     winnings,
     result,
     mode,
-    isPlaying,
+    loseStreak,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
@@ -139,6 +156,6 @@ export const useGameStore = defineStore('game', () => {
     addWinnings,
     setResult,
     resetWinnings,
-    isPlayingToggle,
+    setLoseStreakEffect
   }
 })

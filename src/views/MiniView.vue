@@ -81,6 +81,10 @@ const miniGridSelectedNumbers = ref<number[]>([])
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
 const showModal = ref(false)
 
+gameStore.setLoseStreakEffect(() => {
+  alert("You lost 20 times. Here's a free spin!")
+})
+
 onBeforeMount(() => {
   gameStore.setGameMode('mini')
 })
@@ -104,7 +108,6 @@ function startDraw() {
   errorMessage.value = '' // Clear previous error if any
 
   resetDraw()
-  gameStore.isPlayingToggle()
   displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return
