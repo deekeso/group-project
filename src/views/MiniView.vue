@@ -167,9 +167,13 @@ function directToHome() {
 }
 
 function directToWallet() {
-  router.push('/wallet')
+  router.push({
+    name: 'wallet',
+    query: {
+      redirect: 'mini'
+    }
+  })
 }
-
 function displayResult() {
   setTimeout(() => {
     calculatePayout()
