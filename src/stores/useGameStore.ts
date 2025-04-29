@@ -68,7 +68,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function halfWager() {
-    const newWager = wager.value / 2
+    const newWager = Math.floor(wager.value / 2)
     wager.value = Math.max(newWager, MIN_WAGER)
   }
 
