@@ -1,6 +1,12 @@
 <template>
   <div class="btn-container">
-    <button @click="halfWager" class="yellow-btn btn" :disabled="isDrawing">÷2</button>
+    <button
+      @click="halfWager"
+      class="yellow-btn btn"
+      :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
+    >
+      ÷2
+    </button>
     <div class="wager-container" :class="{ disabled: isDrawing }">
       <button
         class="wager-btn"
