@@ -23,6 +23,10 @@ function handleClassicKeno() {
     router.push('/classic-keno')
   }
 }
+
+function directToTutorial() {
+  router.push('/tutorial')
+}
 </script>
 <template>
   <div class="gamemode-container">
@@ -83,7 +87,7 @@ function handleClassicKeno() {
         thrilling, customizable play.
       </p>
       <div class="tutorial-btn">
-        <el-button>
+        <el-button @click="directToTutorial">
           <el-icon :size="32"><CaretRight class="Icon" /></el-icon>
           Learn How to Play Keno</el-button
         >

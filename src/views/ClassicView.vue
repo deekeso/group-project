@@ -1,11 +1,12 @@
 <template>
-  <el-container>
+  <el-container class="classic-page">
     <el-header>
       <HomeButton @home="directToHome" />
       <UserBalance @wallet="directToWallet" />
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
+        <TheLegend />
         <PayTable
           kenoType="classic"
           :selectedCellsCount="selectedNumbers.length"
@@ -18,8 +19,12 @@
             :is-round-finished
             @reset-round="resetRound"
           />
-          <!-- TODO: Implement autopick logic -->
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected" :max-number="payTable['classic'].length"/>
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable['classic'].length"
+            :game-is-drawing="isDrawing"
+          />
         </div>
 
         <GameButtons
@@ -41,7 +46,7 @@
 
 <script setup lang="ts">
 import WithWin from '@/components/WithWin.vue'
-// import NoWin from '@/components/NoWin.vue'
+import NoWin from '@/components/NoWin.vue'
 import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
@@ -59,6 +64,7 @@ import { useWalletStore } from '@/stores/wallet'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
+import TheLegend from '@/components/TheLegend.vue'
 
 const router = useRouter()
 const gameStore = useGameStore()
@@ -173,15 +179,30 @@ function displayResult() {
 </script>
 
 <style scoped>
+.classic-page {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('@/assets/game-background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
 .el-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+  background: transparent;
 }
 
 .el-main {
   display: grid;
   place-items: center;
+  background: transparent;
+  flex: 1;
 }
 .drawn-numbers {
   display: flex;
@@ -195,15 +216,7 @@ function displayResult() {
   display: flex;
   gap: 10px;
 }
-.background {
-  height: 100vh;
-  width: 100%;
-  align-content: center;
-  background-image: url(src/assets/game-background.png);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
+
 
 .bounce-enter-active {
   animation: bounce-in 0.4s;

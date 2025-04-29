@@ -48,7 +48,6 @@ import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
 import { Plus, Minus } from '@element-plus/icons-vue'
-// import MultipleCard from './PurchaseCard/MultipleCard.vue';
 
 const gameStore = useGameStore()
 const { wager } = storeToRefs(gameStore)
@@ -168,6 +167,7 @@ function halfWager() {
 .wager-container,
 .wager-btn {
   transition:
+    transform 100ms,
     transform 100ms,
     opacity 1000ms,
     background 100ms;
