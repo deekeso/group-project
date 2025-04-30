@@ -1,5 +1,5 @@
 <template>
-  <el-container class="mini-page">
+  <el-container class="classic-page">
     <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
       <span>
         You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
@@ -19,13 +19,21 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable kenoType="mini" :selectedCellsCount="selectedNumbers.length"
+        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
           :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
         <div class="grid-sidebtn-container">
-          <MiniGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound" />
-          <!-- TODO: Implement autopick logic -->
+          <ClassicGrid 
+            v-if="gameType === GameType.Classic" 
+            @number-selected="setSelectedNumbers" 
+            :is-round-finished @reset-round="resetRound" 
+          />
+          <MiniGrid 
+            v-else-if="gameType === GameType.Mini" 
+            @number-selected="setSelectedNumbers" 
+            :is-round-finished @reset-round="resetRound" 
+          />
           <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
-            :max-number="payTable['mini'].length" :game-is-drawing="isDrawing" />
+            :max-number="payTable[gameType].length" :game-is-drawing="isDrawing" />
         </div>
 
         <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
@@ -39,43 +47,46 @@
 </template>
 
 <script setup lang="ts">
+import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
-import HomeButton from '@/components/HomeButton.vue'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
-import PayTable from '@/components/PayTable/PayTable.vue'
-import { useKenoDraw } from '@/composables/useKenoDraw'
-import { useGameStore } from '@/stores/useGameStore'
-import { storeToRefs } from 'pinia'
-import { onBeforeMount, provide, readonly, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
-import UserBalance from '@/components/UserBalance.vue'
-import { useKenoResult } from '@/composables/useKenoResult'
-import WithWin from '@/components/WithWin.vue'
+import HomeButton from '@/components/HomeButton.vue'
 import NoWin from '@/components/NoWin.vue'
+import payTable from '@/components/PayTable/payTable.json'
+import PayTable from '@/components/PayTable/PayTable.vue'
+import TheLegend from '@/components/TheLegend.vue'
+import UserBalance from '@/components/UserBalance.vue'
+import WithWin from '@/components/WithWin.vue'
+import { gameIsDrawingKey } from '@/composables/keys'
+import { useKenoDraw } from '@/composables/useKenoDraw'
+import { useKenoResult } from '@/composables/useKenoResult'
+import { useSyncGameMode } from '@/composables/useSyncGameMode'
+import { useGameStore } from '@/stores/useGameStore'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
-// import { useSyncGameMode } from '@/composables/useSyncGameMode'
-import payTable from '@/components/PayTable/payTable.json'
-import { gameIsDrawingKey } from '@/composables/keys'
-import TheLegend from '@/components/TheLegend.vue'
+import { storeToRefs } from 'pinia'
+import { provide, readonly, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
+import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
+import { GameType } from '@/types'
 
 const router = useRouter()
+const route = useRoute()
+const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { drawnNumbers, matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
-const { miniKenoDraw, resetAutopicked, resetDraw, kenoAutopick } = useKenoDraw()
+const { matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
-const errorMessage = ref('')
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
 
-const { calculatePayout, evaluateGame } = useKenoResult('mini')
+const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
 
 gameStore.setLoseStreakEffect(() => {
@@ -109,14 +120,12 @@ async function playSoundEffect(i: number, soundEffect: string) {
 gameStore.setMatchCallback((i) => {
   playSoundEffect(i, matchSoundEffect)
 })
-
-onBeforeMount(() => {
-  gameStore.setGameMode('mini')
-})
-// useSyncGameMode('mini')
+//
 provide(gameIsDrawingKey, readonly(isDrawing))
 
-function startDraw() {
+useSyncGameMode('classic')
+
+async function startDraw() {
   // Check balance before playing
   if (walletStore.balance < gameStore.wager) {
     ElNotification({
@@ -130,12 +139,8 @@ function startDraw() {
     return
   }
 
-  errorMessage.value = '' // Clear previous error if any
-
   resetDraw()
   displayMatching.value = true
-
-  if (isDrawing.value || drawnNumbers.value.length >= 49) return
 
   isDrawing.value = true
   let count = 0
@@ -154,11 +159,15 @@ function startDraw() {
   }
 
   const interval = setInterval(() => {
-    miniKenoDraw()
+    if (gameType === GameType.Classic) {
+      classicKenoDraw()
+    } else if (gameType === GameType.Mini) {
+      miniKenoDraw()
+    }
     playSoundEffect(count, drawSoundEffect)
     count++
-
-    if (count >= 10 || drawnNumbers.value.length >= 49) {
+    let maxDraw = gameType === GameType.Classic ? 20 : 10
+    if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
       isRoundFinished.value = true
@@ -166,32 +175,26 @@ function startDraw() {
       evaluateGame()
       displayResult()
     }
-  }, 100)
+  }, 150)
 }
 
-function setSelectedNumbers(numbers: number[]) {
-  miniGridSelectedNumbers.value = numbers
-}
-
-function startAutoPick(number: number) {
+function autopickNumberSelected(number: number) {
   if (isDrawing.value) return
+  isDrawing.value = true
   resetAutopicked()
   isRoundFinished.value = true
   let count = 0
 
   const interval = setInterval(() => {
-    kenoAutopick(number, 'mini')
+    kenoAutopick(number, gameType)
     count++
 
     if (count >= number) {
       clearInterval(interval)
+      isDrawing.value = false
     }
   }, 10)
   displayMatching.value = false
-}
-
-function autopickNumberSelected(number: number) {
-  startAutoPick(number)
 }
 
 function resetRound() {
@@ -204,6 +207,11 @@ function resetGame() {
   gameStore.resetGame()
 }
 
+function setSelectedNumbers(numbers: number[]) {
+  miniGridSelectedNumbers.value = numbers
+  displayMatching.value = false
+}
+
 function directToHome() {
   router.push('/home')
 }
@@ -212,21 +220,22 @@ function directToWallet() {
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'mini'
+      redirect: 'classic'
     }
   })
 }
+
 function displayResult() {
   setTimeout(() => {
     calculatePayout()
     showModal.value = true
-  }, 500)
+  }, 150)
   showModal.value = false
 }
 </script>
 
 <style scoped>
-.mini-page {
+.classic-page {
   min-height: 100vh;
   width: 100%;
   background-image: url('@/assets/game-background.png');
@@ -245,16 +254,16 @@ function displayResult() {
   background: transparent;
 }
 
-.el-alert {
-  position: absolute;
-  top: 0;
-  width: fit-content;
-}
-
 .el-main {
   display: grid;
   place-items: center;
   background: transparent;
+  flex: 1;
+}
+
+.drawn-numbers {
+  display: flex;
+  margin-block: 10px;
 }
 
 .grid-paytable-container {
@@ -267,19 +276,6 @@ function displayResult() {
   gap: 10px;
 }
 
-.background {
-  height: 100vh;
-  width: 100%;
-  align-content: center;
-  background-image: url('src/assets/game-background.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-.autopick {
-  height: 100%;
-}
 
 .bounce-enter-active {
   animation: bounce-in 0.4s;
