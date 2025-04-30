@@ -125,6 +125,7 @@ onMounted(() => {
 
 
 <style scoped>
+
 .autopick-container {
   min-width: 70px;
   max-width: 80px;
@@ -138,7 +139,7 @@ onMounted(() => {
   border-radius: 8px 10px 0 0;
 
   width: 100%;
-  height: 360px;
+  height: 300px;
 
 
   overflow: scroll;
@@ -169,13 +170,13 @@ onMounted(() => {
   width: 100%;
   user-select: none;
   flex: 0 0 auto;
-  height: 72px;
+  height: 60px;
 }
 
 .filler {
   /* border-bottom: 0.5px solid red;
   border-top: 0.5px solid red; */
-  height: 72px;
+  height: 60px;
   flex: 0 0 auto;
   width: 100%;
 }
@@ -233,11 +234,11 @@ onMounted(() => {
   background: linear-gradient(
     0deg,
     rgb(83, 45, 136) 0%,
-    rgb(83, 45, 136, 0.6) 35%,
+    rgb(83, 45, 136, 0.7) 30%,
     rgba(132, 108, 207, 0.4) 45%,
     rgba(133, 108, 207, 0) 50%,
-    rgba(133, 108, 207, 0.5) 55%,
-    rgba(83, 45, 136, 0.6) 65%,
+    rgba(133, 108, 207, 0.4) 55%,
+    rgba(83, 45, 136, 0.7) 70%,
     rgb(83, 45, 136) 100%
   );
   border: 5px solid #e7cfff;
@@ -246,11 +247,16 @@ onMounted(() => {
   left: 0;
   top: 0;
   right: 0;
-  bottom: calc(100% - 360px);
+  bottom: calc(100% - 300px);
   pointer-events: none;
 
   display: flex;
   align-items: center;
 }
+
+/* .gradient div {
+  width: 100%;
+  border: 1px solid green;
+} */
 
 </style>
