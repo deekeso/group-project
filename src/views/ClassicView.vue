@@ -7,37 +7,18 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable
-          kenoType="classic"
-          :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-          style="padding-bottom: 24px"
-        />
+        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
         <div class="grid-sidebtn-container">
-          <ClassicGrid
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable['classic'].length"
-            :game-is-drawing="isDrawing"
-          />
+          <ClassicGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound" />
+          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
+            :max-number="payTable['classic'].length" :game-is-drawing="isDrawing" />
         </div>
 
-        <GameButtons
-          @playGame="startDraw"
-          :game-is-drawing="isDrawing"
-          :disabled="selectedNumbers.length < 1"
-        />
-        <Transition name="bounce"
-          ><WithWin
-            v-if="result === 'win' && showModal"
-            :winValue="winnings"
-            @close="showModal = false"
-        /></Transition>
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
+        <Transition name="bounce">
+          <WithWin v-if="result === 'win' && showModal" :winValue="winnings" @close="showModal = false" />
+        </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
     </el-main>
@@ -66,6 +47,9 @@ import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
 import TheLegend from '@/components/TheLegend.vue'
 
+import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
+import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
+
 const router = useRouter()
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
@@ -86,13 +70,47 @@ const showModal = ref(false)
 gameStore.setLoseStreakEffect(() => {
   alert("You lost 20 times. Here's a free spin!")
 })
+async function playSoundEffect(i: number, soundEffect: string) {
+  console.log(i)
+    const response = await fetch(soundEffect);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+
+    source.connect(audioContext.destination);
+    source.start()
+  }
+gameStore.setMatchCallback((i) => {
+  playSoundEffect(i, matchSoundEffect)
+})
 //
 provide(gameIsDrawingKey, readonly(isDrawing))
 // provide(isAutopickingKey, readonly(isAutopicking))
 
 useSyncGameMode('classic')
 
-function startDraw() {
+const audioContext = new window.AudioContext()
+const soundEffect = new Audio(drawSoundEffect)
+// soundEffect.play()
+const track = audioContext.createMediaElementSource(soundEffect)
+const biquadFilter = audioContext.createBiquadFilter()
+biquadFilter.type = 'peaking'
+biquadFilter.frequency.value = 1000
+biquadFilter.gain.value = 10
+
+track.connect(biquadFilter)
+biquadFilter.connect(audioContext.destination)
+
+// function changePitch(frequency: number) {
+//   biquadFilter.frequency.value = frequency
+// }
+
+
+
+async function startDraw() {
   // Check balance before playing
   if (walletStore.balance < gameStore.wager) {
     ElNotification({
@@ -114,10 +132,23 @@ function startDraw() {
   isDrawing.value = true
   let count = 0
 
+  async function playSoundEffect(i: number, soundEffect: string) {
+    const response = await fetch(soundEffect);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+
+    source.connect(audioContext.destination);
+    source.start()
+  }
+  
   const interval = setInterval(() => {
     classicKenoDraw()
+    playSoundEffect(count, drawSoundEffect)
     count++
-
     if (count >= 20 || drawnNumbers.value.length >= 49) {
       clearInterval(interval)
       isDrawing.value = false
@@ -211,14 +242,17 @@ function displayResult() {
   background: transparent;
   flex: 1;
 }
+
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
 }
+
 .grid-paytable-container {
   width: fit-content;
   margin: 0 auto;
 }
+
 .grid-sidebtn-container {
   display: flex;
   gap: 10px;
@@ -228,16 +262,20 @@ function displayResult() {
 .bounce-enter-active {
   animation: bounce-in 0.4s;
 }
+
 .bounce-leave-active {
   animation: bounce-in 0.4s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(1);
   }
