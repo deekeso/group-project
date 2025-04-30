@@ -138,7 +138,7 @@ onMounted(() => {
   border-radius: 8px 10px 0 0;
 
   width: 100%;
-  height: 360px;
+  height: 300px;
 
 
   overflow: scroll;
@@ -233,11 +233,11 @@ onMounted(() => {
   background: linear-gradient(
     0deg,
     rgb(83, 45, 136) 0%,
-    rgb(83, 45, 136, 0.6) 35%,
+    rgb(83, 45, 136, 0.3) 35%,
     rgba(132, 108, 207, 0.4) 45%,
     rgba(133, 108, 207, 0) 50%,
     rgba(133, 108, 207, 0.5) 55%,
-    rgba(83, 45, 136, 0.6) 65%,
+    rgba(83, 45, 136, 0.3) 65%,
     rgb(83, 45, 136) 100%
   );
   border: 5px solid #e7cfff;
@@ -246,7 +246,7 @@ onMounted(() => {
   left: 0;
   top: 0;
   right: 0;
-  bottom: calc(100% - 360px);
+  bottom: calc(100% - 300px);
   pointer-events: none;
 
   display: flex;
