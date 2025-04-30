@@ -81,7 +81,6 @@ track.connect(biquadFilter)
 biquadFilter.connect(audioContext.destination)
 
 async function playSoundEffect(i: number, soundEffect: string) {
-  console.log(i)
   const response = await fetch(soundEffect);
   const arrayBuffer = await response.arrayBuffer();
   const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
