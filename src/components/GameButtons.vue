@@ -229,12 +229,12 @@ function halfWager() {
   border-radius: 100px;
   flex: 1;
   padding-block: 0;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
   overflow: hidden;
   border: 4px solid #ffe387;
+  position: relative;
 }
 
 .wager-btn {
@@ -272,8 +272,12 @@ function halfWager() {
 }
 .wager-txt {
   position: absolute;
-  transform: translateX(150px);
-  user-select: none;
+  width: 100%;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+  pointer-events: none;
 }
 
 .wager-icon {
@@ -281,23 +285,22 @@ function halfWager() {
   height: 1.2rem;
 }
 input[type='range'] {
-  margin: auto;
   -webkit-appearance: none;
   position: relative;
   overflow: hidden;
-  height: 40px;
-  width: 340px;
   cursor: pointer;
+  width: 400px;
   border-radius: 0; /* iOS */
+  flex: 1;
 }
 ::-webkit-slider-runnable-track {
   background: #f8ab00;
 }
 ::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 0px; /* 1 */
+  width: 0px;
   height: 40px;
-  box-shadow: -200px 0 0 200px #c28400; /* 2 */
-  border: 4px solid #fff;
+  box-shadow: -400px 0 0 400px #c28400;
+  border: 4px solid white;
 }
 </style>
