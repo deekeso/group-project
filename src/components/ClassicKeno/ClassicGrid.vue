@@ -22,11 +22,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
 const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
+const isDrawing = useGameDrawing()
 
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
@@ -39,6 +41,7 @@ const { isRoundFinished } = defineProps<{
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
+  if (isDrawing) return
   if (isRoundFinished) {
     matchedNumbers.value = []
     drawnNumbers.value = []

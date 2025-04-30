@@ -11,6 +11,7 @@
             matchedNumbers.includes(number) ? 'matched' :
             drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
             selectedNumbers.includes(number) ? 'selected' : '',
+            isDrawing ? 'disabled' : ''
           ]"
           @click="toggleNumber(number)"
         >
@@ -22,11 +23,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
 const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
+const isDrawing = useGameDrawing()
 
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
@@ -39,6 +42,7 @@ const { isRoundFinished } = defineProps<{
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
+  if (isDrawing) return
   if (isRoundFinished) {
     matchedNumbers.value = []
     drawnNumbers.value = []
@@ -108,5 +112,8 @@ function toggleNumber(number: number): void {
 .cell.missed {
   background: #ff7779;
   color: #4b0405;
+}
+.disabled {
+  cursor: not-allowed;
 }
 </style>
