@@ -1,7 +1,19 @@
 <template>
   <el-container class="mini-page">
+    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
+      <span>
+        You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+      </span>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
+          <el-button type="primary" @click="directToHome">Yes, take me home</el-button>
+        </div>
+      </template>
+    </el-dialog>
     <el-header>
-      <HomeButton @home="directToHome" />
+      <HomeButton @home="confirmExitDialogVisible = true" />
       <UserBalance @wallet="directToWallet" />
     </el-header>
     <el-main>
@@ -77,9 +89,14 @@ const isRoundFinished = ref(false)
 const errorMessage = ref('')
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
+const confirmExitDialogVisible = ref(false)
 
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
 const showModal = ref(false)
+
+gameStore.setLoseStreakEffect(() => {
+  alert("You lost 20 times. Here's a free spin!")
+})
 
 onBeforeMount(() => {
   gameStore.setGameMode('mini')
@@ -104,7 +121,6 @@ function startDraw() {
   errorMessage.value = '' // Clear previous error if any
 
   resetDraw()
-  gameStore.isPlayingToggle()
   displayMatching.value = true
 
   if (isDrawing.value || drawnNumbers.value.length >= 49) return

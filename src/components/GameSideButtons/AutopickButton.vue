@@ -10,21 +10,21 @@
         cursor: isDrawing ? 'not-allowed' : 'pointer',
       }"
     >
-      <div class="number filler" :style="{ cursor: 'not-allowed' }"></div>
-
       <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
-        <div
-        v-for="number in numbers"
-        :key="number"
-        :class="['number', { selected: number === selectedNumber }]" <-- This one. Renders 2 times for some reason
-        @click="scrollToNumber(number)"
-        @scroll="onScroll"
-        ref="numberRefs">
-
-        Did not explore this as we will not be using the .selected class
-        The autopick container will also have a gradient to indicate the center (selected item),
-        which makes this bug invisible.
+      <div
+      v-for="number in numbers"
+      :key="number"
+      :class="['number', { selected: number === selectedNumber }]" <-- This one. Renders 2 times for some reason
+      @click="scrollToNumber(number)"
+      @scroll="onScroll"
+      ref="numberRefs">
+      
+      Did not explore this as we will not be using the .selected class
+      The autopick container will also have a gradient to indicate the center (selected item),
+      which makes this bug invisible.
       >-->
+      <div class="filler"></div>
+      <div class="filler"></div>
       <div
         v-for="number in numbers"
         :key="number"
@@ -33,9 +33,10 @@
         @scroll="detectCenteredNumber"
         ref="numberRefs"
       >
-        {{ number }}
+        <span>{{ number }}</span>
       </div>
-      <div class="number filler"></div>
+      <div class="filler"></div>
+      <div class="filler"></div>
     </div>
     <button
       class="autopick-btn"
@@ -63,7 +64,6 @@ const emit = defineEmits<{
 const numbers = ref<number[]>(Array.from({ length: maxNumber }, (_, i) => i + 1))
 const selectedNumber = ref<number>(1)
 const numberRefs = ref<(HTMLElement | null)[]>([])
-
 // Function to select a centered or clicked number
 const selectNumber = (number: number | null) => {
   if (number !== null) {
@@ -114,12 +114,13 @@ const detectCenteredNumber = () => {
 
 // Scroll a clicked number to the center
 const scrollToNumber = (number: number) => {
+  console.log(number)
   // Check [Comment 1] above. Because of the rendering bug, i had to use number - 1
   // Will not explore for now as I have other things to do but if you encounter this,
   // try exploring it.
   const targetElement = numberRefs.value[number - 1]
   if (targetElement) {
-    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' })
     selectNumber(number)
   }
 }
@@ -147,14 +148,13 @@ onMounted(() => {
   width: 100%;
   height: 300px;
 
-  overflow: auto;
+  overflow: scroll;
   scroll-snap-type: y mandatory;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  --scroll-gap: 5px;
   padding: 0 0;
 
   /* Hide scrollbar for IE, Edge, and Firefox */
@@ -168,23 +168,29 @@ onMounted(() => {
 }
 
 .number {
-  font-size: 2rem;
-  color: #ffff;
-  font-weight: 600;
-  height: 50px;
   scroll-snap-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 100px;
   width: 100%;
   user-select: none;
+  flex: 0 0 auto;
+  height: 60px;
 }
 
-.number .filler {
-  height: 50px; /* Match the size of number elements */
-  scroll-snap-align: start; /* Align to prevent selection */
+.filler {
+  /* border-bottom: 0.5px solid red;
+  border-top: 0.5px solid red; */
+  height: 60px;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.number span {
+  font-size: 2rem;
+  color: #ffff;
+  font-weight: 600;
 }
 
 .selected {
@@ -235,11 +241,13 @@ onMounted(() => {
   position: absolute;
   background: linear-gradient(
     0deg,
-    rgba(132, 108, 207, 1) 0%,
-    rgba(132, 108, 207, 0.5) 25%,
+    rgb(83, 45, 136) 0%,
+    rgb(83, 45, 136, 0.7) 30%,
+    rgba(132, 108, 207, 0.4) 45%,
     rgba(133, 108, 207, 0) 50%,
-    rgba(133, 108, 207, 0.5) 75%,
-    rgba(132, 108, 207, 1) 100%
+    rgba(133, 108, 207, 0.4) 55%,
+    rgba(83, 45, 136, 0.7) 70%,
+    rgb(83, 45, 136) 100%
   );
   border: 5px solid #e7cfff;
   border-bottom: none;
@@ -249,5 +257,13 @@ onMounted(() => {
   right: 0;
   bottom: calc(100% - 300px);
   pointer-events: none;
+
+  display: flex;
+  align-items: center;
 }
+
+/* .gradient div {
+  width: 100%;
+  border: 1px solid green;
+} */
 </style>

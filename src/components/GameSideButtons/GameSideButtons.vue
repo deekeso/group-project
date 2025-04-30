@@ -24,7 +24,7 @@ const emit = defineEmits<{
 .side-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px ;
 }
 .clear-btn {
   flex: 1;

@@ -189,10 +189,7 @@ const authStore = useAuthStore()
 }
 
 .userbal-button .button-container {
-  width: 150px;
-  justify-content: center;
-  align-items: center;
-  height: 35px;
+  height: 38px;
 }
 
 ::v-deep(.el-dialog__header) {

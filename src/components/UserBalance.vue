@@ -4,10 +4,10 @@
     @click="$emit('wallet')"
     :title="`Go to wallet.\nRemaining balance: ₱${balance}`"
   >
-    <el-icon size="25" color="black">
+    <el-icon size="40" color="black">
       <WalletFilled />
     </el-icon>
-    ₱{{ balance }}
+    <span class="balance-txt">₱{{ balance }}</span>
   </button>
 </template>
 
@@ -22,7 +22,7 @@ const balance = computed(() => wallet.balance)
 
 <style scoped>
 .button-container {
-  background: #ffffff;
+  background: #f8ab00;
   border-radius: 100px;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -32,7 +32,7 @@ const balance = computed(() => wallet.balance)
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
   transition: all 100ms;
 }
 .button-container:hover {
@@ -50,5 +50,6 @@ const balance = computed(() => wallet.balance)
   color: black;
   font-size: 1.2rem;
   margin-left: 20px;
+  font-weight: 700;
 }
 </style>
