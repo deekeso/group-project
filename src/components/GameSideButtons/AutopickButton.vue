@@ -81,33 +81,7 @@ const debounce = (func: Function, delay: number) => {
   }
 }
 
-onMounted(() => {
-  const container = document.querySelector('.gradient') as HTMLElement
-  const containerRect = container.getBoundingClientRect()
-  const centerY = containerRect.top + containerRect.height / 2
-
-  numberRefs.value.forEach((numberRef, index) => {
-    if (numberRef) {
-      const rect = numberRef.getBoundingClientRect()
-      let distance = (rect.top + rect.height / 2 - centerY)
-
-      let min = -150
-      let max = 150
-
-      
-      let percent = 2 * ((distance - min)/(max - min)) - 1
-      if (percent > 1) percent = 1
-      if (percent < -1) percent = -1
-
-      let scalePercent = Math.abs(percent)
-      let angle = Math.max(-40, Math.min(percent * -90, 40))
-      
-      numberRef.style = `transform: scale(${1.45 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
-    }
-  })
-})
-
-const scrollEvent = () => {
+function applyWheelEffect() {
   const container = document.querySelector('.gradient') as HTMLElement
   const containerRect = container.getBoundingClientRect()
   const centerY = containerRect.top + containerRect.height / 2
@@ -132,6 +106,8 @@ const scrollEvent = () => {
     }
   })
 }
+
+onMounted(applyWheelEffect)
 
 // Scroll logic to detect the center element
 const detectCenteredNumber = () => {
@@ -181,7 +157,7 @@ const scrollToNumber = (number: number) => {
 onMounted(() => {
   const container = document.querySelector('.number-container') as HTMLElement
   container.addEventListener('scroll', debounce(detectCenteredNumber, 200)) // Adjust delay as needed
-  container.addEventListener('scroll', scrollEvent) // Adjust delay as needed
+  container.addEventListener('scroll', applyWheelEffect) // Adjust delay as needed
 })
 </script>
 
