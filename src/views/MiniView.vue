@@ -1,7 +1,19 @@
 <template>
   <el-container class="mini-page">
+    <el-dialog v-model="confirmExitDialogVisible" title="Keep the streak alive?" width="500" align-center>
+      <span>
+        83% of gamblers quit right before hitting the jackpot. Stick around to see if you're the exception!
+      </span>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="directToHome">No I don't want that jackpot!</el-button>
+          <el-button type="primary" @click="confirmExitDialogVisible = false">Yes, let's keep playing!</el-button>
+        </div>
+      </template>
+    </el-dialog>
     <el-header>
-      <HomeButton @home="directToHome" />
+      <HomeButton @home="confirmExitDialogVisible = true" />
       <UserBalance @wallet="directToWallet" />
     </el-header>
     <el-main>
@@ -77,6 +89,7 @@ const isRoundFinished = ref(false)
 const errorMessage = ref('')
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
+const confirmExitDialogVisible = ref(false)
 
 const { calculatePayout, evaluateGame } = useKenoResult('mini')
 const showModal = ref(false)
