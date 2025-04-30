@@ -3,8 +3,13 @@
     <div class="gradient">
       <div></div>
     </div>
-    <div class="number-container" :style="{ pointerEvents: isDrawing ? 'none' : 'auto', cursor: isDrawing ? 'not-allowed' : 'pointer' }">
-      
+    <div
+      class="number-container"
+      :style="{
+        pointerEvents: isDrawing ? 'none' : 'auto',
+        cursor: isDrawing ? 'not-allowed' : 'pointer',
+      }"
+    >
       <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
       <div
       v-for="number in numbers"
@@ -33,14 +38,18 @@
       <div class="filler"></div>
       <div class="filler"></div>
     </div>
-    <button class="autopick-btn" @click="emit('numberSelected', selectedNumber)" :disabled="isDrawing">
+    <button
+      class="autopick-btn"
+      @click="emit('numberSelected', selectedNumber)"
+      :disabled="isDrawing"
+    >
       <img src="../../assets/Shuffle.png" alt="shuffle icon" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useGameDrawing } from '@/composables/useGameDrawing';
+import { useGameDrawing } from '@/composables/useGameDrawing'
 import { ref, nextTick, onMounted } from 'vue'
 const { maxNumber } = defineProps<{
   maxNumber: number
@@ -123,9 +132,7 @@ onMounted(() => {
 })
 </script>
 
-
 <style scoped>
-
 .autopick-container {
   min-width: 70px;
   max-width: 80px;
@@ -140,7 +147,6 @@ onMounted(() => {
 
   width: 100%;
   height: 300px;
-
 
   overflow: scroll;
   scroll-snap-type: y mandatory;
@@ -166,7 +172,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   width: 100%;
   user-select: none;
   flex: 0 0 auto;
@@ -187,7 +193,6 @@ onMounted(() => {
   font-weight: 600;
 }
 
-
 .selected {
   background-color: #d4a0ff;
   font-weight: bold;
@@ -202,15 +207,18 @@ onMounted(() => {
   border-radius: 0px 0px 10px 10px;
   cursor: pointer;
   user-select: none;
-  transition: transform 0ms, opacity 1000ms, background 300ms;
+  transition:
+    transform 0ms,
+    opacity 1000ms,
+    background 300ms;
 }
 
 .autopick-btn img {
-    -webkit-user-drag: none;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 .autopick-btn:enabled:hover:active {
@@ -258,5 +266,4 @@ onMounted(() => {
   width: 100%;
   border: 1px solid green;
 } */
-
 </style>
