@@ -289,7 +289,7 @@ input[type='range'] {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  width: 400px;
+  width: 300px;
   border-radius: 0; /* iOS */
   flex: 1;
 }
@@ -300,7 +300,7 @@ input[type='range'] {
   -webkit-appearance: none;
   width: 0px;
   height: 40px;
-  box-shadow: -400px 0 0 400px #c28400;
+  box-shadow: -300px 0 0 300px #c28400;
   border: 4px solid white;
 }
 </style>
