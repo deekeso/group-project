@@ -29,8 +29,7 @@ import HomeButton from '@/components/HomeButton.vue'
 import tutorial_1 from '../assets/tutorial_1.png'
 import tutorial_2 from '../assets/tutorial_2.png'
 import tutorial_3_4 from '../assets/tutorial_3_4.png'
-import tutorial_5 from '../assets/tutorial_5.png'
-import tutorial_6 from '../assets/tutorial_6.png'
+import tutorial_5_6 from '../assets/tutorial_5_6.png'
 import tutorial_7 from '../assets/tutorial_7.png'
 
 import { useRouter } from 'vue-router'
@@ -63,12 +62,12 @@ const cards = [
   },
   {
     title: 'The game begins',
-    image: tutorial_5,
+    image: tutorial_5_6,
     body: "Once you have entered your wager, it's time to start the game. Simply press the 'Play' button to confirm your choices and begin. The system will then process your selections, and you'll see the results of the draw shortly after.",
   },
   {
     title: 'Matching Numbers',
-    image: tutorial_6,
+    image: tutorial_5_6,
     body: 'After the draw, review the results to see if any of your chosen Keno numbers match the numbers drawn. If you have matching numbers, congratulations! The system will calculate your winnings based on your wager, the number of hits, and the payout table.',
   },
   {
