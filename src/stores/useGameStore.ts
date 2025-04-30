@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { computed, ref, toRaw, watch } from 'vue'
 
 export type GameMode = 'classic' | 'mini'
 
@@ -11,6 +11,7 @@ export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
+  const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
   const wager = ref<number>(MIN_WAGER)
   const bet = ref<number>(1)
   const winnings = ref<number>(0)
@@ -19,6 +20,7 @@ export const useGameStore = defineStore('game', () => {
   const loseStreak = ref(0)
 
   let loseStreakCallback: () => void = function() {}
+  let matchCallback: (i: number) => void = function() {}
 
   // autosave to local storage
   watch(
@@ -39,6 +41,14 @@ export const useGameStore = defineStore('game', () => {
       )
     },
     { deep: true },
+  )
+
+  watch(
+    watchedMatchedNumbers,
+    (newVal, oldVal) => {
+      if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+    },
+    { deep: true }
   )
 
   // load from local storage
@@ -125,8 +135,12 @@ export const useGameStore = defineStore('game', () => {
     result.value = status
   }
 
-  function setLoseStreakEffect(callback: () => void) {
+  function setLoseStreakCallback(callback: () => void) {
     loseStreakCallback = callback
+  }
+
+  function setMatchCallback(callback: (i: number) => void) {
+    matchCallback = callback
   }
 
   function resetWinnings() {
@@ -156,6 +170,7 @@ export const useGameStore = defineStore('game', () => {
     addWinnings,
     setResult,
     resetWinnings,
-    setLoseStreakEffect
+    setLoseStreakEffect: setLoseStreakCallback,
+    setMatchCallback
   }
 })
