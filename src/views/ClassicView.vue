@@ -70,31 +70,9 @@ const showModal = ref(false)
 gameStore.setLoseStreakEffect(() => {
   alert("You lost 20 times. Here's a free spin!")
 })
-async function playSoundEffect(i: number, soundEffect: string) {
-  console.log(i)
-    const response = await fetch(soundEffect);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-
-    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
-
-    source.connect(audioContext.destination);
-    source.start()
-  }
-gameStore.setMatchCallback((i) => {
-  playSoundEffect(i, matchSoundEffect)
-})
-//
-provide(gameIsDrawingKey, readonly(isDrawing))
-// provide(isAutopickingKey, readonly(isAutopicking))
-
-useSyncGameMode('classic')
 
 const audioContext = new window.AudioContext()
 const soundEffect = new Audio(drawSoundEffect)
-// soundEffect.play()
 const track = audioContext.createMediaElementSource(soundEffect)
 const biquadFilter = audioContext.createBiquadFilter()
 biquadFilter.type = 'peaking'
@@ -103,6 +81,29 @@ biquadFilter.gain.value = 10
 
 track.connect(biquadFilter)
 biquadFilter.connect(audioContext.destination)
+
+async function playSoundEffect(i: number, soundEffect: string) {
+  console.log(i)
+  const response = await fetch(soundEffect);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  const source = audioContext.createBufferSource();
+  source.buffer = audioBuffer;
+
+  source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+
+  source.connect(audioContext.destination);
+  source.start()
+}
+
+gameStore.setMatchCallback((i) => {
+  playSoundEffect(i, matchSoundEffect)
+})
+//
+provide(gameIsDrawingKey, readonly(isDrawing))
+// provide(isAutopickingKey, readonly(isAutopicking))
+
+useSyncGameMode('classic')
 
 // function changePitch(frequency: number) {
 //   biquadFilter.frequency.value = frequency
@@ -144,7 +145,7 @@ async function startDraw() {
     source.connect(audioContext.destination);
     source.start()
   }
-  
+
   const interval = setInterval(() => {
     classicKenoDraw()
     playSoundEffect(count, drawSoundEffect)

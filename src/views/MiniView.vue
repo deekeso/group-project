@@ -7,38 +7,19 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable
-          kenoType="mini"
-          :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-          style="padding-bottom: 24px"
-        />
+        <PayTable kenoType="mini" :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
         <div class="grid-sidebtn-container">
-          <MiniGrid
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
+          <MiniGrid @number-selected="setSelectedNumbers" :is-round-finished @reset-round="resetRound" />
           <!-- TODO: Implement autopick logic -->
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable['mini'].length"
-            :game-is-drawing="isDrawing"
-          />
+          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
+            :max-number="payTable['mini'].length" :game-is-drawing="isDrawing" />
         </div>
 
-        <GameButtons
-          @playGame="startDraw"
-          :game-is-drawing="isDrawing"
-          :disabled="selectedNumbers.length < 1"
-        />
-        <Transition name="bounce"
-          ><WithWin
-            v-if="result === 'win' && showModal"
-            :winValue="winnings"
-            @close="showModal = false"
-        /></Transition>
+        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
+        <Transition name="bounce">
+          <WithWin v-if="result === 'win' && showModal" :winValue="winnings" @close="showModal = false" />
+        </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
     </el-main>
@@ -67,6 +48,9 @@ import payTable from '@/components/PayTable/payTable.json'
 import { gameIsDrawingKey } from '@/composables/keys'
 import TheLegend from '@/components/TheLegend.vue'
 
+import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
+import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
+
 const router = useRouter()
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
@@ -83,6 +67,35 @@ const showModal = ref(false)
 
 gameStore.setLoseStreakEffect(() => {
   alert("You lost 20 times. Here's a free spin!")
+})
+
+const audioContext = new window.AudioContext()
+const soundEffect = new Audio(drawSoundEffect)
+const track = audioContext.createMediaElementSource(soundEffect)
+const biquadFilter = audioContext.createBiquadFilter()
+biquadFilter.type = 'peaking'
+biquadFilter.frequency.value = 1000
+biquadFilter.gain.value = 10
+
+track.connect(biquadFilter)
+biquadFilter.connect(audioContext.destination)
+
+async function playSoundEffect(i: number, soundEffect: string) {
+  console.log(i)
+  const response = await fetch(soundEffect);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  const source = audioContext.createBufferSource();
+  source.buffer = audioBuffer;
+
+  source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+
+  source.connect(audioContext.destination);
+  source.start()
+}
+
+gameStore.setMatchCallback((i) => {
+  playSoundEffect(i, matchSoundEffect)
 })
 
 onBeforeMount(() => {
@@ -115,8 +128,22 @@ function startDraw() {
   isDrawing.value = true
   let count = 0
 
+  async function playSoundEffect(i: number, soundEffect: string) {
+    const response = await fetch(soundEffect);
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+
+    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+
+    source.connect(audioContext.destination);
+    source.start()
+  }
+
   const interval = setInterval(() => {
     miniKenoDraw()
+    playSoundEffect(count, drawSoundEffect)
     count++
 
     if (count >= 10 || drawnNumbers.value.length >= 49) {
@@ -205,6 +232,7 @@ function displayResult() {
   padding-top: 20px;
   background: transparent;
 }
+
 .el-alert {
   position: absolute;
   top: 0;
@@ -216,14 +244,17 @@ function displayResult() {
   place-items: center;
   background: transparent;
 }
+
 .grid-paytable-container {
   width: fit-content;
   margin: 0 auto;
 }
+
 .grid-sidebtn-container {
   display: flex;
   gap: 10px;
 }
+
 .background {
   height: 100vh;
   width: 100%;
@@ -233,6 +264,7 @@ function displayResult() {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
 .autopick {
   height: 100%;
 }
@@ -240,16 +272,20 @@ function displayResult() {
 .bounce-enter-active {
   animation: bounce-in 0.4s;
 }
+
 .bounce-leave-active {
   animation: bounce-in 0.4s reverse;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
   }
+
   50% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(1);
   }
