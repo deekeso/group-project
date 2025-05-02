@@ -11,7 +11,7 @@
             matchedNumbers.includes(number) ? 'matched' :
             drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
             selectedNumbers.includes(number) ? 'selected' : '',
-            isDrawing ? 'disabled' : ''
+            isDrawing ? 'disabled' : '',
           ]"
           @click="toggleNumber(number)"
         >
@@ -95,7 +95,7 @@ function toggleNumber(number: number): void {
   user-select: none;
 }
 
-.cell:hover {
+.cell:not(.disabled):not(.matched):not(.missed):hover {
   background-color: hsl(270, 68%, 69%);
 }
 
