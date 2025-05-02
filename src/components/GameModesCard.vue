@@ -149,6 +149,11 @@ function directToTutorial() {
 .el-button:hover {
   box-shadow: 0px 0px 5px 2px #f8ab00;
 }
+
+.tutorial-btn:hover .el-button {
+  box-shadow: 0 0.5em 0.5em -0.4em #fa812f;
+  transform: translateY(-0.25em);
+}
 .play-btn .el-button {
   display: flex;
   margin-left: auto;
