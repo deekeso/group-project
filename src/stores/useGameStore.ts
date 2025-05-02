@@ -19,8 +19,8 @@ export const useGameStore = defineStore('game', () => {
   const mode = ref<GameMode>('classic') // NEW: game mode
   const loseStreak = ref(0)
 
-  let loseStreakCallback: () => void = function() {}
-  let matchCallback: (i: number) => void = function() {}
+  let loseStreakCallback: () => void = function () {}
+  let matchCallback: (i: number) => void = function () {}
 
   // autosave to local storage
   watch(
@@ -36,7 +36,7 @@ export const useGameStore = defineStore('game', () => {
           winnings: winnings.value,
           result: result.value,
           mode: mode.value,
-          loseStreak: loseStreak.value
+          loseStreak: loseStreak.value,
         }),
       )
     },
@@ -48,7 +48,7 @@ export const useGameStore = defineStore('game', () => {
     (newVal, oldVal) => {
       if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
     },
-    { deep: true }
+    { deep: true },
   )
 
   // load from local storage
@@ -116,7 +116,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function addWinnings(amount: number) {
-    winnings.value += amount
+    winnings.value = amount
   }
 
   function setResult(status: 'win' | 'lose') {
@@ -127,7 +127,7 @@ export const useGameStore = defineStore('game', () => {
         loseStreakCallback()
       }
     }
-    
+
     if (status === 'win') {
       loseStreak.value = 0
     }
@@ -171,6 +171,6 @@ export const useGameStore = defineStore('game', () => {
     setResult,
     resetWinnings,
     setLoseStreakEffect: setLoseStreakCallback,
-    setMatchCallback
+    setMatchCallback,
   }
 })
