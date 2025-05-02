@@ -90,7 +90,7 @@ import { useRoute, useRouter } from 'vue-router'
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
-import { GameType } from '@/types'
+import { GameType, RouteName } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
@@ -236,10 +236,14 @@ function directToHome() {
 }
 
 function directToWallet() {
+  let route = GameType.Classic
+
+  if (gameType === GameType.Mini) route = GameType.Mini
+
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic',
+      redirect: route,
     },
   })
 }
