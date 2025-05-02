@@ -71,6 +71,23 @@
 
   </el-main>
   </el-container>
+  <el-dialog
+  v-model="confirmExitDialogVisible"
+  title="Exit game?"
+  width="500"
+  align-center
+>
+  <span>
+    You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+  </span>
+  <template #footer>
+    <div class="dialog-footer">
+      <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
+      <el-button type="primary" @click="router.push('/home')">Yes, take me home</el-button>
+    </div>
+  </template>
+</el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -89,6 +106,7 @@ const route = useRoute()
 const wallet = useWalletStore()
 const auth = useAuthStore()
 const showConfirmDeposit = ref(false)
+const confirmExitDialogVisible = ref(false)
 
 
 const num = ref<number | null>(null)
@@ -130,7 +148,11 @@ function handleConfirmedDeposit() {
   showConfirmDeposit.value = false
 }
 function directToHome() {
-  router.push('/home')
+  if (route.query['redirect']) {
+    confirmExitDialogVisible.value = true
+  } else {
+    router.push('/home')
+  }
 }
 
 </script>
