@@ -27,10 +27,11 @@
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
-          <GameGrid 
+          <GameGrid
             :game-type="gameType"
-            @number-selected="setSelectedNumbers" 
-            :is-round-finished @reset-round="resetRound" 
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
           />
           <GameSideButtons
             @clear="resetGame"
@@ -229,10 +230,14 @@ function directToHome() {
 }
 
 function directToWallet() {
+  let route = GameType.Classic
+
+  if (gameType === GameType.Mini) route = GameType.Mini
+
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic',
+      redirect: route,
     },
   })
 }
