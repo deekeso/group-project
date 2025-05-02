@@ -61,7 +61,6 @@
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/GameGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
