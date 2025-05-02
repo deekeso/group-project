@@ -27,14 +27,8 @@
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
-          <ClassicGrid
-            v-if="gameType === GameType.Classic"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <MiniGrid
-            v-else-if="gameType === GameType.Mini"
+          <GameGrid
+            :game-type="gameType"
             @number-selected="setSelectedNumbers"
             :is-round-finished
             @reset-round="resetRound"
@@ -67,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
+import ClassicGrid from '@/components/GameGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
@@ -90,8 +84,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import { GameType } from '@/types'
+import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 
 const router = useRouter()
@@ -239,6 +233,10 @@ function directToHome() {
 }
 
 function directToWallet() {
+  let route = GameType.Classic
+
+  if (gameType === GameType.Mini) route = GameType.Mini
+
   router.push({
     name: 'wallet',
     query: {
@@ -263,7 +261,7 @@ function displayResult() {
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: bottom;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -289,12 +287,15 @@ function displayResult() {
 }
 
 .grid-paytable-container {
-  width: fit-content;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .grid-sidebtn-container {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
 
@@ -318,5 +319,41 @@ function displayResult() {
   100% {
     transform: scale(1);
   }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+
+    50% {
+      transform: scale(0.5);
+    }
+
+    100% {
+      transform: scale(0.5);
+    }
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

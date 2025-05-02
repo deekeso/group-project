@@ -137,7 +137,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function addWinnings(amount: number) {
-    winnings.value += amount
+    winnings.value = amount
   }
 
   function setResult(status: 'win' | 'lose') {
