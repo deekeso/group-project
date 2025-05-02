@@ -12,6 +12,7 @@
 
 <style scoped>
 .page-container {
+  transform: scale(0.5);
   position: absolute;
   top: 0;
   left: 0;
