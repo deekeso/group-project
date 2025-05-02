@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import HomeView from '@/views/HomeView.vue'
+import { GameType, RouteName } from '@/types'
+import { useGameStore } from '@/stores/useGameStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,38 +13,43 @@ const router = createRouter({
     },
     {
       path: '/home',
-      name: 'landingpage',
+      name: RouteName.Home,
       component: HomeView,
       meta: { layout: 'full' },
     },
-
-    {
-      path: '/mini-keno',
-      name: 'mini',
-      component: () => import('@/views/MiniView.vue'),
-      meta: { requiresAuth: true },
-    },
     {
       path: '/wallet',
-      name: 'wallet',
+      name: RouteName.Wallet,
       component: () => import('@/views/TheWallet.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/classic-keno',
-      name: 'classic',
-      component: () => import('@/views/ClassicView.vue'),
-      meta: { requiresAuth: true },
+      name: RouteName.ClassicGame,
+      component: () => import('@/views/GameView.vue'),
+      meta: {
+        requiresAuth: true,
+        gameType: GameType.Classic
+      },
+    },
+    {
+      path: '/mini-keno',
+      name: RouteName.MiniGame,
+      component: () => import('@/views/GameView.vue'),
+      meta: {
+        requiresAuth: true,
+        gameType: GameType.Mini
+      },
     },
     {
       path: '/purchase-cards',
-      name: 'purchase',
+      name: RouteName.PurchaseCards,
       component: () => import('@/views/PurchaseView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/tutorial',
-      name: 'tutorial',
+      name: RouteName.Tutorial,
       component: () => import('@/views/TutorialView.vue'),
       meta: { requiresAuth: false },
     },
@@ -51,19 +58,32 @@ const router = createRouter({
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-const authStore = useAuthStore()
+  const authStore = useAuthStore()
 
-//   // Check if route requires auth
-if (to.meta.requiresAuth) {
-if (!authStore.isAuthenticated) {
-//       // Redirect to login with return path
-next({
-path: '/home',
-query: { redirect: to.fullPath },
-})
-return
-}
-}
-next()
+  //   // Check if route requires auth
+  if (to.meta.requiresAuth) {
+    if (!authStore.isAuthenticated) {
+      //       // Redirect to login with return path
+      next({
+        path: '/home',
+        query: { redirect: to.fullPath },
+      })
+      return
+    }
+  }
+
+  // Check if game
+  if (
+    (from.name === RouteName.ClassicGame || from.name === RouteName.MiniGame) && to.name === RouteName.Wallet ||
+    (to.name === RouteName.ClassicGame || to.name === RouteName.MiniGame) && from.name === RouteName.Wallet
+  )
+  {
+    // alert("don't clear")
+  } else {
+    // alert('clear')
+    useGameStore().resetGame()
+  }
+
+  next()
 })
 export default router

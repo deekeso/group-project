@@ -74,15 +74,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import Withdraw from '@/components/Withdraw.vue'
-import { useWalletStore } from '@/stores/wallet'
-import { useAuthStore } from '@/stores/auth'
-import { ElMessage } from 'element-plus'
 import HomeButton from '@/components/HomeButton.vue'
+import Withdraw from '@/components/Withdraw.vue'
 import router from '@/router'
-import { useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useWalletStore } from '@/stores/wallet'
 import { Back } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
