@@ -15,6 +15,7 @@
                 : selectedNumbers.includes(number)
                   ? 'selected'
                   : '',
+            isDrawing ? 'disabled' : '',
           ]"
           @click="toggleNumber(number)"
         >
@@ -26,11 +27,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
 const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
+const isDrawing = useGameDrawing()
 
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
@@ -43,6 +46,7 @@ const { isRoundFinished } = defineProps<{
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
+  if (isDrawing.value) return
   if (isRoundFinished) {
     matchedNumbers.value = []
     drawnNumbers.value = []
@@ -95,8 +99,8 @@ function toggleNumber(number: number): void {
   user-select: none;
 }
 
-.cell:hover {
-  background-color: hsl(270, 68%, 69%);
+.cell:not(.disabled):not(.matched):not(.missed):hover {
+  background-color: #bb78ff;
 }
 
 .cell.selected {
@@ -107,12 +111,7 @@ function toggleNumber(number: number): void {
 .cell.matched {
   background-color: #37eb1f;
   color: #094201;
-  border: 4px solid #37eb1f;
-}
-.cell.matched {
-  background-color: #37eb1f;
-  color: #094201;
-  border: 4px solid #37eb1f;
+  border: 4px solid #094201;
   animation:
     emphasize 0.55s,
     shine 0.55s;
@@ -120,6 +119,9 @@ function toggleNumber(number: number): void {
 .cell.missed {
   background: #ff7779;
   color: #4b0405;
+}
+.disabled {
+  cursor: not-allowed;
 }
 
 @keyframes emphasize {

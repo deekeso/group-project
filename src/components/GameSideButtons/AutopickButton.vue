@@ -30,7 +30,6 @@
         :key="number"
         class="number"
         @click="scrollToNumber(number)"
-        @scroll="detectCenteredNumber"
         ref="numberRefs"
       >
         <span>{{ number }}</span>
@@ -82,8 +81,37 @@ const debounce = (func: Function, delay: number) => {
   }
 }
 
+function applyWheelEffect() {
+  const container = document.querySelector('.gradient') as HTMLElement
+  const containerRect = container.getBoundingClientRect()
+  const centerY = containerRect.top + containerRect.height / 2
+
+  numberRefs.value.forEach((numberRef, index) => {
+    if (numberRef) {
+      const rect = numberRef.getBoundingClientRect()
+      let distance = (rect.top + rect.height / 2 - centerY)
+
+      let min = -150
+      let max = 150
+
+      
+      let percent = 2 * ((distance - min)/(max - min)) - 1
+      if (percent > 1) percent = 1
+      if (percent < -1) percent = -1
+
+      let scalePercent = Math.abs(percent)
+      let angle = Math.max(-40, Math.min(percent * -90, 40))
+      
+      numberRef.style = `transform: scale(${1.45 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
+    }
+  })
+}
+
+onMounted(applyWheelEffect)
+
 // Scroll logic to detect the center element
 const detectCenteredNumber = () => {
+
   nextTick(() => {
     const container = document.querySelector('.number-container') as HTMLElement
     const containerRect = container.getBoundingClientRect()
@@ -96,7 +124,7 @@ const detectCenteredNumber = () => {
       if (numberRef) {
         const rect = numberRef.getBoundingClientRect()
         const distance = Math.abs(rect.top + rect.height / 2 - centerY)
-
+        
         if (distance < closestDistance && numbers.value[index] !== undefined) {
           closestDistance = distance
           closestElement = numberRef
@@ -129,6 +157,7 @@ const scrollToNumber = (number: number) => {
 onMounted(() => {
   const container = document.querySelector('.number-container') as HTMLElement
   container.addEventListener('scroll', debounce(detectCenteredNumber, 200)) // Adjust delay as needed
+  container.addEventListener('scroll', applyWheelEffect) // Adjust delay as needed
 })
 </script>
 
@@ -177,6 +206,7 @@ onMounted(() => {
   user-select: none;
   flex: 0 0 auto;
   height: 60px;
+  transition: all 50ms;
 }
 
 .filler {
@@ -241,13 +271,15 @@ onMounted(() => {
   position: absolute;
   background: linear-gradient(
     0deg,
-    rgb(83, 45, 136) 0%,
+    rgb(37, 20, 59, 0.9) 0%,
+    rgb(83, 45, 136, 0.9) 10%,
     rgb(83, 45, 136, 0.7) 30%,
     rgba(132, 108, 207, 0.4) 45%,
     rgba(133, 108, 207, 0) 50%,
     rgba(133, 108, 207, 0.4) 55%,
     rgba(83, 45, 136, 0.7) 70%,
-    rgb(83, 45, 136) 100%
+    rgb(83, 45, 136, 0.9) 90%,
+    rgb(37, 20, 59, 0.9) 100%
   );
   border: 5px solid #e7cfff;
   border-bottom: none;
@@ -260,6 +292,7 @@ onMounted(() => {
 
   display: flex;
   align-items: center;
+  z-index: 1000px;
 }
 
 /* .gradient div {
