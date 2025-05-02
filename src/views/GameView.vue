@@ -9,7 +9,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
-          <el-button type="primary" @click="directToHome">Yes, take me home</el-button>
+          <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
         </div>
       </template>
     </el-dialog>
@@ -54,13 +54,13 @@
           />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
+        <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
     </el-main>
   </el-container>
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/GameGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
@@ -85,13 +85,15 @@ import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__lase
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
 import { GameType } from '@/types'
 import GameGrid from '@/components/GameGrid.vue'
+import PurchaseCard from '@/components/PurchaseCard.vue'
 
 const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
+  storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -146,7 +148,7 @@ async function startDraw() {
       message: 'Please top up your wallet or adjust your wager.',
       type: 'error',
       position: 'top-right',
-      duration: 3000,
+      duration: 2000,
       showClose: true,
     })
     return
@@ -179,7 +181,7 @@ async function startDraw() {
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    let maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameType === GameType.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
@@ -237,7 +239,7 @@ function directToWallet() {
   router.push({
     name: 'wallet',
     query: {
-      redirect: route,
+      redirect: 'classic',
     },
   })
 }
@@ -248,6 +250,12 @@ function displayResult() {
     showModal.value = true
   }, 150)
   showModal.value = false
+}
+
+function exitGame() {
+  gameStore.resetGame()
+  gameStore.resetPurchase()
+  directToHome()
 }
 </script>
 
