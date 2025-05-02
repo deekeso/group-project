@@ -60,7 +60,7 @@
           />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
-        <PurchaseCard />
+        <PurchaseCard v-if="hasPurchasedCards" />
       </div>
     </el-main>
   </el-container>
@@ -99,7 +99,8 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
+  storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -187,7 +188,7 @@ async function startDraw() {
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    let maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameType === GameType.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false

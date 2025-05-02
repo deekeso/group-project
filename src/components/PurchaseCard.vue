@@ -36,20 +36,20 @@
         </button>
       </div>
     </Transition>
-
-    <button class="select-btn">Select</button>
-    <!-- <button class="select-btn" @click="makePurchase">Select</button> -->
+    <button class="select-btn" @click="makePurchase">Select</button>
   </GameDialog>
 </template>
 
 <script setup lang="ts">
-// import { useGameStore } from '@/stores/useGameStore'
+import { useGameStore } from '@/stores/useGameStore'
 import GameDialog from '../components/GameDialog.vue'
 import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
 import SingleCard from '../components/PurchaseCard/SingleCard.vue'
 import { ref } from 'vue'
+import { storeToRefs } from 'pinia'
 
-// const gameStore = useGameStore()
+const gameStore = useGameStore()
+const { hasPurchasedCards } = storeToRefs(gameStore)
 const selectionMode = ref<'single' | 'multiple'>('single')
 const multipleCounter = ref<number>(2)
 const MIN_NUM = 2
@@ -71,9 +71,10 @@ function incrementCounter() {
   }
 }
 
-// function makePurchase() {
-//   gameStore.makePurchase(selectionMode.value, multipleCounter.value)
-// }
+function makePurchase() {
+  gameStore.makePurchase(selectionMode.value, multipleCounter.value)
+  hasPurchasedCards.value = false
+}
 </script>
 
 <style scoped>
