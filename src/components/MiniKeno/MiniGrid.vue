@@ -42,7 +42,7 @@ const { isRoundFinished } = defineProps<{
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
-  if (isDrawing) return
+  if (isDrawing.value) return
   if (isRoundFinished) {
     matchedNumbers.value = []
     drawnNumbers.value = []
