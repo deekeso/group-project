@@ -171,12 +171,13 @@ export const useGameStore = defineStore('game', () => {
   function makePurchase(mode: 'single' | 'multiple', number: number) {
     hasPurchasedCards.value = true
     purchaseMode.value = mode
+    numberOfCards.value = mode === 'multiple' ? number : 1
+  }
 
-    if (mode === 'multiple') {
-      numberOfCards.value = number
-    } else {
-      numberOfCards.value = 1
-    }
+  function resetPurchase() {
+    hasPurchasedCards.value = false
+    purchaseMode.value = 'single'
+    numberOfCards.value = 1
   }
 
   return {
@@ -208,5 +209,6 @@ export const useGameStore = defineStore('game', () => {
     setLoseStreakEffect: setLoseStreakCallback,
     setMatchCallback,
     makePurchase,
+    resetPurchase,
   }
 })

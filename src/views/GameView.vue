@@ -253,8 +253,9 @@ function displayResult() {
 }
 
 function exitGame() {
+  gameStore.resetGame()
+  gameStore.resetPurchase()
   directToHome()
-  hasPurchasedCards.value = false
 }
 </script>
 
