@@ -264,43 +264,6 @@ function displayResult() {
   justify-content: space-between;
   padding-top: 20px;
   background: transparent;
-  position: fixed;
-  top: 0;
-}
-
-.header-button{
-  margin-right: 1645px;
-}
-
-
-@media (max-width: 1200px) {
-  .header-button {
-    margin-right: 550px; /* Adjust gap for medium screens */
-  }
-}
-
-@media (max-width: 768px) {
-  .header-button {
-    margin-right: 500px; /* Adjust gap for small screens */
-  }
-}
-
-@media (max-width: 375px) {
-  .header-button {
-    margin-right: 20px; /* Adjust gap for small screens */
-  }
-}
-
-@media (max-width: 540px) {
-  .header-button {
-    margin-right: 270px; /* Adjust gap for extra small screens */
-  }
-}
-
-@media (max-width: 412px) {
-  .header-button {
-    margin-right: 80px; /* Adjust gap for extra small screens */
-  }
 }
 
 .el-main {
