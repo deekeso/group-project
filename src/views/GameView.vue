@@ -9,7 +9,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
-          <el-button type="primary" @click="directToHome">Yes, take me home</el-button>
+          <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
         </div>
       </template>
     </el-dialog>
@@ -54,7 +54,7 @@
           />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
-        <PurchaseCard v-if="hasPurchasedCards" />
+        <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
     </el-main>
   </el-container>
@@ -250,6 +250,11 @@ function displayResult() {
     showModal.value = true
   }, 150)
   showModal.value = false
+}
+
+function exitGame() {
+  directToHome()
+  hasPurchasedCards.value = false
 }
 </script>
 

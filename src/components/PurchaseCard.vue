@@ -73,7 +73,7 @@ function incrementCounter() {
 
 function makePurchase() {
   gameStore.makePurchase(selectionMode.value, multipleCounter.value)
-  hasPurchasedCards.value = false
+  hasPurchasedCards.value = true
 }
 </script>
 
