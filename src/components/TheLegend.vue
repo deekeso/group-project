@@ -20,27 +20,29 @@
 
 <style scoped>
   .legend-container {
-    width: fit-content;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    flex-wrap: wrap;
     margin-bottom: 24px;
     user-select: none;
     border-radius: 8px;
     padding: 4px 6px;
-
+    column-gap: 20px;
+    row-gap: 8px;
   }
 
   .legend {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
     padding: 4px 10px;
     border-radius: 8px;
     height: 40px;
+    max-width: max-content;
   }
 
   .legend span {
@@ -74,5 +76,22 @@
     background: #ff7779;
     color: #4b0405;
   }
+
+  /* Small devices (tablets) */
+  /* @media (max-width: 768px) {
+    .legend {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      height: 40px;
+    }
+
+    .legend span {
+      font-weight: 600;
+    }
+  } */
 
 </style>

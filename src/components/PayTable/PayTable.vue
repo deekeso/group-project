@@ -226,20 +226,6 @@ updatePayTableData()
   text-align: center;
 }
 
-.multiplier-cell,
-.selected-count-cell,
-.multiplier-cell-tight,
-.selected-count-cell-tight,
-.placeholder-cell {
-  width: 100%;
-  padding: 4px 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  border: 2px solid rgba(0, 0, 0, 0);
-}
-
 .hit {
   border: 2px solid greenyellow;
   animation: scaleUpDown 300ms ease-in-out; /* Adjust duration as needed */

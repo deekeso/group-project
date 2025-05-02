@@ -102,7 +102,7 @@ function applyWheelEffect() {
       let scalePercent = Math.abs(percent)
       let angle = Math.max(-40, Math.min(percent * -90, 40))
       
-      numberRef.style = `transform: scale(${1.45 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
+      numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
     }
   })
 }
@@ -163,8 +163,6 @@ onMounted(() => {
 
 <style scoped>
 .autopick-container {
-  min-width: 70px;
-  max-width: 80px;
   width: 100%;
   border-radius: 10px;
   position: relative;

@@ -1,23 +1,17 @@
 <template>
   <div class="keno-grid">
-    <el-card class="container">
+    <div class="container">
       <div class="grid">
-        <div
-          v-for="number in 80"
-          :key="number"
-          class="keno-cell"
-          :class="[
-            'cell',
-            matchedNumbers.includes(number) ? 'matched' :
+        <div v-for="number in 80" :key="number" class="keno-cell" :class="[
+          'cell',
+          matchedNumbers.includes(number) ? 'matched' :
             drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
-            selectedNumbers.includes(number) ? 'selected' : '',
-          ]"
-          @click="toggleNumber(number)"
-        >
+              selectedNumbers.includes(number) ? 'selected' : '',
+        ]" @click="toggleNumber(number)">
           {{ number }}
         </div>
       </div>
-    </el-card>
+    </div>
   </div>
 </template>
 
@@ -58,6 +52,7 @@ function toggleNumber(number: number): void {
 .el-card {
   background-color: transparent;
 }
+
 .el-card:deep(.el-card__body) {
   padding: 0;
 }
@@ -68,12 +63,15 @@ function toggleNumber(number: number): void {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(10, 80px);
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(7, 1fr);
   gap: 5px;
 }
+
 .container {
   border: none;
 }
+
 .keno-cell {
   width: 100%;
   height: 60px;
@@ -100,13 +98,51 @@ function toggleNumber(number: number): void {
   color: #ffffff;
   border: 4px solid #e7cfff;
 }
+
 .cell.matched {
   background-color: #37eb1f;
   color: #094201;
   border: 4px solid #37eb1f;
 }
+
 .cell.missed {
   background: #ff7779;
   color: #4b0405;
+}
+
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+  .keno-cell {
+    font-size: 1rem;
+  }
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  /* Styles for tablets */
+  .keno-cell {
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+
+  .grid {
+    gap: 2px;
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

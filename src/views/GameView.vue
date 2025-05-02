@@ -19,8 +19,8 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
+        <!-- <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" /> -->
         <div class="grid-sidebtn-container">
           <ClassicGrid 
             v-if="gameType === GameType.Classic" 
@@ -267,12 +267,15 @@ function displayResult() {
 }
 
 .grid-paytable-container {
-  width: fit-content;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .grid-sidebtn-container {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
 
