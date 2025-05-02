@@ -1,11 +1,5 @@
 <template>
   <GameDialog>
-    <svg class="close-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-      <path
-        fill="currentColor"
-        d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"
-      ></path>
-    </svg>
     <h1>Purchase Cards</h1>
 
     <div class="flex-group">
@@ -23,26 +17,41 @@
 
     <Transition name="bounce">
       <div v-if="selectionMode === 'multiple'" class="counter">
-        <button class="counter-btn" @click="decrementCounter">-</button>
+        <button
+          class="counter-btn"
+          @click="decrementCounter"
+          :disabled="multipleCounter <= MIN_NUM"
+        >
+          -
+        </button>
         <p>
-          Number of cards: <strong>{{ numberOfCards }}</strong>
+          Number of cards: <strong>{{ multipleCounter }}</strong>
         </p>
-        <button class="counter-btn" @click="incrementCounter">+</button>
+        <button
+          class="counter-btn"
+          @click="incrementCounter"
+          :disabled="multipleCounter >= MAX_NUM"
+        >
+          +
+        </button>
       </div>
     </Transition>
 
     <button class="select-btn">Select</button>
+    <!-- <button class="select-btn" @click="makePurchase">Select</button> -->
   </GameDialog>
 </template>
 
 <script setup lang="ts">
+// import { useGameStore } from '@/stores/useGameStore'
 import GameDialog from '../components/GameDialog.vue'
 import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
 import SingleCard from '../components/PurchaseCard/SingleCard.vue'
 import { ref } from 'vue'
 
+// const gameStore = useGameStore()
 const selectionMode = ref<'single' | 'multiple'>('single')
-const numberOfCards = ref<number>(0)
+const multipleCounter = ref<number>(2)
 const MIN_NUM = 2
 const MAX_NUM = 5
 
@@ -51,16 +60,20 @@ function setSelectionMode(mode: 'single' | 'multiple') {
 }
 
 function decrementCounter() {
-  if (numberOfCards.value > MIN_NUM) {
-    numberOfCards.value--
+  if (multipleCounter.value > MIN_NUM) {
+    multipleCounter.value--
   }
 }
 
 function incrementCounter() {
-  if (numberOfCards.value < MAX_NUM) {
-    numberOfCards.value++
+  if (multipleCounter.value < MAX_NUM) {
+    multipleCounter.value++
   }
 }
+
+// function makePurchase() {
+//   gameStore.makePurchase(selectionMode.value, multipleCounter.value)
+// }
 </script>
 
 <style scoped>
@@ -127,9 +140,14 @@ h1 {
   padding-inline: 20px;
   height: 100%;
   border: none;
+  background: #a47cf377;
+}
+.counter-btn:disabled,
+.counter-btn:disabled:hover {
+  cursor: not-allowed;
 }
 .counter-btn:hover {
-  background: #a47cf377;
+  background: #c0a0ff77;
 }
 .counter-btn:active {
   background: #e9deff;
