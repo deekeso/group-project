@@ -65,7 +65,14 @@
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
 
-      <el-dialog v-model="dialogVisible" fullscreen top="40vh" width="70%" draggable>
+      <el-dialog
+        v-model="dialogVisible"
+        fullscreen
+        top="40vh"
+        width="70%"
+        draggable
+        class="help-dialog"
+      >
         <el-space direction="vertical">
           <div class="card-container">
             <div v-for="(card, index) in cards" :key="index" class="card">
@@ -439,7 +446,7 @@ function displayResult() {
   gap: 20px;
 }
 
-::v-deep(.el-dialog) {
+::v-deep(.help-dialog) {
   background-color: #060351;
 }
 
