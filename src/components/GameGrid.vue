@@ -1,8 +1,8 @@
 <template>
   <div class="keno-grid">
     <div class="container">
-      <div class="grid">
-        <div v-for="number in 80" :key="number" class="keno-cell" :class="[
+      <div :class="`${gameType}-grid`">
+        <div v-for="number in cellCount" :key="number" class="keno-cell" :class="[
           'cell',
           matchedNumbers.includes(number) ? 'matched' :
             drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
@@ -17,6 +17,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
+import { GameType } from '@/types';
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
@@ -27,9 +28,12 @@ const emit = defineEmits<{
   (e: 'resetRound'): void
 }>()
 
-const { isRoundFinished } = defineProps<{
+const { isRoundFinished, gameType } = defineProps<{
   isRoundFinished: boolean
+  gameType: GameType
 }>()
+
+const cellCount = gameType === GameType.Classic ? 80 : gameType === GameType.Mini ? 49 : 80
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
@@ -61,9 +65,16 @@ function toggleNumber(number: number): void {
   background-color: transparent;
 }
 
-.grid {
+.classic-grid {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(7, 1fr);
   gap: 5px;
 }
@@ -125,8 +136,11 @@ function toggleNumber(number: number): void {
     padding: 10px 0;
   }
 
-  .grid {
+  .classic-grid, .mini-grid {
     gap: 2px;
+  }
+  .keno-cell {
+    font-size: 1rem;
   }
 }
 
