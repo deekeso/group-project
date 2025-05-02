@@ -2,7 +2,8 @@
   <el-container class="classic-page">
     <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
       <span>
-        You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+        You're about to go back to the home page. You will lose your progress after exiting. Are you
+        sure?
       </span>
 
       <template #footer>
@@ -14,34 +15,83 @@
     </el-dialog>
     <el-header>
       <HomeButton @home="confirmExitDialogVisible = true" />
-      <UserBalance @wallet="directToWallet" />
+      <div class="nav-container">
+        <HelpBtn @click="dialogVisible = true" />
+        <UserBalance @wallet="directToWallet" />
+      </div>
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+          style="padding-bottom: 24px"
+        />
         <div class="grid-sidebtn-container">
-          <ClassicGrid 
-            v-if="gameType === GameType.Classic" 
-            @number-selected="setSelectedNumbers" 
-            :is-round-finished @reset-round="resetRound" 
+          <ClassicGrid
+            v-if="gameType === GameType.Classic"
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
           />
-          <MiniGrid 
-            v-else-if="gameType === GameType.Mini" 
-            @number-selected="setSelectedNumbers" 
-            :is-round-finished @reset-round="resetRound" 
+          <MiniGrid
+            v-else-if="gameType === GameType.Mini"
+            @number-selected="setSelectedNumbers"
+            :is-round-finished
+            @reset-round="resetRound"
           />
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length" :game-is-drawing="isDrawing" />
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable[gameType].length"
+            :game-is-drawing="isDrawing"
+          />
         </div>
 
-        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
+        <GameButtons
+          @playGame="startDraw"
+          :game-is-drawing="isDrawing"
+          :disabled="selectedNumbers.length < 1"
+        />
         <Transition name="bounce">
-          <WithWin v-if="result === 'win' && showModal" :winValue="winnings" @close="showModal = false" />
+          <WithWin
+            v-if="result === 'win' && showModal"
+            :winValue="winnings"
+            @close="showModal = false"
+          />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
+
+      <el-dialog v-model="dialogVisible" fullscreen top="40vh" width="70%" draggable>
+        <el-space direction="vertical">
+          <div class="card-container">
+            <div v-for="(card, index) in cards" :key="index" class="card">
+              <div class="card-header">
+                <div class="step-sidebar">
+                  <div class="step-text">Step</div>
+                  <div class="step-number">
+                    {{ index + 1 }}
+                  </div>
+                </div>
+                <div class="card-title">{{ card.title }}</div>
+              </div>
+
+              <div class="card-content"></div>
+              <img :src="card.image" alt="Card Image" class="card-image" />
+              <p class="card-body">{{ card.body }}</p>
+            </div>
+          </div>
+        </el-space>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="dialogVisible = false"> Confirm </el-button>
+          </div>
+        </template>
+      </el-dialog>
     </el-main>
   </el-container>
 </template>
@@ -51,6 +101,7 @@ import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
+import HelpBtn from '@/components/Help-Btn.vue'
 import NoWin from '@/components/NoWin.vue'
 import payTable from '@/components/PayTable/payTable.json'
 import PayTable from '@/components/PayTable/PayTable.vue'
@@ -73,6 +124,51 @@ import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.w
 import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import { GameType } from '@/types'
 
+import tutorial_1 from '../assets/tutorial_1.png'
+import tutorial_2 from '../assets/tutorial_2.png'
+import tutorial_3_4 from '../assets/tutorial_3_4.png'
+import tutorial_5_6 from '../assets/tutorial_5_6.png'
+import tutorial_7 from '../assets/tutorial_7.png'
+
+const cards = [
+  {
+    title: 'Select game mode',
+    image: tutorial_1,
+    body: 'To play a full online Keno game, start by selecting your preferred game mode. You can choose Classic Keno, where numbers range from 1 to 80, or Mini Keno, which has a smaller range from 1 to 49. Each mode offers different game play experiences, so pick the one that suits your preference.',
+  },
+  {
+    title: 'Purchase cards',
+    image: tutorial_2,
+    body: "Once you've chosen your game mode, proceed to purchase your Keno cards. You can buy a single card or multiple cards, depending on how many chances you want in the draw. Each card allows you to select numbers within the range specified by your chosen game mode.",
+  },
+  {
+    title: 'Select your keno numbers',
+    image: tutorial_3_4,
+    body: "You can select the Keno numbers you wish to bet on after receiving your Keno card or cards. Each number you choose is called a 'Keno spot.' Alternatively, you can use the auto-pick feature. To do this, simply select a number, press the auto-pick button, and the system will choose a Keno spot based on the number you have selected. Once your Keno numbers are chosen, the required hits and payout will be automatically displayed.",
+  },
+  {
+    title: 'Enter your wager amount',
+    image: tutorial_3_4,
+    body: "After selecting your Keno numbers, the next step is to place your wager. Enter the amount you wish to bet in the 'Wager' section. You can adjust your wager according to your preferred amount. If you wish to double your wager instantly, you can simply press the x2 button, which will multiply your wager by two. Keep in mind that the amount you wager can influence the payout you receive if you win.",
+  },
+  {
+    title: 'The game begins',
+    image: tutorial_5_6,
+    body: "Once you have entered your wager, it's time to start the game. Simply press the 'Play' button to confirm your choices and begin. The system will then process your selections, and you'll see the results of the draw shortly after.",
+  },
+  {
+    title: 'Matching Numbers',
+    image: tutorial_5_6,
+    body: 'After the draw, review the results to see if any of your chosen Keno numbers match the numbers drawn. If you have matching numbers, congratulations! The system will calculate your winnings based on your wager, the number of hits, and the payout table.',
+  },
+  {
+    title: 'The results',
+    image: tutorial_7,
+    body: "After pressing the 'Play' button, the outcome of the draw will be displayed. If there is a match, your winnings will be shown, based on the payout and the number of hits you achieved.",
+  },
+]
+
+const dialogVisible = ref(false)
 const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
@@ -105,15 +201,15 @@ track.connect(biquadFilter)
 biquadFilter.connect(audioContext.destination)
 
 async function playSoundEffect(i: number, soundEffect: string) {
-  const response = await fetch(soundEffect);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
+  const response = await fetch(soundEffect)
+  const arrayBuffer = await response.arrayBuffer()
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  const source = audioContext.createBufferSource()
+  source.buffer = audioBuffer
 
-  source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+  source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-  source.connect(audioContext.destination);
+  source.connect(audioContext.destination)
   source.start()
 }
 
@@ -146,15 +242,15 @@ async function startDraw() {
   let count = 0
 
   async function playSoundEffect(i: number, soundEffect: string) {
-    const response = await fetch(soundEffect);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
+    const response = await fetch(soundEffect)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    const source = audioContext.createBufferSource()
+    source.buffer = audioBuffer
 
-    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+    source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-    source.connect(audioContext.destination);
+    source.connect(audioContext.destination)
     source.start()
   }
 
@@ -220,8 +316,8 @@ function directToWallet() {
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic'
-    }
+      redirect: 'classic',
+    },
   })
 }
 
@@ -276,7 +372,6 @@ function displayResult() {
   gap: 10px;
 }
 
-
 .bounce-enter-active {
   animation: bounce-in 0.4s;
 }
@@ -285,6 +380,75 @@ function displayResult() {
   animation: bounce-in 0.4s reverse;
 }
 
+.card {
+  background: white;
+  color: black;
+  border-radius: 8px;
+  width: 900px;
+  margin-bottom: 60px;
+}
+.card-header {
+  display: flex;
+}
+.step-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 86px;
+  height: 96px;
+  background-color: #4244ed;
+  border-radius: 8px 0 0;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.step-text {
+  font-weight: bold;
+}
+.step-number {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.card-title {
+  display: flex;
+  font-size: 1.5em;
+  margin: 8px 0;
+  color: black;
+  align-items: center;
+  padding: 0 20px;
+  font-weight: bold;
+  font-size: 24px;
+}
+.card-content {
+  display: flex;
+}
+
+.card-image {
+  width: 900px;
+  height: auto;
+}
+
+.card-body {
+  font-size: 18px;
+  padding: 26px;
+}
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+::v-deep(.el-dialog) {
+  background-color: #060351;
+}
+
+::v-deep(.el-dialog__body) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
 @keyframes bounce-in {
   0% {
     transform: scale(0);
