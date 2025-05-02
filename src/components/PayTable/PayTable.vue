@@ -78,51 +78,35 @@ updatePayTableData()
       </div>
       <div v-for="data in payTableData" class="pay-data">
         <!-- PAY CELL -->
-        <div
-          v-if="data.endIndex != null"
-          class="multiplier-cell-tight"
-          :class="{
-            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
-            hide:
-              !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
-              matchedCellsCount > -1,
-          }"
-        >
+        <div v-if="data.endIndex != null" class="multiplier-cell-tight" :class="{
+          hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+          hide:
+            !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
+            matchedCellsCount > -1,
+        }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
-        <div
-          v-else
-          class="multiplier-cell-tight"
-          :class="{
-            hit: matchedCellsCount === data.startIndex,
-            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
-          }"
-        >
+        <div v-else class="multiplier-cell-tight" :class="{
+          hit: matchedCellsCount === data.startIndex,
+          hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+        }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
         <!-- END OF PAY CELL -->
 
         <!-- HIT CELL -->
-        <div
-          v-if="data.endIndex != null"
-          class="selected-count-cell"
-          :class="{
-            hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
-            hide:
-              !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
-              matchedCellsCount > -1,
-          }"
-        >
+        <div v-if="data.endIndex != null" class="selected-count-cell" :class="{
+          hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
+          hide:
+            !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
+            matchedCellsCount > -1,
+        }">
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
-        <div
-          v-else
-          class="selected-count-cell"
-          :class="{
-            hit: matchedCellsCount === data.startIndex,
-            hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
-          }"
-        >
+        <div v-else class="selected-count-cell" :class="{
+          hit: matchedCellsCount === data.startIndex,
+          hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+        }">
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
         <!-- END OF HIT CELL -->
@@ -186,7 +170,7 @@ updatePayTableData()
   gap: 10px;
 }
 
-.pay-data:hover > .hide {
+.pay-data:hover>.hide {
   opacity: 1;
 }
 
@@ -226,23 +210,10 @@ updatePayTableData()
   text-align: center;
 }
 
-.multiplier-cell,
-.selected-count-cell,
-.multiplier-cell-tight,
-.selected-count-cell-tight,
-.placeholder-cell {
-  width: 100%;
-  padding: 4px 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-  border: 2px solid rgba(0, 0, 0, 0);
-}
-
 .hit {
   border: 2px solid greenyellow;
-  animation: scaleUpDown 300ms ease-in-out; /* Adjust duration as needed */
+  animation: scaleUpDown 300ms ease-in-out;
+  /* Adjust duration as needed */
 }
 
 .hide {
@@ -257,18 +228,72 @@ updatePayTableData()
 .placeholder-cell {
   background-color: #7674a7;
 }
+
 .el-text {
   color: #ffffff;
   font-weight: bold;
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+
+  /* .pay-table {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+  } */
+  .multiplier-cell .el-text,
+  .multiplier-cell-tight .el-text,
+  .selected-count-cell .el-text,
+  .selected-count-cell-tight .el-text,
+  .placeholder-cell .el-text,
+  .label .el-text {
+    font-size: 0.5rem;
+  }
+
+  .multiplier-cell,
+  .multiplier-cell-tight,
+  .selected-count-cell,
+  .selected-count-cell-tight,
+  .placeholder-cell,
+  .label {
+    padding: 4px 0px;
+  }
+
+  .cells-container {
+    gap: 1px;
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 
 @keyframes scaleUpDown {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.5);
   }
+
   100% {
     transform: scale(1);
   }
