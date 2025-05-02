@@ -92,7 +92,7 @@ function toggleNumber(number: number): void {
 }
 
 .cell:hover {
-  background-color: hsl(270, 68%, 69%);
+  background-color: #bb78ff;
 }
 
 .cell.selected {
@@ -103,7 +103,7 @@ function toggleNumber(number: number): void {
 .cell.matched {
   background-color: #37eb1f;
   color: #094201;
-  border: 4px solid #37eb1f;
+  border: 4px solid #094201;
 }
 .cell.missed {
   background: #ff7779;
