@@ -16,15 +16,29 @@ export const useGameStore = defineStore('game', () => {
   const bet = ref<number>(1)
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
-  const mode = ref<GameMode>('classic') // NEW: game mode
+  const mode = ref<GameMode>('classic')
   const loseStreak = ref(0)
 
-  let loseStreakCallback: () => void = function() {}
-  let matchCallback: (i: number) => void = function() {}
+  let loseStreakCallback: () => void = function () {}
+  let matchCallback: (i: number) => void = function () {}
+
+  //states for card purchase
+  const hasPurchasedCards = ref<boolean>(false)
+  const purchaseMode = ref<'single' | 'multiple'>()
+  const numberOfCards = ref<number>(0)
 
   // autosave to local storage
   watch(
-    [selectedNumbers, drawnNumbers, matchedNumbers, wager, mode],
+    [
+      selectedNumbers,
+      drawnNumbers,
+      matchedNumbers,
+      wager,
+      mode,
+      hasPurchasedCards,
+      purchaseMode,
+      numberOfCards,
+    ],
     () => {
       localStorage.setItem(
         'keno-game',
@@ -36,7 +50,10 @@ export const useGameStore = defineStore('game', () => {
           winnings: winnings.value,
           result: result.value,
           mode: mode.value,
-          loseStreak: loseStreak.value
+          loseStreak: loseStreak.value,
+          hasPurchasedCards: hasPurchasedCards.value,
+          purchaseMode: purchaseMode.value,
+          numberOfCards: numberOfCards.value,
         }),
       )
     },
@@ -48,7 +65,7 @@ export const useGameStore = defineStore('game', () => {
     (newVal, oldVal) => {
       if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
     },
-    { deep: true }
+    { deep: true },
   )
 
   // load from local storage
@@ -65,6 +82,10 @@ export const useGameStore = defineStore('game', () => {
       result.value = parsed.result || ''
       mode.value = parsed.mode || 'classic'
       loseStreak.value = parsed.loseStreak
+
+      hasPurchasedCards.value = parsed.hasPurchasedCards || false
+      purchaseMode.value = parsed.purchaseMode || 'single'
+      numberOfCards.value = parsed.numberOfCards || 1
     }
   }
 
@@ -127,7 +148,7 @@ export const useGameStore = defineStore('game', () => {
         loseStreakCallback()
       }
     }
-    
+
     if (status === 'win') {
       loseStreak.value = 0
     }
@@ -147,6 +168,17 @@ export const useGameStore = defineStore('game', () => {
     winnings.value = 0
   }
 
+  function makePurchase(mode: 'single' | 'multiple', number: number) {
+    hasPurchasedCards.value = true
+    purchaseMode.value = mode
+
+    if (mode === 'multiple') {
+      numberOfCards.value = number
+    } else {
+      numberOfCards.value = 1
+    }
+  }
+
   return {
     selectedNumbers,
     drawnNumbers,
@@ -159,6 +191,9 @@ export const useGameStore = defineStore('game', () => {
     result,
     mode,
     loseStreak,
+    hasPurchasedCards,
+    purchaseMode,
+    numberOfCards,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
@@ -171,6 +206,7 @@ export const useGameStore = defineStore('game', () => {
     setResult,
     resetWinnings,
     setLoseStreakEffect: setLoseStreakCallback,
-    setMatchCallback
+    setMatchCallback,
+    makePurchase,
   }
 })
