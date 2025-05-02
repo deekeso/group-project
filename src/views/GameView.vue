@@ -2,7 +2,8 @@
   <el-container class="classic-page">
     <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
       <span>
-        You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+        You're about to go back to the home page. You will lose your progress after exiting. Are you
+        sure?
       </span>
 
       <template #footer>
@@ -19,26 +20,37 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+          style="padding-bottom: 24px"
+        />
         <div class="grid-sidebtn-container">
-          <ClassicGrid
-            v-if="gameType === GameType.Classic"
+          <GameGrid
+            :game-type="gameType"
             @number-selected="setSelectedNumbers"
             :is-round-finished @reset-round="resetRound"
           />
-          <MiniGrid
-            v-else-if="gameType === GameType.Mini"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished @reset-round="resetRound"
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable[gameType].length"
+            :game-is-drawing="isDrawing"
           />
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length" :game-is-drawing="isDrawing" />
         </div>
 
-        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
+        <GameButtons
+          @playGame="startDraw"
+          :game-is-drawing="isDrawing"
+          :disabled="selectedNumbers.length < 1"
+        />
         <Transition name="bounce">
-          <WithWin v-if="result === 'win' && showModal" :winValue="winnings" @close="showModal = false" />
+          <WithWin
+            v-if="result === 'win' && showModal"
+            :winValue="winnings"
+            @close="showModal = false"
+          />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
@@ -47,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
+import ClassicGrid from '@/components/GameGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
@@ -70,8 +82,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import { GameType } from '@/types'
+import GameGrid from '@/components/GameGrid.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -105,15 +117,15 @@ track.connect(biquadFilter)
 biquadFilter.connect(audioContext.destination)
 
 async function playSoundEffect(i: number, soundEffect: string) {
-  const response = await fetch(soundEffect);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
+  const response = await fetch(soundEffect)
+  const arrayBuffer = await response.arrayBuffer()
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  const source = audioContext.createBufferSource()
+  source.buffer = audioBuffer
 
-  source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+  source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-  source.connect(audioContext.destination);
+  source.connect(audioContext.destination)
   source.start()
 }
 
@@ -146,15 +158,15 @@ async function startDraw() {
   let count = 0
 
   async function playSoundEffect(i: number, soundEffect: string) {
-    const response = await fetch(soundEffect);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
+    const response = await fetch(soundEffect)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    const source = audioContext.createBufferSource()
+    source.buffer = audioBuffer
 
-    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+    source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-    source.connect(audioContext.destination);
+    source.connect(audioContext.destination)
     source.start()
   }
 
@@ -220,8 +232,8 @@ function directToWallet() {
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic'
-    }
+      redirect: 'classic',
+    },
   })
 }
 
@@ -241,7 +253,7 @@ function displayResult() {
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: bottom;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -305,15 +317,17 @@ function displayResult() {
 }
 
 .grid-paytable-container {
-  width: fit-content;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .grid-sidebtn-container {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
-
 
 .bounce-enter-active {
   animation: bounce-in 0.4s;
@@ -335,5 +349,41 @@ function displayResult() {
   100% {
     transform: scale(1);
   }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+
+    50% {
+      transform: scale(0.5);
+    }
+
+    100% {
+      transform: scale(0.5);
+    }
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>
