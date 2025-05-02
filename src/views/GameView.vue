@@ -14,8 +14,8 @@
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton @home="confirmExitDialogVisible = true" />
-      <UserBalance @wallet="directToWallet" />
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
+      <UserBalance class="header-button" @wallet="directToWallet"/>
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
@@ -276,6 +276,7 @@ function displayResult() {
   place-items: center;
   background: transparent;
   flex: 1;
+  margin-top: 80px;
 }
 
 .drawn-numbers {
