@@ -2,7 +2,8 @@
   <el-container class="classic-page">
     <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
       <span>
-        You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+        You're about to go back to the home page. You will lose your progress after exiting. Are you
+        sure?
       </span>
 
       <template #footer>
@@ -19,21 +20,37 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
+        <PayTable
+          kenoType="classic"
+          :selectedCellsCount="selectedNumbers.length"
+          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+          style="padding-bottom: 24px"
+        />
         <div class="grid-sidebtn-container">
           <GameGrid 
             :game-type="gameType"
             @number-selected="setSelectedNumbers" 
             :is-round-finished @reset-round="resetRound" 
           />
-          <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length" :game-is-drawing="isDrawing" />
+          <GameSideButtons
+            @clear="resetGame"
+            @number-selected="autopickNumberSelected"
+            :max-number="payTable[gameType].length"
+            :game-is-drawing="isDrawing"
+          />
         </div>
 
-        <GameButtons @playGame="startDraw" :game-is-drawing="isDrawing" :disabled="selectedNumbers.length < 1" />
+        <GameButtons
+          @playGame="startDraw"
+          :game-is-drawing="isDrawing"
+          :disabled="selectedNumbers.length < 1"
+        />
         <Transition name="bounce">
-          <WithWin v-if="result === 'win' && showModal" :winValue="winnings" @close="showModal = false" />
+          <WithWin
+            v-if="result === 'win' && showModal"
+            :winValue="winnings"
+            @close="showModal = false"
+          />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
       </div>
@@ -100,15 +117,15 @@ track.connect(biquadFilter)
 biquadFilter.connect(audioContext.destination)
 
 async function playSoundEffect(i: number, soundEffect: string) {
-  const response = await fetch(soundEffect);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  const source = audioContext.createBufferSource();
-  source.buffer = audioBuffer;
+  const response = await fetch(soundEffect)
+  const arrayBuffer = await response.arrayBuffer()
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  const source = audioContext.createBufferSource()
+  source.buffer = audioBuffer
 
-  source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+  source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-  source.connect(audioContext.destination);
+  source.connect(audioContext.destination)
   source.start()
 }
 
@@ -141,15 +158,15 @@ async function startDraw() {
   let count = 0
 
   async function playSoundEffect(i: number, soundEffect: string) {
-    const response = await fetch(soundEffect);
-    const arrayBuffer = await response.arrayBuffer();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
+    const response = await fetch(soundEffect)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    const source = audioContext.createBufferSource()
+    source.buffer = audioBuffer
 
-    source.playbackRate.value = 1 + (i * 0.05); // Increase pitch each time
+    source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
 
-    source.connect(audioContext.destination);
+    source.connect(audioContext.destination)
     source.start()
   }
 
@@ -215,8 +232,8 @@ function directToWallet() {
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic'
-    }
+      redirect: 'classic',
+    },
   })
 }
 
@@ -273,7 +290,6 @@ function displayResult() {
   grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
-
 
 .bounce-enter-active {
   animation: bounce-in 0.4s;

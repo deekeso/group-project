@@ -66,11 +66,11 @@
   border: 4px solid #e7cfff;
 }
 
-.matched {
-  color: #094201;
-  background-color: #37eb1f;
-  border: 4px solid #37eb1f;
-}
+  .matched {
+    color: #094201;
+    background-color: #37eb1f;
+    border: 4px solid #094201;
+  }
 
 .missed {
   background: #ff7779;
