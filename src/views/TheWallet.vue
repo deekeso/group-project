@@ -146,7 +146,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
+  margin-top: 50px;
   background-size: cover;
   padding: 2rem;
 }
@@ -314,5 +314,7 @@ body {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+  position: fixed;
+  top: 0;
 }
 </style>

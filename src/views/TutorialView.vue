@@ -85,6 +85,7 @@ const cards = [
   border-radius: 8px;
   width: 900px;
   margin-bottom: 60px;
+  margin-top: 100px;
 }
 .card-header {
   display: flex;
@@ -137,5 +138,7 @@ const cards = [
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
+  position: fixed;
+  top: 0;
 }
 </style>

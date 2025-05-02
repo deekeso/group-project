@@ -13,8 +13,8 @@
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton @home="confirmExitDialogVisible = true" />
-      <UserBalance @wallet="directToWallet" />
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
+      <UserBalance class="header-button" @wallet="directToWallet"/>
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
@@ -22,15 +22,15 @@
         <PayTable kenoType="classic" :selectedCellsCount="selectedNumbers.length"
           :matchedCellsCount="displayMatching ? matchedNumbers.length : -1" style="padding-bottom: 24px" />
         <div class="grid-sidebtn-container">
-          <ClassicGrid 
-            v-if="gameType === GameType.Classic" 
-            @number-selected="setSelectedNumbers" 
-            :is-round-finished @reset-round="resetRound" 
+          <ClassicGrid
+            v-if="gameType === GameType.Classic"
+            @number-selected="setSelectedNumbers"
+            :is-round-finished @reset-round="resetRound"
           />
-          <MiniGrid 
-            v-else-if="gameType === GameType.Mini" 
-            @number-selected="setSelectedNumbers" 
-            :is-round-finished @reset-round="resetRound" 
+          <MiniGrid
+            v-else-if="gameType === GameType.Mini"
+            @number-selected="setSelectedNumbers"
+            :is-round-finished @reset-round="resetRound"
           />
           <GameSideButtons @clear="resetGame" @number-selected="autopickNumberSelected"
             :max-number="payTable[gameType].length" :game-is-drawing="isDrawing" />
@@ -252,6 +252,43 @@ function displayResult() {
   justify-content: space-between;
   padding-top: 20px;
   background: transparent;
+  position: fixed;
+  top: 0;
+}
+
+.header-button{
+  margin-right: 1645px;
+}
+
+
+@media (max-width: 1200px) {
+  .header-button {
+    margin-right: 550px; /* Adjust gap for medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .header-button {
+    margin-right: 500px; /* Adjust gap for small screens */
+  }
+}
+
+@media (max-width: 375px) {
+  .header-button {
+    margin-right: 20px; /* Adjust gap for small screens */
+  }
+}
+
+@media (max-width: 540px) {
+  .header-button {
+    margin-right: 270px; /* Adjust gap for extra small screens */
+  }
+}
+
+@media (max-width: 412px) {
+  .header-button {
+    margin-right: 80px; /* Adjust gap for extra small screens */
+  }
 }
 
 .el-main {
@@ -259,6 +296,7 @@ function displayResult() {
   place-items: center;
   background: transparent;
   flex: 1;
+  margin-top: 80px;
 }
 
 .drawn-numbers {
