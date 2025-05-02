@@ -155,7 +155,7 @@ async function startDraw() {
       message: 'Please top up your wallet or adjust your wager.',
       type: 'error',
       position: 'top-right',
-      duration: 3000,
+      duration: 2000,
       showClose: true,
     })
     return
