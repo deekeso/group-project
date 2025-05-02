@@ -21,7 +21,6 @@ const payTableData = ref<{ pays: string; hit: string; startIndex: number; endInd
  */
 
 function updatePayTableData() {
-  let scc = selectedCellsCount
   if (selectedCellsCount < 1) {
     return
   }
@@ -69,10 +68,10 @@ updatePayTableData()
   <div v-if="selectedCellsCount > 0" class="pay-table">
     <div class="cells-container">
       <div class="label-container">
-        <div class="label">
+        <div class="label" :class="{ verticalText: selectedCellsCount >= 13 }">
           <el-text tag="p" size="large">Pays</el-text>
         </div>
-        <div class="label">
+        <div class="label" :class="{ verticalText: selectedCellsCount >= 13 }">
           <el-text tag="p" size="large">Hits</el-text>
         </div>
       </div>
@@ -83,12 +82,14 @@ updatePayTableData()
           hide:
             !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
             matchedCellsCount > -1,
+          verticalText: selectedCellsCount >= 13
         }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
         <div v-else class="multiplier-cell-tight" :class="{
           hit: matchedCellsCount === data.startIndex,
           hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+          verticalText: selectedCellsCount >= 13
         }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
@@ -146,6 +147,7 @@ updatePayTableData()
 }
 
 .label-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: end;
@@ -162,8 +164,9 @@ updatePayTableData()
 
 .pay-data {
   width: 100%;
-  height: fit-content;
+  height: 100%;
   display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   align-items: stretch;
   flex-direction: column;
@@ -174,13 +177,11 @@ updatePayTableData()
   opacity: 1;
 }
 
-.multiplier-cell,
 .multiplier-cell-tight {
   background-color: #524de0;
 }
 
-.selected-count-cell,
-.selected-count-cell-tight {
+.selected-count-cell {
   background-color: #964de0;
 }
 
@@ -195,12 +196,11 @@ updatePayTableData()
   border: 2px solid rgba(0, 0, 0, 0);
 }
 
-.multiplier-cell,
 .selected-count-cell,
 .multiplier-cell-tight,
-.selected-count-cell-tight,
 .placeholder-cell {
   width: 100%;
+  height: 100%;
   padding: 4px 10px;
   display: flex;
   justify-content: center;
@@ -220,8 +220,7 @@ updatePayTableData()
   opacity: 0.6;
 }
 
-.multiplier-cell-tight,
-.selected-count-cell-tight {
+.multiplier-cell-tight {
   padding: 4px 0;
 }
 
@@ -239,34 +238,32 @@ updatePayTableData()
 
 /* Small devices (tablets) */
 @media (max-width: 768px) {
-
-  /* .pay-table {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-  } */
-  .multiplier-cell .el-text,
-  .multiplier-cell-tight .el-text,
-  .selected-count-cell .el-text,
-  .selected-count-cell-tight .el-text,
-  .placeholder-cell .el-text,
-  .label .el-text {
-    font-size: 0.5rem;
+  .cells-container {  
+    height: 120px;
+  }
+  
+  .selected-count-cell {
+    height: fit-content;
+  }
+  
+  .label {
+    height: 100%;
   }
 
-  .multiplier-cell,
+  .verticalText {
+    flex-grow: 1;
+  }
+
+  .verticalText .el-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
   .multiplier-cell-tight,
   .selected-count-cell,
-  .selected-count-cell-tight,
   .placeholder-cell,
   .label {
     padding: 4px 0px;
-  }
-
-  .cells-container {
-    gap: 1px;
   }
 }
 

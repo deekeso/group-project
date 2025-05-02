@@ -258,7 +258,7 @@ function displayResult() {
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position: left;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
