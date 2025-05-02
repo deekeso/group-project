@@ -98,6 +98,7 @@ function toggleNumber(number: number): void {
   cursor: pointer;
   transition: background-color 0.2s;
   user-select: none;
+  overflow: hidden
 }
 
 .cell:hover {
