@@ -114,7 +114,7 @@ function toggleNumber(number: number): void {
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
   .keno-cell {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -122,7 +122,6 @@ function toggleNumber(number: number): void {
 @media (max-width: 768px) {
   /* Styles for tablets */
   .keno-cell {
-    font-size: 1rem;
     padding: 10px 0;
   }
 
