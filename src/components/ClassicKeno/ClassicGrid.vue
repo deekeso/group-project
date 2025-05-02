@@ -112,6 +112,9 @@ function toggleNumber(number: number): void {
   background-color: #37eb1f;
   color: #094201;
   border: 4px solid #094201;
+  animation:
+    emphasize 0.55s,
+    shine 0.55s;
 }
 .cell.missed {
   background: #ff7779;
@@ -119,5 +122,24 @@ function toggleNumber(number: number): void {
 }
 .disabled {
   cursor: not-allowed;
+}
+
+@keyframes emphasize {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(5deg);
+    background-color: #bcffb3;
+  }
+  75% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
 }
 </style>
