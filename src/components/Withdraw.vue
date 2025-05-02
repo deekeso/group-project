@@ -76,6 +76,14 @@ watch(radio2, (val) => {
   }
 })
 
+watch(num, (val) => {
+  const predefinedAmounts = ['20', '50', '100', '200', '500', '1000']
+  if (!predefinedAmounts.includes(String(val))) {
+    radio2.value = ''
+  }
+})
+
+
 
 function confirmWithdraw() {
   if (!value.value) {
