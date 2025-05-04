@@ -163,9 +163,9 @@ function halfWager() {
 <style scoped>
 .btn-container {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-block: 10px;
+  display: grid;
+  grid-template-columns: 1fr 8fr 1fr 2fr;
+  margin-top: 10px;
   gap: 5px;
 }
 
@@ -206,15 +206,6 @@ function halfWager() {
   padding-inline: 20px;
 }
 
-.wager-container {
-  background: #f8ab00;
-  color: #050505;
-  font-weight: bolder;
-  border-radius: 100px;
-  flex: 1;
-  padding-block: 0;
-}
-
 .yellow-btn {
   background: #f8ab00;
   color: #050505;
@@ -227,8 +218,6 @@ function halfWager() {
   color: #050505;
   font-weight: bolder;
   border-radius: 100px;
-  flex: 1;
-  padding-block: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -302,5 +291,38 @@ input[type='range'] {
   height: 40px;
   box-shadow: -300px 0 0 300px #c28400;
   border: 4px solid white;
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+  .btn-container {
+    grid-template-columns: 1fr 1fr 2fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .wager-container {
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 1;
+    grid-column-end: 4;
+  }
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

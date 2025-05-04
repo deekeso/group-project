@@ -9,7 +9,7 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
-          <el-button type="primary" @click="directToHome">Yes, take me home</el-button>
+          <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
         </div>
       </template>
     </el-dialog>
@@ -30,14 +30,8 @@
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
-          <ClassicGrid
-            v-if="gameType === GameType.Classic"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <MiniGrid
-            v-else-if="gameType === GameType.Mini"
+          <GameGrid
+            :game-type="gameType"
             @number-selected="setSelectedNumbers"
             :is-round-finished
             @reset-round="resetRound"
@@ -63,6 +57,7 @@
           />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
+        <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
 
       <el-dialog
@@ -104,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
@@ -128,60 +122,17 @@ import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import { GameType } from '@/types'
+import GameGrid from '@/components/GameGrid.vue'
+import PurchaseCard from '@/components/PurchaseCard.vue'
 
-import tutorial_1 from '../assets/tutorial_1.png'
-import tutorial_2 from '../assets/tutorial_2.png'
-import tutorial_3_4 from '../assets/tutorial_3_4.png'
-import tutorial_5_6 from '../assets/tutorial_5_6.png'
-import tutorial_7 from '../assets/tutorial_7.png'
-
-const cards = [
-  {
-    title: 'Select game mode',
-    image: tutorial_1,
-    body: 'To play a full online Keno game, start by selecting your preferred game mode. You can choose Classic Keno, where numbers range from 1 to 80, or Mini Keno, which has a smaller range from 1 to 49. Each mode offers different game play experiences, so pick the one that suits your preference.',
-  },
-  {
-    title: 'Purchase cards',
-    image: tutorial_2,
-    body: "Once you've chosen your game mode, proceed to purchase your Keno cards. You can buy a single card or multiple cards, depending on how many chances you want in the draw. Each card allows you to select numbers within the range specified by your chosen game mode.",
-  },
-  {
-    title: 'Select your keno numbers',
-    image: tutorial_3_4,
-    body: "You can select the Keno numbers you wish to bet on after receiving your Keno card or cards. Each number you choose is called a 'Keno spot.' Alternatively, you can use the auto-pick feature. To do this, simply select a number, press the auto-pick button, and the system will choose a Keno spot based on the number you have selected. Once your Keno numbers are chosen, the required hits and payout will be automatically displayed.",
-  },
-  {
-    title: 'Enter your wager amount',
-    image: tutorial_3_4,
-    body: "After selecting your Keno numbers, the next step is to place your wager. Enter the amount you wish to bet in the 'Wager' section. You can adjust your wager according to your preferred amount. If you wish to double your wager instantly, you can simply press the x2 button, which will multiply your wager by two. Keep in mind that the amount you wager can influence the payout you receive if you win.",
-  },
-  {
-    title: 'The game begins',
-    image: tutorial_5_6,
-    body: "Once you have entered your wager, it's time to start the game. Simply press the 'Play' button to confirm your choices and begin. The system will then process your selections, and you'll see the results of the draw shortly after.",
-  },
-  {
-    title: 'Matching Numbers',
-    image: tutorial_5_6,
-    body: 'After the draw, review the results to see if any of your chosen Keno numbers match the numbers drawn. If you have matching numbers, congratulations! The system will calculate your winnings based on your wager, the number of hits, and the payout table.',
-  },
-  {
-    title: 'The results',
-    image: tutorial_7,
-    body: "After pressing the 'Play' button, the outcome of the draw will be displayed. If there is a match, your winnings will be shown, based on the payout and the number of hits you achieved.",
-  },
-]
-
-const dialogVisible = ref(false)
 const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
+  storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -236,7 +187,7 @@ async function startDraw() {
       message: 'Please top up your wallet or adjust your wager.',
       type: 'error',
       position: 'top-right',
-      duration: 3000,
+      duration: 2000,
       showClose: true,
     })
     return
@@ -269,7 +220,7 @@ async function startDraw() {
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    let maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameType === GameType.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
@@ -320,6 +271,10 @@ function directToHome() {
 }
 
 function directToWallet() {
+  let route = GameType.Classic
+
+  if (gameType === GameType.Mini) route = GameType.Mini
+
   router.push({
     name: 'wallet',
     query: {
@@ -335,6 +290,12 @@ function displayResult() {
   }, 150)
   showModal.value = false
 }
+
+function exitGame() {
+  gameStore.resetGame()
+  gameStore.resetPurchase()
+  directToHome()
+}
 </script>
 
 <style scoped>
@@ -344,7 +305,7 @@ function displayResult() {
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: bottom;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -362,6 +323,7 @@ function displayResult() {
   place-items: center;
   background: transparent;
   flex: 1;
+  margin-top: 80px;
 }
 
 .drawn-numbers {
@@ -370,12 +332,15 @@ function displayResult() {
 }
 
 .grid-paytable-container {
-  width: fit-content;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .grid-sidebtn-container {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
 
@@ -468,5 +433,41 @@ function displayResult() {
   100% {
     transform: scale(1);
   }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+
+    50% {
+      transform: scale(0.5);
+    }
+
+    100% {
+      transform: scale(0.5);
+    }
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>
