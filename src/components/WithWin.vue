@@ -23,10 +23,21 @@
 
 <script setup lang="ts">
 import GameDialog from '../components/GameDialog.vue'
+import winSound from '@/assets/sounds/withwin/8-bit-video-game-win-level-sound-version-1-145827.mp3'
+import { onMounted } from 'vue'
 
 const props = defineProps<{
   winValue: number
 }>()
+
+const playWinSound = () => {
+  const audio = new Audio(winSound)
+  audio.play()
+}
+
+onMounted(() => {
+  playWinSound()
+})
 </script>
 
 <style scoped>
