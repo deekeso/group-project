@@ -14,7 +14,7 @@
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton @home="confirmExitDialogVisible = true" />
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
       <div class="nav-container">
         <!-- <HelpBtn @click="dialogVisible = true" /> -->
         <HelpBtn @click="startTour" />
@@ -256,14 +256,14 @@ function directToHome() {
 }
 
 function directToWallet() {
-  let route = GameType.Classic
+  let r = GameType.Classic
 
-  if (gameType === GameType.Mini) route = GameType.Mini
+  if (gameType === GameType.Mini) r = GameType.Mini
 
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic',
+      redirect: r,
     },
   })
 }
