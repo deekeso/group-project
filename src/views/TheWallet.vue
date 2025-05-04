@@ -135,7 +135,7 @@ watch(num, (val) => {
 
 function confirmDeposit() {
   if (!value.value) {
-    ElMessage.error('Please select a payment method.')
+    ElMessage.error('Please select an e-wallet for the payment method.')
     return
   }
 
@@ -348,5 +348,24 @@ body {
   top: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
   width: 100%;
+}
+
+@media screen and (max-width: 480px) {
+  .wallet-header {
+    flex-direction: row; /* Keep items in row */
+    flex-wrap: wrap; /* Allow wrapping if needed */
+    gap: 1rem; /* Add some space between elements */
+  }
+
+  .balance-section {
+    width: 100%; /* Full width on mobile */
+    margin-bottom: 1rem;
+  }
+
+  .tab-toggle {
+    min-width: unset; /* Remove fixed min-width */
+    width: 100%; /* Take full width */
+    max-width: none; /* Allow full width on mobile */
+  }
 }
 </style>
