@@ -1,6 +1,6 @@
 <template>
   <el-container class="classic-page">
-    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
+    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" class="home-confirmation-dialog" align-center>
       <span>
         You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
       </span>
@@ -12,6 +12,7 @@
         </div>
       </template>
     </el-dialog>
+    <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
       <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
       <div class="nav-container">
@@ -21,7 +22,7 @@
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
-        <TheLegend />
+        <TheLegend class="legend"/>
         <PayTable
           kenoType="classic"
           :selectedCellsCount="selectedNumbers.length"
@@ -59,39 +60,6 @@
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
 
-      <el-dialog
-        v-model="dialogVisible"
-        fullscreen
-        top="40vh"
-        width="70%"
-        draggable
-        class="help-dialog"
-      >
-        <el-space direction="vertical">
-          <div class="card-container">
-            <div v-for="(card, index) in cards" :key="index" class="card">
-              <div class="card-header">
-                <div class="step-sidebar">
-                  <div class="step-text">Step</div>
-                  <div class="step-number">
-                    {{ index + 1 }}
-                  </div>
-                </div>
-                <div class="card-title">{{ card.title }}</div>
-              </div>
-
-              <div class="card-content"></div>
-              <img :src="card.image" alt="Card Image" class="card-image" />
-              <p class="card-body">{{ card.body }}</p>
-            </div>
-          </div>
-        </el-space>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button type="primary" @click="dialogVisible = false"> Continue to game </el-button>
-          </div>
-        </template>
-      </el-dialog>
     </el-main>
   </el-container>
 </template>
@@ -117,58 +85,14 @@ import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import { provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { GameType } from '@/types'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import { GameType } from '@/types'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
+import TutorialDialog from '@/components/TutorialDialog.vue'
 
-import tutorial_1 from '../assets/tutorial_1.png'
-import tutorial_2 from '../assets/tutorial_2.png'
-import tutorial_3_4 from '../assets/tutorial_3_4.png'
-import tutorial_5_6 from '../assets/tutorial_5_6.png'
-import tutorial_7 from '../assets/tutorial_7.png'
-
-const cards = [
-  {
-    title: 'Select game mode',
-    image: tutorial_1,
-    body: 'To play a full online Keno game, start by selecting your preferred game mode. You can choose Classic Keno, where numbers range from 1 to 80, or Mini Keno, which has a smaller range from 1 to 49. Each mode offers different game play experiences, so pick the one that suits your preference.',
-  },
-  {
-    title: 'Purchase cards',
-    image: tutorial_2,
-    body: "Once you've chosen your game mode, proceed to purchase your Keno cards. You can buy a single card or multiple cards, depending on how many chances you want in the draw. Each card allows you to select numbers within the range specified by your chosen game mode.",
-  },
-  {
-    title: 'Select your keno numbers',
-    image: tutorial_3_4,
-    body: "You can select the Keno numbers you wish to bet on after receiving your Keno card or cards. Each number you choose is called a 'Keno spot.' Alternatively, you can use the auto-pick feature. To do this, simply select a number, press the auto-pick button, and the system will choose a Keno spot based on the number you have selected. Once your Keno numbers are chosen, the required hits and payout will be automatically displayed.",
-  },
-  {
-    title: 'Enter your wager amount',
-    image: tutorial_3_4,
-    body: "After selecting your Keno numbers, the next step is to place your wager. Enter the amount you wish to bet in the 'Wager' section. You can adjust your wager according to your preferred amount. If you wish to double your wager instantly, you can simply press the x2 button, which will multiply your wager by two. Keep in mind that the amount you wager can influence the payout you receive if you win.",
-  },
-  {
-    title: 'The game begins',
-    image: tutorial_5_6,
-    body: "Once you have entered your wager, it's time to start the game. Simply press the 'Play' button to confirm your choices and begin. The system will then process your selections, and you'll see the results of the draw shortly after.",
-  },
-  {
-    title: 'Matching Numbers',
-    image: tutorial_5_6,
-    body: 'After the draw, review the results to see if any of your chosen Keno numbers match the numbers drawn. If you have matching numbers, congratulations! The system will calculate your winnings based on your wager, the number of hits, and the payout table.',
-  },
-  {
-    title: 'The results',
-    image: tutorial_7,
-    body: "After pressing the 'Play' button, the outcome of the draw will be displayed. If there is a match, your winnings will be shown, based on the payout and the number of hits you achieved.",
-  },
-]
-
-const dialogVisible = ref(false)
 const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
@@ -182,6 +106,7 @@ const isRoundFinished = ref(false)
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
+const dialogVisible = ref(false)
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
@@ -366,7 +291,6 @@ function exitGame() {
   place-items: center;
   background: transparent;
   flex: 1;
-  margin-top: 80px;
 }
 
 .drawn-numbers {
@@ -395,65 +319,22 @@ function exitGame() {
   animation: bounce-in 0.4s reverse;
 }
 
-.card {
-  background: white;
-  color: black;
-  border-radius: 8px;
-  width: 900px;
-  margin-bottom: 60px;
-}
-.card-header {
-  display: flex;
-}
-.step-sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 86px;
-  height: 96px;
-  background-color: #4244ed;
-  border-radius: 8px 0 0;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.step-text {
-  font-weight: bold;
-}
-.step-number {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.card-title {
-  display: flex;
-  font-size: 1.5em;
-  margin: 8px 0;
-  color: black;
-  align-items: center;
-  padding: 0 20px;
-  font-weight: bold;
-  font-size: 24px;
-}
-.card-content {
-  display: flex;
-}
-
-.card-image {
-  width: 900px;
-  height: auto;
-}
-
-.card-body {
-  font-size: 18px;
-  padding: 26px;
-}
 .nav-container {
   display: flex;
   justify-content: space-between;
   gap: 20px;
 }
 
+::v-deep(.home-confirmation-dialog) {
+  --el-dialog-width: 100%;
+  max-width: 500px;
+}
+
+::v-deep(.el-overlay-dialog:has(.home-confirmation-dialog)) {
+  padding: 0 40px;
+}
+
+/* TODO: Try to move this to TutorialDialog.vue */
 ::v-deep(.help-dialog) {
   background-color: #060351;
 }
@@ -464,6 +345,7 @@ function exitGame() {
   align-items: center;
   flex-direction: column;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -484,6 +366,10 @@ function exitGame() {
 
 /* Small devices (tablets) */
 @media (max-width: 768px) {
+  .legend {
+    display: none;
+  }
+
   @keyframes bounce-in {
     0% {
       transform: scale(0);
