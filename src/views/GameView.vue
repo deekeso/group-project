@@ -2,19 +2,19 @@
   <el-container class="classic-page">
     <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
       <span>
-        You're about to go back to the home page. You will lose your progress after exiting. Are you
-        sure?
+        You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
       </span>
 
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
-          <el-button type="primary" @click="directToHome">Yes, take me home</el-button>
+          <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
         </div>
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton @home="confirmExitDialogVisible = true" />
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
+      <UserBalance class="header-button" @wallet="directToWallet"/>
       <div class="nav-container">
         <HelpBtn @click="dialogVisible = true" />
         <UserBalance @wallet="directToWallet" />
@@ -30,14 +30,8 @@
           style="padding-bottom: 24px"
         />
         <div class="grid-sidebtn-container">
-          <ClassicGrid
-            v-if="gameType === GameType.Classic"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <MiniGrid
-            v-else-if="gameType === GameType.Mini"
+          <GameGrid
+            :game-type="gameType"
             @number-selected="setSelectedNumbers"
             :is-round-finished
             @reset-round="resetRound"
@@ -63,6 +57,7 @@
           />
         </Transition>
         <NoWin v-if="result === 'lose' && showModal" />
+        <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
 
       <el-dialog
@@ -104,7 +99,6 @@
 </template>
 
 <script setup lang="ts">
-import ClassicGrid from '@/components/ClassicKeno/ClassicGrid.vue'
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
@@ -128,8 +122,9 @@ import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import MiniGrid from '@/components/MiniKeno/MiniGrid.vue'
 import { GameType } from '@/types'
+import GameGrid from '@/components/GameGrid.vue'
+import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import tutorial_1 from '../assets/tutorial_1.png'
 import tutorial_2 from '../assets/tutorial_2.png'
@@ -181,7 +176,8 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result } = storeToRefs(gameStore)
+const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
+  storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -236,7 +232,7 @@ async function startDraw() {
       message: 'Please top up your wallet or adjust your wager.',
       type: 'error',
       position: 'top-right',
-      duration: 3000,
+      duration: 2000,
       showClose: true,
     })
     return
@@ -269,7 +265,7 @@ async function startDraw() {
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    let maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameType === GameType.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
@@ -320,6 +316,10 @@ function directToHome() {
 }
 
 function directToWallet() {
+  let route = GameType.Classic
+
+  if (gameType === GameType.Mini) route = GameType.Mini
+
   router.push({
     name: 'wallet',
     query: {
@@ -335,6 +335,12 @@ function displayResult() {
   }, 150)
   showModal.value = false
 }
+
+function exitGame() {
+  gameStore.resetGame()
+  gameStore.resetPurchase()
+  directToHome()
+}
 </script>
 
 <style scoped>
@@ -344,7 +350,7 @@ function displayResult() {
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: bottom;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -362,6 +368,7 @@ function displayResult() {
   place-items: center;
   background: transparent;
   flex: 1;
+  margin-top: 80px;
 }
 
 .drawn-numbers {
@@ -370,12 +377,15 @@ function displayResult() {
 }
 
 .grid-paytable-container {
-  width: fit-content;
+  width: 100%;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .grid-sidebtn-container {
-  display: flex;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 9fr 1fr;
   gap: 10px;
 }
 
@@ -468,5 +478,41 @@ function displayResult() {
   100% {
     transform: scale(1);
   }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+
+    50% {
+      transform: scale(0.5);
+    }
+
+    100% {
+      transform: scale(0.5);
+    }
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

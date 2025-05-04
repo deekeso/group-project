@@ -29,7 +29,7 @@ const router = createRouter({
       component: () => import('@/views/GameView.vue'),
       meta: {
         requiresAuth: true,
-        gameType: GameType.Classic
+        gameType: GameType.Classic,
       },
     },
     {
@@ -38,14 +38,8 @@ const router = createRouter({
       component: () => import('@/views/GameView.vue'),
       meta: {
         requiresAuth: true,
-        gameType: GameType.Mini
+        gameType: GameType.Mini,
       },
-    },
-    {
-      path: '/purchase-cards',
-      name: RouteName.PurchaseCards,
-      component: () => import('@/views/PurchaseView.vue'),
-      meta: { requiresAuth: true },
     },
     {
       path: '/tutorial',
@@ -74,10 +68,11 @@ router.beforeEach(async (to, from, next) => {
 
   // Check if game
   if (
-    (from.name === RouteName.ClassicGame || from.name === RouteName.MiniGame) && to.name === RouteName.Wallet ||
-    (to.name === RouteName.ClassicGame || to.name === RouteName.MiniGame) && from.name === RouteName.Wallet
-  )
-  {
+    ((from.name === RouteName.ClassicGame || from.name === RouteName.MiniGame) &&
+      to.name === RouteName.Wallet) ||
+    ((to.name === RouteName.ClassicGame || to.name === RouteName.MiniGame) &&
+      from.name === RouteName.Wallet)
+  ) {
     // alert("don't clear")
   } else {
     // alert('clear')
