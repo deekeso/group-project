@@ -21,11 +21,6 @@ const showSigninModal = () => {
   isSignupVisible.value = false
 }
 
-const showSignupModal = () => {
-  isSignupVisible.value = true
-  isSigninVisible.value = false
-}
-
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -47,29 +42,29 @@ onBeforeMount(() => {
       <hr />
       <div class="gamemode-container">
         <GameModesCard @trigger-signin="showSigninModal" />
-        <el-dialog 
-          v-model="isSigninVisible" 
-          style="background-color: transparent" 
+        <el-dialog
+          v-model="isSigninVisible"
+          style="background-color: transparent"
           center
           @close="signinFormRef?.resetForm()"
         >
-          <SigninForm 
+          <SigninForm
             ref="signinFormRef"
-            @close="isSigninVisible = false" 
+            @close="isSigninVisible = false"
             @open-signup="() => {
               isSigninVisible = false
               isSignupVisible = true
-            }" 
+            }"
           />
         </el-dialog>
 
-        <el-dialog 
-          v-model="isSignupVisible" 
-          style="background-color: transparent" 
+        <el-dialog
+          v-model="isSignupVisible"
+          style="background-color: transparent"
           center
           @close="signupFormRef?.resetForm()"
         >
-          <SignupForm 
+          <SignupForm
             ref="signupFormRef"
             @close="isSignupVisible = false"
             @open-signin="() => {
