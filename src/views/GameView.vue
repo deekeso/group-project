@@ -89,8 +89,7 @@
         </el-space>
         <template #footer>
           <div class="dialog-footer">
-            <el-button @click="dialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="dialogVisible = false"> Confirm </el-button>
+            <el-button type="primary" @click="dialogVisible = false"> Continue to game </el-button>
           </div>
         </template>
       </el-dialog>
@@ -316,14 +315,14 @@ function directToHome() {
 }
 
 function directToWallet() {
-  let route = GameType.Classic
+  let r = GameType.Classic
 
-  if (gameType === GameType.Mini) route = GameType.Mini
+  if (gameType === GameType.Mini) r = GameType.Mini
 
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic',
+      redirect: r,
     },
   })
 }
