@@ -16,7 +16,8 @@
     <el-header>
       <HomeButton @home="confirmExitDialogVisible = true" />
       <div class="nav-container">
-        <HelpBtn @click="dialogVisible = true" />
+        <!-- <HelpBtn @click="dialogVisible = true" /> -->
+        <HelpBtn @click="startTour" />
         <UserBalance @wallet="directToWallet" />
       </div>
     </el-header>
@@ -60,40 +61,20 @@
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
 
-      <el-dialog
-        v-model="dialogVisible"
-        fullscreen
-        top="40vh"
-        width="70%"
-        draggable
-        class="help-dialog"
-      >
-        <el-space direction="vertical">
-          <div class="card-container">
-            <div v-for="(card, index) in cards" :key="index" class="card">
-              <div class="card-header">
-                <div class="step-sidebar">
-                  <div class="step-text">Step</div>
-                  <div class="step-number">
-                    {{ index + 1 }}
-                  </div>
-                </div>
-                <div class="card-title">{{ card.title }}</div>
-              </div>
-
-              <div class="card-content"></div>
-              <img :src="card.image" alt="Card Image" class="card-image" />
-              <p class="card-body">{{ card.body }}</p>
-            </div>
-          </div>
-        </el-space>
-        <template #footer>
-          <div class="dialog-footer">
-            <el-button @click="dialogVisible = false">Cancel</el-button>
-            <el-button type="primary" @click="dialogVisible = false"> Confirm </el-button>
-          </div>
+      <el-tour v-model="open" style="color: black">
+        <el-tour-step
+          v-for="(step, index) in tourSteps"
+          :key="index"
+          :target="step.target"
+          :title="step.title"
+          :placement="step.placement"
+        >
+          {{ step.description }}
+        </el-tour-step>
+        <template #indicators="{ current, total }">
+          <span>{{ current + 1 }} / {{ total }}</span>
         </template>
-      </el-dialog>
+      </el-tour>
     </el-main>
   </el-container>
 </template>
@@ -125,6 +106,10 @@ import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.w
 import { GameType } from '@/types'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
+
+import { useTour } from '@/composables/useTour'
+
+const { open, currentStep, tourSteps, startTour, nextStep } = useTour()
 
 const router = useRouter()
 const route = useRoute()

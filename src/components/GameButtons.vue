@@ -2,7 +2,7 @@
   <div class="btn-container">
     <button
       @click="halfWager"
-      class="yellow-btn btn"
+      class="yellow-btn btn half-btn"
       :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
     >
       ÷2
@@ -16,11 +16,12 @@
         @mouseup="stopDecreaseHold"
         @mouseleave="stopDecreaseHold"
       >
-        <el-icon size="large" color="black">
+        <el-icon class="minus-icon" size="large" color="black">
           <Minus />
         </el-icon>
       </button>
       <input
+        class="wager-slider"
         type="range"
         v-model="wager"
         :min="gameStore.MIN_WAGER"
@@ -39,7 +40,7 @@
         @mouseup="stopIncreaseHold"
         @mouseleave="stopIncreaseHold"
       >
-        <el-icon size="large" color="black">
+        <el-icon class="plus-icon" size="large" color="black">
           <Plus />
         </el-icon>
       </button>
@@ -48,12 +49,16 @@
 
     <button
       @click="doubleWager"
-      class="yellow-btn btn"
+      class="yellow-btn btn double-btn"
       :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
     >
       ×2
     </button>
-    <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing || disabled">
+    <button
+      @click="$emit('playGame')"
+      class="yellow-btn btn play-btn"
+      :disabled="isDrawing || disabled"
+    >
       Play
     </button>
   </div>
