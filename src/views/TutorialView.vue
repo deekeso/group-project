@@ -79,6 +79,7 @@ const cards = [
 </script>
 
 <style scoped>
+
 .card {
   background: white;
   color: black;

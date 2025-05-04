@@ -20,6 +20,7 @@ import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { GameType } from '@/types';
 import { storeToRefs } from 'pinia'
+import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 
 const gameStore = useGameStore()
 const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
@@ -48,8 +49,10 @@ function toggleNumber(number: number): void {
   const index = selectedNumbers.value.indexOf(number)
   if (index > -1) {
     selectedNumbers.value.splice(index, 1)
+    new Audio(toggleSoundEffect).play()
   } else if (selectedNumbers.value.length < 15) {
     selectedNumbers.value.push(number)
+    new Audio(toggleSoundEffect).play()
   }
   emit('numberSelected', selectedNumbers.value)
 }

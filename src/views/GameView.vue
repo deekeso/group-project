@@ -87,8 +87,10 @@ import { provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { GameType } from '@/types'
 
-import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
+// import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
+import drawSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
+import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 import TutorialDialog from '@/components/TutorialDialog.vue'
@@ -174,7 +176,7 @@ async function startDraw() {
     const source = audioContext.createBufferSource()
     source.buffer = audioBuffer
 
-    source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
+    source.playbackRate.value = 1 + i * 0.005 // Increase pitch each time
 
     source.connect(audioContext.destination)
     source.start()
@@ -210,12 +212,12 @@ function autopickNumberSelected(number: number) {
   const interval = setInterval(() => {
     kenoAutopick(number, gameType)
     count++
-
+    playSoundEffect(0, toggleSoundEffect)
     if (count >= number) {
       clearInterval(interval)
       isDrawing.value = false
     }
-  }, 10)
+  }, 50)
   displayMatching.value = false
 }
 
@@ -267,6 +269,15 @@ function exitGame() {
 </script>
 
 <style scoped>
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -khtml-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
 .classic-page {
   min-height: 100vh;
   width: 100%;
