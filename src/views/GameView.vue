@@ -14,31 +14,68 @@
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
-      <UserBalance class="header-button" @wallet="directToWallet"/>
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+      <UserBalance class="header-button" @wallet="directToWallet" />
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable
-          kenoType="classic"
-          :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-          style="padding-bottom: 24px"
-        />
-        <div class="grid-sidebtn-container">
-          <GameGrid
-            :game-type="gameType"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
+
+        <!--Display in carousel if there are multiple cards-->
+        <el-carousel
+          v-if="purchaseMode === 'multiple'"
+          indicator-position="outside"
+          arrow="always"
+          autoplay="disabled"
+          loop="false"
+          height="auto"
+        >
+          <el-carousel-item v-for="(cards, index) in numberOfCards" :key="index" height="auto">
+            <PayTable
+              kenoType="classic"
+              :selectedCellsCount="selectedNumbers.length"
+              :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+              style="padding-bottom: 24px"
+            />
+            <div class="grid-sidebtn-container">
+              <GameGrid
+                :game-type="gameType"
+                @number-selected="setSelectedNumbers"
+                :is-round-finished
+                @reset-round="resetRound"
+              />
+              <GameSideButtons
+                @clear="resetGame"
+                @number-selected="autopickNumberSelected"
+                :max-number="payTable[gameType].length"
+                :game-is-drawing="isDrawing"
+              />
+            </div>
+          </el-carousel-item>
+        </el-carousel>
+
+        <!--else, display single card-->
+        <div v-else>
+          <PayTable
+            kenoType="classic"
+            :selectedCellsCount="selectedNumbers.length"
+            :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+            style="padding-bottom: 24px"
           />
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length"
-            :game-is-drawing="isDrawing"
-          />
+          <div class="grid-sidebtn-container">
+            <GameGrid
+              :game-type="gameType"
+              @number-selected="setSelectedNumbers"
+              :is-round-finished
+              @reset-round="resetRound"
+            />
+            <GameSideButtons
+              @clear="resetGame"
+              @number-selected="autopickNumberSelected"
+              :max-number="payTable[gameType].length"
+              :game-is-drawing="isDrawing"
+            />
+          </div>
         </div>
 
         <GameButtons
@@ -92,8 +129,15 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
-  storeToRefs(gameStore)
+const {
+  matchedNumbers,
+  selectedNumbers,
+  winnings,
+  result,
+  hasPurchasedCards,
+  purchaseMode,
+  numberOfCards,
+} = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -286,13 +330,16 @@ function exitGame() {
   flex: 1;
   margin-top: 80px;
 }
-
+.el-carousel__item {
+  height: auto;
+}
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
 }
 
-.grid-paytable-container {
+.grid-paytable-container,
+.el-carousel__item {
   width: 100%;
   max-width: 760px;
   margin: 0 auto;
