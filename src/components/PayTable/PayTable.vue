@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import payTable from './payTable.json'
 
 const { selectedCellsCount, matchedCellsCount, kenoType } = defineProps<{
@@ -29,7 +29,8 @@ function updatePayTableData() {
   const zeros = payTable[kenoType][selectedCellsCount - 1]['zeros']
   const hits = payTable[kenoType][selectedCellsCount - 1]['hits']
 
-  let result: any[] = []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any[] = []
 
   const numberFormatter = Intl.NumberFormat('en-US', { notation: 'compact' })
 
@@ -68,28 +69,30 @@ updatePayTableData()
   <div v-if="selectedCellsCount > 0" class="pay-table">
     <div class="cells-container">
       <div class="label-container">
-        <div class="label" :class="{ verticalText: selectedCellsCount >= 13 }">
+        <div class="label" :class="{ verticalText: selectedCellsCount >= 9, smallerText: selectedCellsCount >= 9 }">
           <el-text tag="p" size="large">Pays</el-text>
         </div>
-        <div class="label" :class="{ verticalText: selectedCellsCount >= 13 }">
+        <div class="label" :class="{ verticalText: selectedCellsCount >= 9, smallerText: selectedCellsCount >= 9 }">
           <el-text tag="p" size="large">Hits</el-text>
         </div>
       </div>
-      <div v-for="data in payTableData" class="pay-data">
+      <div v-for="data in payTableData" class="pay-data" :key="data.hit">
         <!-- PAY CELL -->
         <div v-if="data.endIndex != null" class="multiplier-cell-tight" :class="{
           hit: matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex,
           hide:
             !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
             matchedCellsCount > -1,
-          verticalText: selectedCellsCount >= 13
+          verticalText: selectedCellsCount >= 9,
+          smallerText: selectedCellsCount >= 9
         }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
         <div v-else class="multiplier-cell-tight" :class="{
           hit: matchedCellsCount === data.startIndex,
           hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
-          verticalText: selectedCellsCount >= 13
+          verticalText: selectedCellsCount >= 9,
+          smallerText: selectedCellsCount >= 9
         }">
           <el-text size="large">x{{ data.pays }}</el-text>
         </div>
@@ -101,12 +104,14 @@ updatePayTableData()
           hide:
             !(matchedCellsCount >= data.startIndex && matchedCellsCount <= data.endIndex) &&
             matchedCellsCount > -1,
+            smallerText: selectedCellsCount >= 9
         }">
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
         <div v-else class="selected-count-cell" :class="{
           hit: matchedCellsCount === data.startIndex,
           hide: matchedCellsCount !== data.startIndex && matchedCellsCount > -1,
+          smallerText: selectedCellsCount >= 9
         }">
           <el-text size="large">{{ data.hit }}</el-text>
         </div>
@@ -179,10 +184,16 @@ updatePayTableData()
 
 .multiplier-cell-tight {
   background-color: #524de0;
+  display: flex;
+  justify-content: center;
+  align-items: center
 }
 
 .selected-count-cell {
   background-color: #964de0;
+  display: flex;
+  justify-content: center;
+  align-items: center
 }
 
 .label {
@@ -238,16 +249,20 @@ updatePayTableData()
 
 /* Small devices (tablets) */
 @media (max-width: 768px) {
-  .cells-container {  
+  .cells-container {
     height: 120px;
   }
-  
+
   .selected-count-cell {
     height: fit-content;
   }
-  
+
   .label {
     height: 100%;
+  }
+
+  .smallerText .el-text {
+    font-size: 0.8rem;
   }
 
   .verticalText {

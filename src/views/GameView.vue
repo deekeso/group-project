@@ -6,10 +6,10 @@
       </span>
 
       <template #footer>
-        <div class="dialog-footer">
+        <el-space alignment="flex-end" :size="10" wrap>
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
           <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
-        </div>
+        </el-space>
       </template>
     </el-dialog>
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
@@ -344,6 +344,11 @@ function exitGame() {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+.el-space {
+  display: flex;
+  justify-content: end;
 }
 
 @keyframes bounce-in {
