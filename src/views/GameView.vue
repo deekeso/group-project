@@ -14,7 +14,6 @@
     </el-dialog>
     <el-header>
       <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
-      <UserBalance class="header-button" @wallet="directToWallet"/>
       <div class="nav-container">
         <HelpBtn @click="dialogVisible = true" />
         <UserBalance @wallet="directToWallet" />
