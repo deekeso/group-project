@@ -12,10 +12,12 @@ export const useGameStore = defineStore('game', () => {
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
   const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
+
+  // moved to card states array
   const wager = ref<number>(MIN_WAGER)
-  const bet = ref<number>(1)
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
+
   const mode = ref<GameMode>('classic')
   const loseStreak = ref(0)
 
@@ -31,6 +33,9 @@ export const useGameStore = defineStore('game', () => {
     Array<{
       selectedNumbers: number[]
       matchedNumbers: number[]
+      wager: number
+      winnings: number
+      result: 'win' | 'lose' | ''
     }>
   >([])
 
@@ -104,6 +109,9 @@ export const useGameStore = defineStore('game', () => {
     cards.value = Array.from({ length: numberOfCards.value }, () => ({
       selectedNumbers: [],
       matchedNumbers: [],
+      wager: MIN_WAGER,
+      winnings: 0,
+      result: '',
     }))
   }
 
