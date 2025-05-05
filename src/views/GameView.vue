@@ -371,6 +371,20 @@ function exitGame() {
 
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
+  .grid-paytable-container {
+    padding: 10px;
+  }
+  ::v-deep(.el-carousel__arrow) {
+    width: 20px;
+    height: 30px;
+    border-radius: 5px;
+  }
+  ::v-deep(.el-carousel__arrow--left) {
+    left: -27px;
+  }
+  ::v-deep(.el-carousel__arrow--right) {
+    right: -27px;
+  }
 }
 
 /* Small devices (tablets) */
