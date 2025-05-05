@@ -67,9 +67,7 @@ const authStore = useAuthStore()
 <template>
   <nav class="navbar">
     <div class="nav-content">
-      <div class="logo-container">
-        <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
-      </div>
+      <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       <div class="profile-container">
         <div class="userbal-button" v-if="authStore.isAuthenticated">
           <UserBalance @wallet="directToWallet" />
@@ -145,15 +143,8 @@ const authStore = useAuthStore()
   padding: 0 40px;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  height: 100px;
-  grid-column: 2;
-  justify-content: center;
-}
-
 .logo {
+  grid-column: 2;
   height: 150px;
   width: auto;
   margin-top: 25px;
@@ -215,5 +206,30 @@ const authStore = useAuthStore()
 :deep(.el-dialog__body) {
   padding: 0;
   overflow: auto;
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+  .logo {
+    grid-column: 1;
+  }
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

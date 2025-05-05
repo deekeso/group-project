@@ -13,7 +13,9 @@
         @click="gameStore.decreaseWager"
         :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
         @mousedown="startDecreaseHold"
+        @touchstart="startDecreaseHold"
         @mouseup="stopDecreaseHold"
+        @touchend="stopDecreaseHold"
         @mouseleave="stopDecreaseHold"
       >
         <el-icon class="minus-icon" size="large" color="black">
@@ -37,7 +39,9 @@
         @click="gameStore.increaseWager"
         :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
         @mousedown="startIncreaseHold"
+        @touchstart="startIncreaseHold"
         @mouseup="stopIncreaseHold"
+        @touchend="stopIncreaseHold"
         @mouseleave="stopIncreaseHold"
       >
         <el-icon class="plus-icon" size="large" color="black">
@@ -166,6 +170,15 @@ function halfWager() {
 </script>
 
 <style scoped>
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -khtml-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
 .btn-container {
   width: 100%;
   display: grid;
