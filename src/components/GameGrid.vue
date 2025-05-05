@@ -2,12 +2,22 @@
   <div class="keno-grid">
     <div class="container">
       <div :class="`${gameType}-grid`">
-        <div v-for="number in cellCount" :key="number" class="keno-cell" :class="[
-          'cell',
-          matchedNumbers.includes(number) ? 'matched' :
-            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
-              selectedNumbers.includes(number) ? 'selected' : '',
-        ]" @click="toggleNumber(number)">
+        <div
+          v-for="number in cellCount"
+          :key="number"
+          class="keno-cell"
+          :class="[
+            'cell',
+            card.matchedNumbers.includes(number)
+              ? 'matched'
+              : drawnNumbers.includes(number) && !selectedNumbers.includes(number)
+                ? 'missed'
+                : card.selectedNumbers.includes(number)
+                  ? 'selected'
+                  : '',
+          ]"
+          @click="toggleNumber(number)"
+        >
           {{ number }}
         </div>
       </div>
@@ -18,24 +28,26 @@
 <script setup lang="ts">
 import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
-import { GameType } from '@/types';
+import { GameType } from '@/types'
 import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
-const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
+const { selectedNumbers, matchedNumbers, drawnNumbers, cards } = storeToRefs(gameStore)
 const isDrawing = useGameDrawing()
-
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
   (e: 'resetRound'): void
 }>()
 
-const { isRoundFinished, gameType } = defineProps<{
+const { isRoundFinished, gameType, cardIndex } = defineProps<{
   isRoundFinished: boolean
   gameType: GameType
+  cardIndex: number
 }>()
 
 const cellCount = gameType === GameType.Classic ? 80 : gameType === GameType.Mini ? 49 : 80
+
+const card = cards.value[cardIndex]
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
@@ -45,13 +57,13 @@ function toggleNumber(number: number): void {
     drawnNumbers.value = []
     emit('resetRound')
   }
-  const index = selectedNumbers.value.indexOf(number)
+  const index = card.selectedNumbers.indexOf(number)
   if (index > -1) {
-    selectedNumbers.value.splice(index, 1)
-  } else if (selectedNumbers.value.length < 15) {
-    selectedNumbers.value.push(number)
+    card.selectedNumbers.splice(index, 1) //multcard
+  } else if (card.selectedNumbers.length < 15) {
+    card.selectedNumbers.push(number)
   }
-  emit('numberSelected', selectedNumbers.value)
+  // emit('numberSelected', card.selectedNumbers) not necessary
 }
 </script>
 
@@ -101,7 +113,7 @@ function toggleNumber(number: number): void {
   cursor: pointer;
   transition: background-color 0.2s;
   user-select: none;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .cell:not(.disabled):not(.matched):not(.missed):hover {
@@ -150,7 +162,6 @@ function toggleNumber(number: number): void {
   }
 }
 
-
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
   .keno-cell {
@@ -165,7 +176,8 @@ function toggleNumber(number: number): void {
     padding: 10px 0;
   }
 
-  .classic-grid, .mini-grid {
+  .classic-grid,
+  .mini-grid {
     gap: 2px;
   }
   .keno-cell {

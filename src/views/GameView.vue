@@ -30,20 +30,19 @@
           :arrow="numberOfCards > 1 ? 'always' : 'never'"
           :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
         >
-          <el-carousel-item v-for="card in numberOfCards" :key="card" height="auto">
+          <el-carousel-item v-for="(card, index) in cards" :key="index" height="auto">
             <PayTable
               kenoType="classic"
-              :selectedCellsCount="selectedNumbers.length"
-              :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+              :selectedCellsCount="cards[index].selectedNumbers.length"
+              :matchedCellsCount="displayMatching ? cards[index].matchedNumbers.length : -1"
               style="padding-bottom: 24px"
-              :cardIndex="card"
             />
             <div class="grid-sidebtn-container">
               <GameGrid
                 :game-type="gameType"
-                @number-selected="setSelectedNumbers"
                 :is-round-finished
                 @reset-round="resetRound"
+                :cardIndex="index"
               />
               <GameSideButtons
                 @clear="resetGame"
@@ -106,8 +105,15 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards, numberOfCards } =
-  storeToRefs(gameStore)
+const {
+  matchedNumbers,
+  selectedNumbers,
+  winnings,
+  result,
+  hasPurchasedCards,
+  numberOfCards,
+  cards,
+} = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
