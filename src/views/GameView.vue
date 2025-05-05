@@ -23,12 +23,11 @@
 
         <!--Display in carousel if there are multiple cards-->
         <el-carousel
-          v-if="purchaseMode === 'multiple'"
-          indicator-position="outside"
-          arrow="always"
-          autoplay="disabled"
-          loop="false"
           height="auto"
+          :loop="false"
+          :autoplay="false"
+          :arrow="numberOfCards > 1 ? 'always' : 'never'"
+          :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
         >
           <el-carousel-item v-for="(cards, index) in numberOfCards" :key="index" height="auto">
             <PayTable
@@ -53,30 +52,6 @@
             </div>
           </el-carousel-item>
         </el-carousel>
-
-        <!--else, display single card-->
-        <div v-else>
-          <PayTable
-            kenoType="classic"
-            :selectedCellsCount="selectedNumbers.length"
-            :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-            style="padding-bottom: 24px"
-          />
-          <div class="grid-sidebtn-container">
-            <GameGrid
-              :game-type="gameType"
-              @number-selected="setSelectedNumbers"
-              :is-round-finished
-              @reset-round="resetRound"
-            />
-            <GameSideButtons
-              @clear="resetGame"
-              @number-selected="autopickNumberSelected"
-              :max-number="payTable[gameType].length"
-              :game-is-drawing="isDrawing"
-            />
-          </div>
-        </div>
 
         <GameButtons
           @playGame="startDraw"
@@ -330,8 +305,29 @@ function exitGame() {
   flex: 1;
   margin-top: 80px;
 }
+.el-carousel {
+  overflow: visible;
+}
 .el-carousel__item {
   height: auto;
+}
+::v-deep(.el-carousel__arrow) {
+  background-color: #7674a7;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+::v-deep(.el-carousel__arrow:hover) {
+  background-color: #8f8ec0;
+}
+::v-deep(.el-carousel__arrow--left) {
+  left: -50px;
+}
+::v-deep(.el-carousel__arrow--right) {
+  right: -50px;
 }
 .drawn-numbers {
   display: flex;
@@ -342,7 +338,6 @@ function exitGame() {
 .el-carousel__item {
   width: 100%;
   max-width: 760px;
-  margin: 0 auto;
 }
 
 .grid-sidebtn-container {
