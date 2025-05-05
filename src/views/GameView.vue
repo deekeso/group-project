@@ -334,10 +334,10 @@ function exitGame() {
   margin-block: 10px;
 }
 
-.grid-paytable-container,
-.el-carousel__item {
+.grid-paytable-container {
   width: 100%;
-  max-width: 760px;
+  max-width: 800px;
+  padding: 35px;
 }
 
 .grid-sidebtn-container {
