@@ -128,7 +128,12 @@ export const useGameStore = defineStore('game', () => {
 
   function setDrawnNumbers(numbers: number[]) {
     drawnNumbers.value = numbers
-    matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
+
+    //modified to detect match per card
+    cards.value = cards.value.map((card) => ({
+      ...card,
+      matchedNumbers: numbers.filter((n) => card.selectedNumbers.includes(n)),
+    }))
   }
 
   function resetGame(preserveSelectedNumbers: boolean = false) {

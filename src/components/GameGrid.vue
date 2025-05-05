@@ -30,9 +30,10 @@ import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { GameType } from '@/types'
 import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 
 const gameStore = useGameStore()
-const { selectedNumbers, matchedNumbers, drawnNumbers, cards } = storeToRefs(gameStore)
+const { selectedNumbers, drawnNumbers, cards } = storeToRefs(gameStore)
 const isDrawing = useGameDrawing()
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
@@ -47,13 +48,13 @@ const { isRoundFinished, gameType, cardIndex } = defineProps<{
 
 const cellCount = gameType === GameType.Classic ? 80 : gameType === GameType.Mini ? 49 : 80
 
-const card = cards.value[cardIndex]
+const card = computed(() => cards.value[cardIndex])
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
   if (isDrawing.value) return
   if (isRoundFinished) {
-    matchedNumbers.value = []
+    card.matchedNumbers = []
     drawnNumbers.value = []
     emit('resetRound')
   }

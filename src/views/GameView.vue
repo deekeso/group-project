@@ -49,6 +49,7 @@
                 @number-selected="autopickNumberSelected"
                 :max-number="payTable[gameType].length"
                 :game-is-drawing="isDrawing"
+                :cardIndex="index"
               />
             </div>
           </el-carousel-item>
@@ -57,7 +58,7 @@
         <GameButtons
           @playGame="startDraw"
           :game-is-drawing="isDrawing"
-          :disabled="selectedNumbers.length < 1"
+          :disabled="!allCardsHaveSelections"
         />
         <Transition name="bounce">
           <WithWin
@@ -91,7 +92,7 @@ import { useGameStore } from '@/stores/useGameStore'
 import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import { provide, readonly, ref } from 'vue'
+import { provide, readonly, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
@@ -105,15 +106,7 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const {
-  matchedNumbers,
-  selectedNumbers,
-  winnings,
-  result,
-  hasPurchasedCards,
-  numberOfCards,
-  cards,
-} = storeToRefs(gameStore)
+const { winnings, result, hasPurchasedCards, numberOfCards, cards } = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -123,6 +116,10 @@ const confirmExitDialogVisible = ref(false)
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
+
+const allCardsHaveSelections = computed(
+  () => cards.value.length > 0 && cards.value.every((card) => card.selectedNumbers.length > 0),
+)
 
 gameStore.setLoseStreakEffect(() => {
   alert("You lost 20 times. Here's a free spin!")
