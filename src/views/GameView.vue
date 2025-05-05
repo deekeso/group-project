@@ -23,7 +23,6 @@
 
         <!--Display in carousel if there are multiple cards-->
         <el-carousel
-          v-model="currentIndex"
           height="auto"
           trigger="click"
           :loop="false"
