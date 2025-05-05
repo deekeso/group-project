@@ -27,6 +27,13 @@ export const useGameStore = defineStore('game', () => {
   const purchaseMode = ref<'single' | 'multiple'>()
   const numberOfCards = ref<number>(0)
 
+  const cards = ref<
+    Array<{
+      selectedNumbers: number[]
+      matchedNumbers: number[]
+    }>
+  >([])
+
   // autosave to local storage
   watch(
     [
@@ -38,6 +45,7 @@ export const useGameStore = defineStore('game', () => {
       hasPurchasedCards,
       purchaseMode,
       numberOfCards,
+      cards,
     ],
     () => {
       localStorage.setItem(
@@ -54,6 +62,7 @@ export const useGameStore = defineStore('game', () => {
           hasPurchasedCards: hasPurchasedCards.value,
           purchaseMode: purchaseMode.value,
           numberOfCards: numberOfCards.value,
+          cards: cards.value,
         }),
       )
     },
@@ -86,7 +95,16 @@ export const useGameStore = defineStore('game', () => {
       hasPurchasedCards.value = parsed.hasPurchasedCards || false
       purchaseMode.value = parsed.purchaseMode || 'single'
       numberOfCards.value = parsed.numberOfCards || 1
+
+      cards.value = parsed.cards || []
     }
+  }
+
+  function initializeCards() {
+    cards.value = Array.from({ length: numberOfCards.value }, () => ({
+      selectedNumbers: [],
+      matchedNumbers: [],
+    }))
   }
 
   // wager counter
@@ -110,7 +128,12 @@ export const useGameStore = defineStore('game', () => {
 
   function setDrawnNumbers(numbers: number[]) {
     drawnNumbers.value = numbers
-    matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
+
+    //modified to detect match per card
+    cards.value = cards.value.map((card) => ({
+      ...card,
+      matchedNumbers: numbers.filter((n) => card.selectedNumbers.includes(n)),
+    }))
   }
 
   function resetGame(preserveSelectedNumbers: boolean = false) {
@@ -195,6 +218,8 @@ export const useGameStore = defineStore('game', () => {
     hasPurchasedCards,
     purchaseMode,
     numberOfCards,
+    cards,
+    initializeCards,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,

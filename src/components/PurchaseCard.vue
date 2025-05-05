@@ -46,10 +46,8 @@ import GameDialog from '../components/GameDialog.vue'
 import MultipleCard from '../components/PurchaseCard/MultipleCard.vue'
 import SingleCard from '../components/PurchaseCard/SingleCard.vue'
 import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 
 const gameStore = useGameStore()
-const { hasPurchasedCards } = storeToRefs(gameStore)
 const selectionMode = ref<'single' | 'multiple'>('single')
 const multipleCounter = ref<number>(2)
 const MIN_NUM = 2
@@ -73,6 +71,7 @@ function incrementCounter() {
 
 function makePurchase() {
   gameStore.makePurchase(selectionMode.value, multipleCounter.value)
+  gameStore.initializeCards()
 }
 </script>
 
