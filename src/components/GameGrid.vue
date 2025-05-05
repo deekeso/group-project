@@ -54,15 +54,15 @@ const card = computed(() => cards.value[cardIndex])
 function toggleNumber(number: number): void {
   if (isDrawing.value) return
   if (isRoundFinished) {
-    card.matchedNumbers = []
+    card.value.matchedNumbers = []
     drawnNumbers.value = []
     emit('resetRound')
   }
-  const index = card.selectedNumbers.indexOf(number)
+  const index = card.value.selectedNumbers.indexOf(number)
   if (index > -1) {
-    card.selectedNumbers.splice(index, 1) //multcard
-  } else if (card.selectedNumbers.length < 15) {
-    card.selectedNumbers.push(number)
+    card.value.selectedNumbers.splice(index, 1) //multcard
+  } else if (card.value.selectedNumbers.length < 15) {
+    card.value.selectedNumbers.push(number)
   }
   // emit('numberSelected', card.selectedNumbers) not necessary
 }
