@@ -14,32 +14,44 @@
       </template>
     </el-dialog>
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
-      <UserBalance class="header-button" @wallet="directToWallet"/>
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+      <UserBalance class="header-button" @wallet="directToWallet" />
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend />
-        <PayTable
-          kenoType="classic"
-          :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-          style="padding-bottom: 24px"
-        />
-        <div class="grid-sidebtn-container">
-          <GameGrid
-            :game-type="gameType"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length"
-            :game-is-drawing="isDrawing"
-          />
-        </div>
+
+        <!--Display in carousel if there are multiple cards-->
+        <el-carousel
+          height="auto"
+          :loop="false"
+          :autoplay="false"
+          :arrow="numberOfCards > 1 ? 'always' : 'never'"
+          :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
+        >
+          <el-carousel-item v-for="(cards, index) in numberOfCards" :key="index" height="auto">
+            <PayTable
+              kenoType="classic"
+              :selectedCellsCount="selectedNumbers.length"
+              :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
+              style="padding-bottom: 24px"
+            />
+            <div class="grid-sidebtn-container">
+              <GameGrid
+                :game-type="gameType"
+                @number-selected="setSelectedNumbers"
+                :is-round-finished
+                @reset-round="resetRound"
+              />
+              <GameSideButtons
+                @clear="resetGame"
+                @number-selected="autopickNumberSelected"
+                :max-number="payTable[gameType].length"
+                :game-is-drawing="isDrawing"
+              />
+            </div>
+          </el-carousel-item>
+        </el-carousel>
 
         <GameButtons
           @playGame="startDraw"
@@ -92,8 +104,15 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
-  storeToRefs(gameStore)
+const {
+  matchedNumbers,
+  selectedNumbers,
+  winnings,
+  result,
+  hasPurchasedCards,
+  purchaseMode,
+  numberOfCards,
+} = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
@@ -286,7 +305,30 @@ function exitGame() {
   flex: 1;
   margin-top: 80px;
 }
+.el-carousel {
+  overflow: visible;
+}
+.el-carousel__item {
+  height: auto;
+}
+::v-deep(.el-carousel__arrow) {
+  background-color: #7674a7;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
 
+::v-deep(.el-carousel__arrow:hover) {
+  background-color: #8f8ec0;
+}
+::v-deep(.el-carousel__arrow--left) {
+  left: -50px;
+}
+::v-deep(.el-carousel__arrow--right) {
+  right: -50px;
+}
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
@@ -294,8 +336,8 @@ function exitGame() {
 
 .grid-paytable-container {
   width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
+  max-width: 800px;
+  padding: 35px;
 }
 
 .grid-sidebtn-container {
@@ -329,6 +371,20 @@ function exitGame() {
 
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
+  .grid-paytable-container {
+    padding: 10px;
+  }
+  ::v-deep(.el-carousel__arrow) {
+    width: 20px;
+    height: 30px;
+    border-radius: 5px;
+  }
+  ::v-deep(.el-carousel__arrow--left) {
+    left: -27px;
+  }
+  ::v-deep(.el-carousel__arrow--right) {
+    right: -27px;
+  }
 }
 
 /* Small devices (tablets) */
