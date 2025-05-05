@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTour } from '@/composables/useTour'
 
-const { open, currentStep, tourSteps, startTour, nextStep } = useTour()
+const { open, tourSteps } = useTour()
 </script>
 <template>
   <el-tour v-model="open" style="color: black">

@@ -22,8 +22,8 @@
     <el-header>
       <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
       <div class="nav-container">
-        <!-- <HelpBtn @click="dialogVisible = true" /> -->
-        <HelpBtn @click="startTour" />
+        <HelpBtn @click="dialogVisible = true" />
+        <!-- <HelpBtn @click="startTour" /> -->
         <UserBalance @wallet="directToWallet" />
       </div>
     </el-header>
@@ -66,8 +66,6 @@
         <NoWin v-if="result === 'lose' && showModal" />
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
-      <TutorialDialog v-model="dialogVisible" />
-
       <HelpTour v-model="open" />
     </el-main>
   </el-container>
@@ -107,7 +105,7 @@ import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import { useTour } from '@/composables/useTour'
 
-const { open, startTour } = useTour()
+const { open } = useTour()
 
 const router = useRouter()
 const route = useRoute()
@@ -357,11 +355,6 @@ function exitGame() {
 
 ::v-deep(.el-overlay-dialog:has(.home-confirmation-dialog)) {
   padding: 0 40px;
-}
-
-/* TODO: Try to move this to TutorialDialog.vue */
-::v-deep(.help-dialog) {
-  background-color: #060351;
 }
 
 ::v-deep(.el-dialog__body) {
