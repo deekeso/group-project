@@ -1,44 +1,55 @@
 <template>
-  <el-header>
-    <HomeButton @home="directToHome" />
-  </el-header>
-  <el-space direction="vertical">
-    <div class="card-container">
-      <div v-for="(card, index) in cards" :key="index" class="card">
-        <div class="card-header">
-          <div class="step-sidebar">
-            <div class="step-text">Step</div>
-            <div class="step-number">
-              {{ index + 1 }}
+  <el-dialog v-model="dialogVisible" fullscreen top="40vh" width="70%" draggable class="help-dialog">
+    <el-space direction="vertical">
+      <TheLegend />
+      <el-card v-for="(card, index) in cards" :key="index">
+        <template #header>
+          <div class="card-header">
+            <div class="step-container">
+              <span>Step</span>
+              <span>{{ index + 1 }}</span>
+            </div>
+            <div class="card-title">
+              <span>{{ card.title }}</span>
             </div>
           </div>
-          <div class="card-title">{{ card.title }}</div>
+        </template>
+
+        <div>
+          <el-image
+            :src="card.image"
+            :zoom-rate="1.2"
+            :max-scale="7"
+            :min-scale="0.2"
+            :preview-src-list="[card.image]"
+            fit="cover"
+            class="card-image"
+            hide-on-click-modal
+            close-on-press-escape
+          />
+          <p class="description">{{ card.body }}</p>
         </div>
 
-        <div class="card-content"></div>
-        <img :src="card.image" alt="Card Image" class="card-image" />
-        <p class="card-body">{{ card.body }}</p>
+      </el-card>
+    </el-space>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false"> Continue to game </el-button>
       </div>
-    </div>
-  </el-space>
+    </template>
+  </el-dialog>
 </template>
 
-<script setup lang="ts">
-import HomeButton from '@/components/HomeButton.vue'
+<script lang="ts" setup>
+import tutorial_1 from '@/assets/tutorial_1.png'
+import tutorial_2 from '@/assets/tutorial_2.png'
+import tutorial_3_4 from '@/assets/tutorial_3_4.png'
+import tutorial_5_6 from '@/assets/tutorial_5_6.png'
+import tutorial_7 from '@/assets/tutorial_7.png'
+import TheLegend from './TheLegend.vue'
 
-import tutorial_1 from '../assets/tutorial_1.png'
-import tutorial_2 from '../assets/tutorial_2.png'
-import tutorial_3_4 from '../assets/tutorial_3_4.png'
-import tutorial_5_6 from '../assets/tutorial_5_6.png'
-import tutorial_7 from '../assets/tutorial_7.png'
+const dialogVisible = defineModel('dialogVisible')
 
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-function directToHome() {
-  router.push('/home')
-}
 const cards = [
   {
     title: 'Select game mode',
@@ -78,70 +89,65 @@ const cards = [
 ]
 </script>
 
-<style scoped>
+<style lang="css" scoped>
+  ::v-deep(.el-card__header) {
+    padding: 0;
+    border: none;
+  }
 
-.card {
-  background: white;
-  color: black;
-  border-radius: 8px;
-  width: 900px;
-  margin-bottom: 60px;
-  margin-top: 100px;
-}
-.card-header {
-  display: flex;
-}
-.step-sidebar {
-  display: flex;
-  flex-direction: column;
-  width: 86px;
-  height: 96px;
-  background-color: #4244ed;
-  border-radius: 8px 0 0;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
+  ::v-deep(.el-card__body) {
+    max-width: 900px;
+    padding: 0;
+  }
 
-.step-text {
-  font-weight: bold;
-}
-.step-number {
-  font-size: 24px;
-  font-weight: bold;
-}
+  .el-card {
+    border: none;
+  }
 
-.card-title {
-  display: flex;
-  font-size: 1.5em;
-  margin: 8px 0;
-  color: black;
-  align-items: center;
-  padding: 0 20px;
-  font-weight: bold;
-  font-size: 24px;
-}
-.card-content {
-  display: flex;
-}
+  .card-header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
 
-.card-image {
-  width: 900px;
-  height: auto;
-}
+  .step-container {
+    display: flex;
+    flex-direction: column;
+    width: 86px;
+    height: 96px;
+    background-color: #4244ed;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
 
-.card-body {
-  font-size: 18px;
-  padding: 26px;
-}
+  .step-container span {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
 
-.el-header {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 20px;
-  position: fixed;
-  top: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
-  width: 100%;
-}
+  .title {
+    width: 100%;
+  }
+
+  .card-image {
+    width: 100%;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    padding: 0 20px;
+  }
+
+  .card-title span {
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    font-size: 24px;
+  }
+
+  .description {
+    padding: 20px;
+  }
 </style>

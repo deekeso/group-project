@@ -18,7 +18,7 @@
       @click="scrollToNumber(number)"
       @scroll="onScroll"
       ref="numberRefs">
-      
+
       Did not explore this as we will not be using the .selected class
       The autopick container will also have a gradient to indicate the center (selected item),
       which makes this bug invisible.
@@ -94,14 +94,14 @@ function applyWheelEffect() {
       let min = -150
       let max = 150
 
-      
+
       let percent = 2 * ((distance - min)/(max - min)) - 1
       if (percent > 1) percent = 1
       if (percent < -1) percent = -1
 
       let scalePercent = Math.abs(percent)
       let angle = Math.max(-40, Math.min(percent * -90, 40))
-      
+
       numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
     }
   })
@@ -124,7 +124,7 @@ const detectCenteredNumber = () => {
       if (numberRef) {
         const rect = numberRef.getBoundingClientRect()
         const distance = Math.abs(rect.top + rect.height / 2 - centerY)
-        
+
         if (distance < closestDistance && numbers.value[index] !== undefined) {
           closestDistance = distance
           closestElement = numberRef
@@ -175,7 +175,8 @@ onMounted(() => {
   width: 100%;
   height: 300px;
 
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   scroll-snap-type: y mandatory;
 
   display: flex;

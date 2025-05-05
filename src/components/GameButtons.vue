@@ -2,7 +2,7 @@
   <div class="btn-container">
     <button
       @click="halfWager"
-      class="yellow-btn btn"
+      class="yellow-btn btn half-btn"
       :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
     >
       ÷2
@@ -13,14 +13,17 @@
         @click="gameStore.decreaseWager"
         :disabled="isDrawing || wager <= gameStore.MIN_WAGER"
         @mousedown="startDecreaseHold"
+        @touchstart="startDecreaseHold"
         @mouseup="stopDecreaseHold"
+        @touchend="stopDecreaseHold"
         @mouseleave="stopDecreaseHold"
       >
-        <el-icon size="large" color="black">
+        <el-icon class="minus-icon" size="large" color="black">
           <Minus />
         </el-icon>
       </button>
       <input
+        class="wager-slider"
         type="range"
         v-model="wager"
         :min="gameStore.MIN_WAGER"
@@ -36,10 +39,12 @@
         @click="gameStore.increaseWager"
         :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
         @mousedown="startIncreaseHold"
+        @touchstart="startIncreaseHold"
         @mouseup="stopIncreaseHold"
+        @touchend="stopIncreaseHold"
         @mouseleave="stopIncreaseHold"
       >
-        <el-icon size="large" color="black">
+        <el-icon class="plus-icon" size="large" color="black">
           <Plus />
         </el-icon>
       </button>
@@ -48,12 +53,16 @@
 
     <button
       @click="doubleWager"
-      class="yellow-btn btn"
+      class="yellow-btn btn double-btn"
       :disabled="isDrawing || wager >= gameStore.MAX_WAGER"
     >
       ×2
     </button>
-    <button @click="$emit('playGame')" class="yellow-btn btn" :disabled="isDrawing || disabled">
+    <button
+      @click="$emit('playGame')"
+      class="yellow-btn btn play-btn"
+      :disabled="isDrawing || disabled"
+    >
       Play
     </button>
   </div>
@@ -161,6 +170,15 @@ function halfWager() {
 </script>
 
 <style scoped>
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -khtml-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
 .btn-container {
   width: 100%;
   display: grid;

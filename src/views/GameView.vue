@@ -1,25 +1,30 @@
 <template>
   <el-container class="classic-page">
-    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
+    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" class="home-confirmation-dialog" align-center>
       <span>
         You're about to go back to the home page. You will lose your progress after exiting. Are you
         sure?
       </span>
 
       <template #footer>
-        <div class="dialog-footer">
+        <el-space alignment="flex-end" :size="10" wrap>
           <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
           <el-button type="primary" @click="exitGame">Yes, take me home</el-button>
-        </div>
+        </el-space>
       </template>
     </el-dialog>
+    <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true"/>
-      <UserBalance class="header-button" @wallet="directToWallet"/>
+      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+      <div class="nav-container">
+        <!-- <HelpBtn @click="dialogVisible = true" /> -->
+        <HelpBtn @click="startTour" />
+        <UserBalance @wallet="directToWallet" />
+      </div>
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
-        <TheLegend />
+        <TheLegend class="legend"/>
         <PayTable
           kenoType="classic"
           :selectedCellsCount="selectedNumbers.length"
@@ -56,6 +61,21 @@
         <NoWin v-if="result === 'lose' && showModal" />
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
+
+      <el-tour v-model="open" style="color: black">
+        <el-tour-step
+          v-for="(step, index) in tourSteps"
+          :key="index"
+          :target="step.target"
+          :title="step.title"
+          :placement="step.placement"
+        >
+          {{ step.description }}
+        </el-tour-step>
+        <template #indicators="{ current, total }">
+          <span>{{ current + 1 }} / {{ total }}</span>
+        </template>
+      </el-tour>
     </el-main>
   </el-container>
 </template>
@@ -64,6 +84,7 @@
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
 import HomeButton from '@/components/HomeButton.vue'
+import HelpBtn from '@/components/Help-Btn.vue'
 import NoWin from '@/components/NoWin.vue'
 import payTable from '@/components/PayTable/payTable.json'
 import PayTable from '@/components/PayTable/PayTable.vue'
@@ -80,12 +101,18 @@ import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import { provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
-import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
 import { GameType } from '@/types'
+
+// import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
+import drawSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
+import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
+import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
+
+import { useTour } from '@/composables/useTour'
+
+const { open, currentStep, tourSteps, startTour, nextStep } = useTour()
 
 const router = useRouter()
 const route = useRoute()
@@ -100,6 +127,7 @@ const isRoundFinished = ref(false)
 const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
+const dialogVisible = ref(false)
 
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
@@ -167,7 +195,7 @@ async function startDraw() {
     const source = audioContext.createBufferSource()
     source.buffer = audioBuffer
 
-    source.playbackRate.value = 1 + i * 0.05 // Increase pitch each time
+    source.playbackRate.value = 1 + i * 0.005 // Increase pitch each time
 
     source.connect(audioContext.destination)
     source.start()
@@ -203,12 +231,12 @@ function autopickNumberSelected(number: number) {
   const interval = setInterval(() => {
     kenoAutopick(number, gameType)
     count++
-
+    playSoundEffect(0, toggleSoundEffect)
     if (count >= number) {
       clearInterval(interval)
       isDrawing.value = false
     }
-  }, 10)
+  }, 50)
   displayMatching.value = false
 }
 
@@ -232,14 +260,14 @@ function directToHome() {
 }
 
 function directToWallet() {
-  let route = GameType.Classic
+  let r = GameType.Classic
 
-  if (gameType === GameType.Mini) route = GameType.Mini
+  if (gameType === GameType.Mini) r = GameType.Mini
 
   router.push({
     name: 'wallet',
     query: {
-      redirect: 'classic',
+      redirect: r,
     },
   })
 }
@@ -260,13 +288,22 @@ function exitGame() {
 </script>
 
 <style scoped>
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -khtml-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:rgba(0,0,0,0);
+}
 .classic-page {
   min-height: 100vh;
   width: 100%;
   background-image: url('@/assets/game-background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: bottom;
+  background-position: left;
   background-attachment: fixed;
   display: flex;
   flex-direction: column;
@@ -284,7 +321,6 @@ function exitGame() {
   place-items: center;
   background: transparent;
   flex: 1;
-  margin-top: 80px;
 }
 
 .drawn-numbers {
@@ -313,6 +349,38 @@ function exitGame() {
   animation: bounce-in 0.4s reverse;
 }
 
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+::v-deep(.home-confirmation-dialog) {
+  --el-dialog-width: 100%;
+  max-width: 500px;
+}
+
+::v-deep(.el-overlay-dialog:has(.home-confirmation-dialog)) {
+  padding: 0 40px;
+}
+
+/* TODO: Try to move this to TutorialDialog.vue */
+::v-deep(.help-dialog) {
+  background-color: #060351;
+}
+
+::v-deep(.el-dialog__body) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.el-space {
+  display: flex;
+  justify-content: end;
+}
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -333,6 +401,10 @@ function exitGame() {
 
 /* Small devices (tablets) */
 @media (max-width: 768px) {
+  .legend {
+    display: none;
+  }
+
   @keyframes bounce-in {
     0% {
       transform: scale(0);
