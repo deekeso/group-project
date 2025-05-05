@@ -46,14 +46,14 @@
 
           <div class="section">
             <label class="section-title">Deposit Amount</label>
-            <el-radio-group v-model="radio2" class="amount-buttons">
-              <el-radio-button label="20">₱20</el-radio-button>
-              <el-radio-button label="50">₱50</el-radio-button>
-              <el-radio-button label="100">₱100</el-radio-button>
-              <el-radio-button label="200">₱200</el-radio-button>
-              <el-radio-button label="500">₱500</el-radio-button>
-              <el-radio-button label="1000">₱1,000</el-radio-button>
-            </el-radio-group>
+              <el-radio-group v-model="radio2" size="large" class="amount-buttons">
+                 <el-radio-button 
+             v-for="amount in withdrawAmounts" 
+              :key="amount.label"
+              :label="amount.label">
+               {{ amount.display }}
+              </el-radio-button>
+          </el-radio-group>
 
             <el-input-number
               v-model="num"
@@ -117,10 +117,18 @@ const auth = useAuthStore()
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 
-const num = ref<number | null>(null)
+const num = ref(20)
 const radio1 = ref('1')
 const value = ref('')
 const radio2 = ref('')
+const withdrawAmounts = [
+  { label: '20', display: '₱20' },
+  { label: '50', display: '₱50' },
+  { label: '100', display: '₱100' },
+  { label: '200', display: '₱200' },
+  { label: '500', display: '₱500' },
+  { label: '1000', display: '₱1,000' }
+] as const
 const options = [
   { value: 'GCash', label: 'GCash' },
   { value: 'Maya', label: 'Maya' },
@@ -156,7 +164,7 @@ function confirmDeposit() {
 function handleConfirmedDeposit() {
   wallet.deposit(Number(num.value))
   ElMessage.success('Deposit successful!')
-  num.value = null
+  num.value = 20
   radio2.value = ''
   value.value = ''
   showConfirmDeposit.value = false
