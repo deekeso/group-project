@@ -23,13 +23,20 @@
 
         <!--Display in carousel if there are multiple cards-->
         <el-carousel
+          v-model="currentIndex"
           height="auto"
+          trigger="click"
           :loop="false"
           :autoplay="false"
           :arrow="numberOfCards > 1 ? 'always' : 'never'"
           :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
         >
-          <el-carousel-item v-for="(cards, index) in numberOfCards" :key="index" height="auto">
+          <el-carousel-item
+            v-for="(cards, index) in numberOfCards"
+            :key="index"
+            height="auto"
+            :data-index="index + 1"
+          >
             <PayTable
               kenoType="classic"
               :selectedCellsCount="selectedNumbers.length"
@@ -322,6 +329,35 @@ function exitGame() {
 ::v-deep(.el-carousel__arrow--right) {
   right: -50px;
 }
+
+/* carousel indicator styles ::v-deep(.el-carousel__indicator) {
+  height: 30px;
+  width: 30px;
+  background-color: lime;
+  border-radius: 50%;
+  margin: 10px 5px 5px 0px;
+}
+::v-deep(.el-carousel__indicator.is-active) {
+  background-color: #00ff99;
+  animation: ease-in-out;
+  transform: scale(1.1);
+} */
+::v-deep(.el-carousel__button) {
+  content: '5';
+  height: 30px;
+  width: 30px;
+  background-color: yellow;
+  text-align: center;
+  border-radius: 10px;
+}
+::v-deep(.el-carousel__button::before) {
+  content: '5';
+}
+/* ::v-deep(.el-carousel__indicators--outside button) {
+  height: 100%;
+  width: 100%;
+} */
+
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
@@ -365,12 +401,13 @@ function exitGame() {
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
   .grid-paytable-container {
-    padding: 10px;
+    padding: 0px;
   }
   ::v-deep(.el-carousel__arrow) {
     width: 20px;
     height: 30px;
     border-radius: 5px;
+    display: none;
   }
   ::v-deep(.el-carousel__arrow--left) {
     left: -27px;
