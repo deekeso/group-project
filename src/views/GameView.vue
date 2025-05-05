@@ -104,15 +104,8 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const walletStore = useWalletStore()
-const {
-  matchedNumbers,
-  selectedNumbers,
-  winnings,
-  result,
-  hasPurchasedCards,
-  purchaseMode,
-  numberOfCards,
-} = storeToRefs(gameStore)
+const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards, numberOfCards } =
+  storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
