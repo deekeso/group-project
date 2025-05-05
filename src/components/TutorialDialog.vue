@@ -32,6 +32,12 @@ const tour = () => {
 
 <style scoped>
 :deep(.help-dialog) {
-  background-color: #dcd6f7;
+  background-color: #bcb1ec;
+  --el-dialog-width: 100%;
+  max-width: 650px;
+}
+
+:deep(.el-overlay-dialog:has(.help-dialog)) {
+  padding: 0 40px;
 }
 </style>
