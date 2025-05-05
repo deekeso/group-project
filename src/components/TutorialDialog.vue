@@ -1,5 +1,12 @@
 <template>
-  <el-dialog v-model="dialogVisible" fullscreen top="40vh" width="70%" draggable class="help-dialog">
+  <el-dialog
+    v-model="dialogVisible"
+    fullscreen
+    top="40vh"
+    width="70%"
+    draggable
+    class="help-dialog"
+  >
     <el-space direction="vertical">
       <TheLegend />
       <el-card v-for="(card, index) in cards" :key="index">
@@ -29,7 +36,6 @@
           />
           <p class="description">{{ card.body }}</p>
         </div>
-
       </el-card>
     </el-space>
     <template #footer>
@@ -90,64 +96,64 @@ const cards = [
 </script>
 
 <style lang="css" scoped>
-  ::v-deep(.el-card__header) {
-    padding: 0;
-    border: none;
-  }
+::v-deep(.el-card__header) {
+  padding: 0;
+  border: none;
+}
 
-  ::v-deep(.el-card__body) {
-    max-width: 900px;
-    padding: 0;
-  }
+::v-deep(.el-card__body) {
+  max-width: 900px;
+  padding: 0;
+}
 
-  .el-card {
-    border: none;
-  }
+.el-card {
+  border: none;
+}
 
-  .card-header {
-    display: grid;
-    grid-template-columns: auto 1fr;
-  }
+.card-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
 
-  .step-container {
-    display: flex;
-    flex-direction: column;
-    width: 86px;
-    height: 96px;
-    background-color: #4244ed;
-    align-items: center;
-    justify-content: center;
-    color: white;
-  }
+.step-container {
+  display: flex;
+  flex-direction: column;
+  width: 86px;
+  height: 96px;
+  background-color: #4244ed;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
 
-  .step-container span {
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
+.step-container span {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
 
-  .title {
-    width: 100%;
-  }
+.title {
+  width: 100%;
+}
 
-  .card-image {
-    width: 100%;
-  }
+.card-image {
+  width: 100%;
+}
 
-  .card-title {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-    padding: 0 20px;
-  }
+.card-title {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 0 20px;
+}
 
-  .card-title span {
-    color: black;
-    font-size: 1.5em;
-    font-weight: bold;
-    font-size: 24px;
-  }
+.card-title span {
+  color: black;
+  font-size: 1.5em;
+  font-weight: bold;
+  font-size: 24px;
+}
 
-  .description {
-    padding: 20px;
-  }
+.description {
+  padding: 20px;
+}
 </style>

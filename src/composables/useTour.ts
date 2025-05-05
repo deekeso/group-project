@@ -12,7 +12,7 @@ const tourSteps = ref([
     placement: 'top',
   },
   {
-    target: '.number-container',
+    target: '.autopick-container',
     title: 'Auto Pick',
     description:
       'Scroll to choose how many numbers to bet on, and the system will automatically select them for you.',
