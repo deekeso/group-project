@@ -71,6 +71,7 @@ function incrementCounter() {
 
 function makePurchase() {
   gameStore.makePurchase(selectionMode.value, multipleCounter.value)
+  gameStore.initializeCards()
 }
 </script>
 

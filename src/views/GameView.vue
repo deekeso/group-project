@@ -30,17 +30,13 @@
           :arrow="numberOfCards > 1 ? 'always' : 'never'"
           :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
         >
-          <el-carousel-item
-            v-for="(cards, index) in numberOfCards"
-            :key="index"
-            height="auto"
-            :data-index="index + 1"
-          >
+          <el-carousel-item v-for="card in numberOfCards" :key="card" height="auto">
             <PayTable
               kenoType="classic"
               :selectedCellsCount="selectedNumbers.length"
               :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
               style="padding-bottom: 24px"
+              :cardIndex="card"
             />
             <div class="grid-sidebtn-container">
               <GameGrid
