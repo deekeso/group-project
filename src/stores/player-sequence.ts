@@ -12,7 +12,7 @@ export const usePlayerOrderStore = defineStore('playerOrderStore', {
   // STATES
   // ─────────────────────────────
   state: () => ({
-    orderedPlayerIds: [] as (string | number)[],
+    orderedPlayerIds: Number,
     isOrdered: false,
     currentTurnIndex: 0,
   }),
