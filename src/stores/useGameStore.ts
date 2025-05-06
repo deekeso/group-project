@@ -107,7 +107,6 @@ export const useGameStore = defineStore('game', () => {
     cards.value = Array.from({ length: numberOfCards.value }, () => ({
       selectedNumbers: [],
       matchedNumbers: [],
-      wager: ref(wager.value),
       winnings: 0,
       result: '',
     }))

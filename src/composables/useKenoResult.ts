@@ -33,7 +33,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     cards.value.forEach((card, index) => {
       const isWin = winValues.value[index] > 0
       card.result = isWin ? 'win' : 'lose'
-      // console.log(`Card ${index + 1} result: ${card.result}`)
+      console.log(`Card ${index + 1} result: ${card.result}`)
     })
   }
 
@@ -50,7 +50,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       }
 
       card.winnings = winnings
-      // console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
+      console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
   }
 
