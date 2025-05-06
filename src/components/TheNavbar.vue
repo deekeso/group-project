@@ -129,6 +129,7 @@ const authStore = useAuthStore()
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  margin: 0 auto;
 }
 
 .logo {
