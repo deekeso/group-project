@@ -11,6 +11,19 @@
       }"
       ref="containerRef"
     >
+      <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
+      <div
+      v-for="number in numbers"
+      :key="number"
+      :class="['number', { selected: number === selectedNumber }]" <-- This one. Renders 2 times for some reason
+      @click="scrollToNumber(number)"
+      @scroll="onScroll"
+      ref="numberRefs">
+
+      Did not explore this as we will not be using the .selected class
+      The autopick container will also have a gradient to indicate the center (selected item),
+      which makes this bug invisible.
+      >-->
       <div class="filler"></div>
       <div class="filler"></div>
       <div
@@ -75,8 +88,6 @@ const debounce = (func: Function, delay: number) => {
 }
 
 function applyWheelEffect() {
-  console.log('wheel effect applied')
-
   const container = gradientRef.value
   if (!container) return
   // const container = document.querySelector('.gradient') as HTMLElement
@@ -126,7 +137,6 @@ const detectCenteredNumber = () => {
           closestDistance = distance
           closestElement = numberRef
           selectedNumber.value = numbers.value[index]
-          console.log('detect center')
         }
       }
     })
@@ -140,7 +150,6 @@ const detectCenteredNumber = () => {
 
 // Scroll a clicked number to the center
 const scrollToNumber = (number: number) => {
-  console.log(number)
   // Check [Comment 1] above. Because of the rendering bug, i had to use number - 1
   // Will not explore for now as I have other things to do but if you encounter this,
   // try exploring it.
