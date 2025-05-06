@@ -4,11 +4,9 @@
 import { ref } from 'vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
-import type { FormRules } from 'element-plus'
-import { useFormValidation } from '@/composables/useFormValidation'
-import { useSuccessModal } from '@/composables/useSuccessModal'
 import { watch } from 'vue'
 
 import SigninForm from './SigninForm.vue'
@@ -20,10 +18,51 @@ const showSignupForm = ref(true)
 const showSigninForm = ref(false)
 const router = useRouter()
 const authStore = useAuthStore()
-const { formRef, loading, validateForm } = useFormValidation()
-const { showSuccessModal } = useSuccessModal()
 
-const form = reactive({
+// Form validation logic directly in component
+const formRef = ref<FormInstance>()
+const loading = ref(false)
+
+// Update the validateForm function to properly validate using a Promise
+const validateForm = () => {
+  if (!formRef.value) return Promise.resolve(false)
+  
+  return formRef.value.validate()
+    .then(() => true)
+    .catch(() => false)
+}
+
+// Success modal logic directly in component
+const showSuccessModal = (title: string, message: string) => {
+  try {
+    ElMessageBox.alert(message, title, {
+      confirmButtonText: 'OK',
+      type: 'success',
+      center: true,
+      customClass: 'success-modal',
+      showClose: false
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Add this interface before the form declaration
+interface SignupFormData {
+  firstname: string;
+  lastname: string;
+  email: string;
+  dateOfBirth: string;
+  age: string;
+  phoneNumber: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
+// Update the form declaration to use the interface
+const form = reactive<SignupFormData>({
   firstname: '',
   lastname: '',
   email: '',
@@ -90,7 +129,7 @@ const rules = reactive<FormRules>({
     { required: true, message: 'Username is required', trigger: 'blur' },
     { min: 3, message: 'Username must be at least 3 characters', trigger: 'blur' },
     {
-      validator: async (_rule: any, value: string, callback: Function) => {
+      validator: (rule: any, value: string, callback: (error?: Error) => void) => {
         if (!value) {
           callback()
           return
@@ -133,6 +172,7 @@ const rules = reactive<FormRules>({
   ],
 })
 
+// Update the handleSubmit function to properly await validation
 const handleSubmit = async (e: Event) => {
   e.preventDefault()
   if (loading.value) return
@@ -143,9 +183,29 @@ const handleSubmit = async (e: Event) => {
     const isValid = await validateForm()
     if (!isValid) {
       ElMessage.error('Please check your input')
+      loading.value = false
       return
     }
 
+    // Check if any required fields are empty
+    const requiredFields: Array<keyof typeof form> = [
+      'firstname',
+      'lastname',
+      'email',
+      'dateOfBirth',
+      'username',
+      'password',
+      'confirmPassword'
+    ]
+
+    const emptyFields = requiredFields.filter(field => !form[field])
+    if (emptyFields.length > 0) {
+      ElMessage.error('Please fill in all required fields')
+      loading.value = false
+      return
+    }
+
+    // Continue with registration if validation passes
     authStore.register({
       firstname: form.firstname,
       lastname: form.lastname,
@@ -155,17 +215,16 @@ const handleSubmit = async (e: Event) => {
       dateOfBirth: new Date(form.dateOfBirth),
     })
 
-    await showSuccessModal(
+    showSuccessModal(
       'Registration Successful',
       'Welcome to Keno Plus! Your account has been successfully created.',
     )
     
-    // Emit close event after successful registration
     emit('close')
-
     router.push('/home')
-  } catch (error: any) {
-    ElMessage.error(error.message)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred during registration'
+    ElMessage.error(errorMessage)
   } finally {
     loading.value = false
   }

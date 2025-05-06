@@ -1,6 +1,6 @@
 <template>
   <button
-    class="button-container"
+    class="button-container wallet-btn"
     @click="$emit('wallet')"
     :title="`Go to wallet.\nRemaining balance: ₱${balance}`"
   >
