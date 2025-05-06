@@ -154,6 +154,15 @@ export const useGameStore = defineStore('game', () => {
     if (!preserveSelectedNumbers) {
       selectedNumbers.value = []
     }
+
+    //reset all cards
+    cards.value = cards.value.map((card) => ({
+      selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }))
+    drawnNumbers.value = []
   }
 
   //mode switcher
