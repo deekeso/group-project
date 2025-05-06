@@ -10,13 +10,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
 
   const gameStore = useGameStore()
   const walletStore = useWalletStore()
-  const { selectedNumbers, matchedNumbers, wager, cards } = storeToRefs(gameStore)
-
-  //find the paytable row for the number of selected numbers
-  // const tableEntry = computed(() => {
-  //   const selectionLength = selectedNumbers.value.length
-  //   return kenoTable.value[selectionLength - 1] // paytable is 0-indexed
-  // })
+  const { wager, cards } = storeToRefs(gameStore)
 
   // Compute paytable entry per card based on its selected number count
   const tableEntries = computed(() =>
@@ -26,12 +20,6 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     }),
   )
 
-  // Get the win value based on number of matched numbers
-  // const winValue = computed(() => {
-  //   const entry = tableEntry.value
-  //   return entry.values[matchedNumbers.value.length]
-  // })
-
   // Compute win multiplier per card based on how many matched numbers it got
   const winValues = computed(() =>
     cards.value.map((card, index) => {
@@ -40,29 +28,29 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     }),
   )
 
+  // Determine 'win' or 'lose' for each card
   function evaluateGame() {
     cards.value.forEach((card, index) => {
       const isWin = winValues.value[index] > 0
-      card.result = isWin ? 'win' : 'lose' // Directly mutate the object
-      console.log('card result', card.result)
+      card.result = isWin ? 'win' : 'lose'
+      // console.log(`Card ${index + 1} result: ${card.result}`)
     })
   }
 
+  // Apply payout or deduct wager per card
   function calculatePayout() {
     cards.value.forEach((card, index) => {
       const multiplier = winValues.value[index]
       const winnings = wager.value * multiplier
 
       if (multiplier > 0) {
-        walletStore.addPayout(winnings)
+        walletStore.addPayout(winnings) // Add win to wallet
       } else {
-        walletStore.deductLostBet(wager.value)
+        walletStore.deductLostBet(wager.value) // Deduct shared wager for losing card
       }
 
-      card.winnings = winnings // Directly assign winnings
-      console.log('multiplier', multiplier)
-      console.log('wager', wager.value)
-      console.log('winnings', card.winnings)
+      card.winnings = winnings
+      // console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
   }
 
