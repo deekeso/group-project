@@ -2,14 +2,15 @@ import { computed } from 'vue'
 import paytable from '../components/PayTable/payTable.json'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
-import { useWalletStore } from '@/stores/wallet'
+import { useAuthStore } from '@/stores/auth'
+import { TransactionOperation } from '@/types'
 
 export function useKenoResult(mode: 'mini' | 'classic') {
   const kenoPayout = paytable as Paytable
   const kenoTable = computed<PaytableEntry[]>(() => kenoPayout[mode])
 
+  const { performTransaction } = useAuthStore()
   const gameStore = useGameStore()
-  const walletStore = useWalletStore()
   const { selectedNumbers, matchedNumbers, wager } = storeToRefs(gameStore)
 
   //find the paytable row for the number of selected numbers
@@ -33,11 +34,13 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     const payout = wager.value * winValue.value
 
     if (winValue.value <= 0) {
-      walletStore.deductLostBet(wager.value)
+      performTransaction(TransactionOperation.Wage, wager.value)
+      // walletStore.deductLostBet(wager.value)
       return
     }
     gameStore.addWinnings(payout)
-    walletStore.addPayout(payout)
+    performTransaction(TransactionOperation.Payout, payout)
+    // walletStore.addPayout(payout)
   }
 
   return {

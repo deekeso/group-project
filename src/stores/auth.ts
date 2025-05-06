@@ -1,62 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import type { User, UserDetails } from '@/types.ts'
-import { User } from '@element-plus/icons-vue'
 import useUtils from '@/composables/useUtils'
-
-// () => {
-//   const users = ref<User[]>([])
-//   const user = ref<User | null>(null)
-//   const isAuthenticated = ref(false)
-
-//   function login(email: string, password: string) {
-//     const foundUser = users.value.find((u) => u.email === email && u.password === password)
-
-//     if (!foundUser) {
-//       throw new Error('Invalid email or password')
-//     }
-
-//     user.value = foundUser
-//     isAuthenticated.value = true
-//   }
-
-//   function logout() {
-//     user.value = null
-//     isAuthenticated.value = false
-//   }
-
-//   function register(userData: User) {
-//     // Check for duplicate email
-//     if (users.value.some((u) => u.email === userData.email)) {
-//       throw new Error('Email already registered')
-//     }
-
-//     // Check for duplicate username
-//     if (users.value.some((u) => u.username === userData.username)) {
-//       throw new Error('Username already taken')
-//     }
-
-//     users.value.push({ ...userData, balance: 0 })
-//     user.value = { ...userData, balance: 0 }
-//     isAuthenticated.value = true
-//   }
-
-//   return {
-//     user,
-//     users,
-//     isAuthenticated,
-//     login,
-//     logout,
-//     register,
-//   }
-// },
+import type { TransactionOperation, User, UserDetails } from '@/types.ts'
+import { defineStore } from 'pinia'
+import { useWalletsStore, type Wallet } from './wallet'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     users: [] as User[],
     user: null as User | null,
-    isAuthenticated: false,
+    isAuthenticated: false
   }),
 
   actions: {
@@ -77,6 +29,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     register(userData: UserDetails) {
+      const { createWallet } = useWalletsStore()
       // Check for duplicate email
       if (this.users.some((u) => u.email === userData.email)) {
         throw new Error('Email already registered')
@@ -89,13 +42,18 @@ export const useAuthStore = defineStore('auth', {
 
       const newUser: User = {
         ...userData,
-        balance: 0
+        wallet: createWallet()
       }
 
       this.users.push(newUser)
       this.user = newUser
       this.isAuthenticated = true
     },
+
+    performTransaction(operation: TransactionOperation, amount: number) {
+      const { performTransaction } = useWalletsStore()
+      console.log(performTransaction(this.wallet.id, operation, amount))
+    }
   },
 
   getters: {
@@ -103,6 +61,13 @@ export const useAuthStore = defineStore('auth', {
       if (!state.isAuthenticated || !state.user) throw new Error('User is not authenticated.')
       const { calculateAge } = useUtils()
       return calculateAge(state.user.dateOfBirth)
+    },
+
+    wallet(state): Wallet {
+      const { findWallet } = useWalletsStore()
+      if (!state.isAuthenticated || !state.user) throw new Error('User is not authenticated.')
+
+      return findWallet(state.user.wallet)
     }
   },
 

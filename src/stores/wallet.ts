@@ -1,59 +1,81 @@
+import { TransactionOperation } from '@/types'
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
-import { useAuthStore } from './auth'
+import { v4 as uuidv4 } from 'uuid'
 
-export const useWalletStore = defineStore('wallet', () => {
-  const auth = useAuthStore()
+interface Transaction {
+  oldBalance: number
+  operation: TransactionOperation
+  amount: number
+  newBalance: number
+  timestamp: Date
+}
 
-  const balance = computed(() => {
-    return auth.user?.balance ?? 0
-  })
+export interface Wallet {
+  id: string
+  balance: number
+  transactions: Transaction[]
+}
 
-  function updateUserBalance(amount: number, operation: 'deposit' | 'withdraw') {
-    if (!auth.user) return
+export const useWalletsStore = defineStore('wallets', {
+  state: () => ({
+    wallets: [] as Wallet[]
+  }),
 
-    const index = auth.users.findIndex((u) => u.email === auth.user!.email)
-    if (index === -1) return
+  actions: {
+    createWallet(): string {
+      const id = uuidv4()
+      let newWallet: Wallet = {
+        id,
+        balance: 0,
+        transactions: []
+      }
 
-    const currentBalance = auth.user.balance ?? 0
-    const newBalance = operation === 'deposit' ? currentBalance + amount : currentBalance - amount
+      this.wallets.push(newWallet)
+      return id
+    },
 
-    // Update in user ref
-    auth.user.balance = newBalance
+    findWallet(id: string) {
+      const foundWallet = this.wallets.find((wallet) => wallet.id === id)
+  
+      if (!foundWallet) {
+        throw new Error('Wallet not found!')
+      }
+  
+      return foundWallet 
+    },
 
-    // Update in users array (persisted)
-    auth.users[index].balance = newBalance
-  }
+    performTransaction(id: string, operation: TransactionOperation, amount: number): Transaction {
+      const wallet = this.findWallet(id)
 
-  function deposit(amount: number) {
-    updateUserBalance(amount, 'deposit')
-  }
+      const oldBalance = wallet.balance
 
-  function withdraw(amount: number) {
-    const currentBalance = auth.user?.balance ?? 0
-    if (amount > currentBalance) {
-      throw new Error('Insufficient balance')
+      switch(operation) {
+        case TransactionOperation.Deposit:
+          wallet.balance += amount
+        break
+        case TransactionOperation.Payout:
+        case TransactionOperation.Wage:
+        case TransactionOperation.Withdraw:
+          wallet.balance -= amount
+        break
+      }
+
+      const transaction = {
+        oldBalance,
+        operation,
+        amount,
+        newBalance: wallet.balance,
+        timestamp: new Date()
+      }
+
+      wallet.transactions.push(transaction)
+      return transaction
     }
-    updateUserBalance(amount, 'withdraw')
-  }
+  },
 
-  function deductLostBet(amount: number) {
-    try {
-      withdraw(amount)
-    } catch (error) {
-      console.error('Failed to deduct bet:', error)
-    }
-  }
-
-  function addPayout(amount: number) {
-    updateUserBalance(amount, 'deposit')
-  }
-
-  return {
-    balance,
-    deposit,
-    withdraw,
-    deductLostBet,
-    addPayout,
-  }
+  persist: {
+    key: 'wallet-store',
+    storage: localStorage,
+    paths: ['wallet'],
+  } as any,
 })

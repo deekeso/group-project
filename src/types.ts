@@ -22,5 +22,12 @@ export interface UserDetails {
 }
 
 export interface User extends UserDetails {
-  balance: number
+  wallet: string
+}
+
+export enum TransactionOperation {
+  'Deposit' = 'deposit',
+  'Withdraw' = 'withdraw',
+  'Wage' = 'wage',
+  'Payout' = 'payout'
 }

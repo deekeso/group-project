@@ -51,16 +51,17 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useWalletStore } from '@/stores/wallet'
+import { useAuthStore } from '@/stores/auth'
 import { defineEmits } from 'vue'
 import { ElMessage } from 'element-plus'
+import { TransactionOperation } from '@/types'
 const showConfirmWithdraw = ref(false)
 
 
 
 
 const emit = defineEmits(['update:show'])
-const wallet = useWalletStore()
+const { performTransaction } = useAuthStore()
 
 const num = ref(20)
 const radio2 = ref('')
@@ -109,7 +110,7 @@ function confirmWithdraw() {
 
 function handleConfirmedWithdraw() {
   try {
-    wallet.withdraw(Number(num.value))
+    performTransaction(TransactionOperation.Withdraw, Number(num.value))
     ElMessage.success('Withdrawal successful!')
     num.value = 20
     radio2.value = ''
