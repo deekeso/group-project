@@ -45,7 +45,7 @@
                 :cardIndex="index"
               />
               <GameSideButtons
-                @clear="resetGame"
+                @clear="resetGame(index)"
                 @number-selected="autopickNumberSelected"
                 :max-number="payTable[gameType].length"
                 :game-is-drawing="isDrawing"
@@ -234,9 +234,9 @@ function resetRound() {
   isRoundFinished.value = false
 }
 
-function resetGame() {
+function resetGame(cardIndex: number) {
   if (isDrawing.value) return
-  gameStore.resetGame()
+  gameStore.resetCard(cardIndex)
 }
 
 function setSelectedNumbers(numbers: number[]) {

@@ -140,13 +140,20 @@ export const useGameStore = defineStore('game', () => {
     }))
   }
 
+  function resetCard(cardIndex: number) {
+    cards.value[cardIndex] = {
+      selectedNumbers: [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }
+    drawnNumbers.value = []
+  }
+
   function resetGame(preserveSelectedNumbers: boolean = false) {
     if (!preserveSelectedNumbers) {
       selectedNumbers.value = []
     }
-    drawnNumbers.value = []
-    matchedNumbers.value = []
-    winnings.value = 0
   }
 
   //mode switcher
@@ -238,5 +245,6 @@ export const useGameStore = defineStore('game', () => {
     setMatchCallback,
     makePurchase,
     resetPurchase,
+    resetCard,
   }
 })
