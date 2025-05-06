@@ -1,9 +1,12 @@
 import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 // Composable to handle Keno drawing logic
 export function useKenoDraw() {
   const gameStore = useGameStore()
+  const { cards } = storeToRefs(gameStore)
+
   // Reactive state for the drawn numbers
   const drawnNumbers = ref<number[]>([])
   const autopickedNumbers = ref<number[]>([])
@@ -30,9 +33,9 @@ export function useKenoDraw() {
     gameStore.setDrawnNumbers([...drawnNumbers.value])
   }
 
-  function autopickNumber(autopickSize: number, maxNumber: number): void {
+  function autopickNumber(autopickSize: number, maxNumber: number, cardIndex: number): void {
     if (autopickedNumbers.value.length >= autopickSize) {
-      resetAutopicked()
+      resetAutopicked(cardIndex)
     }
 
     // Generate a random number between 1 and maxNumber
@@ -45,7 +48,7 @@ export function useKenoDraw() {
 
     // Add the drawn number to the list
     autopickedNumbers.value.push(randomNumber)
-    gameStore.selectedNumbers = [...autopickedNumbers.value]
+    cards.value[cardIndex].selectedNumbers = [...autopickedNumbers.value]
   }
 
   function classicKenoDraw() {
@@ -56,8 +59,12 @@ export function useKenoDraw() {
     return drawNumber(10, 49)
   }
 
-  function kenoAutopick(autopickSize: number, type: 'classic' | 'mini') {
-    return autopickNumber(autopickSize, type === 'classic' ? 80 : type === 'mini' ? 49 : 80)
+  function kenoAutopick(autopickSize: number, type: 'classic' | 'mini', cardIndex: number) {
+    return autopickNumber(
+      autopickSize,
+      type === 'classic' ? 80 : type === 'mini' ? 49 : 80,
+      cardIndex,
+    )
   }
 
   // Function to reset the drawn numbers
@@ -66,9 +73,9 @@ export function useKenoDraw() {
     gameStore.setDrawnNumbers([])
   }
 
-  function resetAutopicked() {
-    autopickedNumbers.value = []
-    gameStore.selectedNumbers = []
+  function resetAutopicked(cardIndex: number) {
+    autopickedNumbers.value = [] = []
+    cards.value[cardIndex].selectedNumbers = []
     resetDraw()
   }
 
@@ -78,6 +85,6 @@ export function useKenoDraw() {
     miniKenoDraw,
     kenoAutopick,
     resetDraw,
-    resetAutopicked
+    resetAutopicked,
   }
 }
