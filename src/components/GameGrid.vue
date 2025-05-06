@@ -2,12 +2,22 @@
   <div class="keno-grid">
     <div class="container">
       <div :class="`${gameType}-grid`">
-        <div v-for="number in cellCount" :key="number" class="keno-cell" :class="[
-          'cell',
-          matchedNumbers.includes(number) ? 'matched' :
-            drawnNumbers.includes(number) && !selectedNumbers.includes(number) ? 'missed' :
-              selectedNumbers.includes(number) ? 'selected' : '',
-        ]" @click="toggleNumber(number)">
+        <div
+          v-for="number in cellCount"
+          :key="number"
+          class="keno-cell"
+          :class="[
+            'cell',
+            matchedNumbers.includes(number)
+              ? 'matched'
+              : drawnNumbers.includes(number) && !selectedNumbers.includes(number)
+                ? 'missed'
+                : selectedNumbers.includes(number)
+                  ? 'selected'
+                  : '',
+          ]"
+          @click="toggleNumber(number)"
+        >
           {{ number }}
         </div>
       </div>
@@ -18,7 +28,7 @@
 <script setup lang="ts">
 import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
-import { GameType } from '@/types';
+import { GameType } from '@/types'
 import { storeToRefs } from 'pinia'
 import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 
@@ -46,11 +56,13 @@ function toggleNumber(number: number): void {
     drawnNumbers.value = []
     emit('resetRound')
   }
+
+  const selectionLimit = gameType === GameType.Classic ? 15 : 10
   const index = selectedNumbers.value.indexOf(number)
   if (index > -1) {
     selectedNumbers.value.splice(index, 1)
     new Audio(toggleSoundEffect).play()
-  } else if (selectedNumbers.value.length < 15) {
+  } else if (selectedNumbers.value.length < selectionLimit) {
     selectedNumbers.value.push(number)
     new Audio(toggleSoundEffect).play()
   }
@@ -104,7 +116,7 @@ function toggleNumber(number: number): void {
   cursor: pointer;
   transition: background-color 0.2s;
   user-select: none;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .cell:not(.disabled):not(.matched):not(.missed):hover {
@@ -153,7 +165,6 @@ function toggleNumber(number: number): void {
   }
 }
 
-
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
   .keno-cell {
@@ -168,7 +179,8 @@ function toggleNumber(number: number): void {
     padding: 10px 0;
   }
 
-  .classic-grid, .mini-grid {
+  .classic-grid,
+  .mini-grid {
     gap: 2px;
   }
   .keno-cell {
