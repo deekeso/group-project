@@ -1,9 +1,9 @@
 <template>
   <el-container>
     <el-header>
-        <HomeButton @home="directToHome" />
-      </el-header>
-      <el-main class="wallet-page">
+      <HomeButton @home="directToHome" />
+    </el-header>
+    <el-main class="wallet-page">
       <el-container class="wallet-box">
         <div class="wallet-header">
           <div class="balance-section">
@@ -24,7 +24,7 @@
             </div>
           </div>
 
-          <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="min-width: 204px;">
+          <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="min-width: 204px">
             <el-radio-button value="1" class="deposit-tab">Deposit</el-radio-button>
             <el-radio-button value="2" class="withdraw-tab">Withdraw</el-radio-button>
           </el-radio-group>
@@ -46,13 +46,14 @@
 
           <div class="section">
             <label class="section-title">Deposit Amount</label>
-            <el-radio-group v-model="radio2" class="amount-buttons">
-              <el-radio-button class="amount-button" value="20">₱20</el-radio-button>
-              <el-radio-button class="amount-button" value="50">₱50</el-radio-button>
-              <el-radio-button class="amount-button" value="100">₱100</el-radio-button>
-              <el-radio-button class="amount-button" value="200">₱200</el-radio-button>
-              <el-radio-button class="amount-button" value="500">₱500</el-radio-button>
-              <el-radio-button class="amount-button" value="1000">₱1,000</el-radio-button>
+            <el-radio-group v-model="radio2" size="large" class="amount-buttons">
+              <el-radio-button
+                v-for="amount in withdrawAmounts"
+                :key="amount.label"
+                :label="amount.label"
+              >
+                {{ amount.display }}
+              </el-radio-button>
             </el-radio-group>
 
             <el-input-number
@@ -87,7 +88,8 @@
   </el-container>
   <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
     <span>
-      You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
+      You're about to go back to the home page. You will lose your progress after exiting. Are you
+      sure?
     </span>
     <template #footer>
       <div class="dialog-footer">
@@ -96,7 +98,6 @@
       </div>
     </template>
   </el-dialog>
-
 </template>
 
 <script setup lang="ts">
@@ -117,10 +118,18 @@ const auth = useAuthStore()
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 
-const num = ref<number | null>(null)
+const num = ref(20)
 const radio1 = ref('1')
 const value = ref('')
 const radio2 = ref('')
+const withdrawAmounts = [
+  { label: '20', display: '₱20' },
+  { label: '50', display: '₱50' },
+  { label: '100', display: '₱100' },
+  { label: '200', display: '₱200' },
+  { label: '500', display: '₱500' },
+  { label: '1000', display: '₱1,000' },
+] as const
 const options = [
   { value: 'GCash', label: 'GCash' },
   { value: 'Maya', label: 'Maya' },
@@ -156,7 +165,7 @@ function confirmDeposit() {
 function handleConfirmedDeposit() {
   wallet.deposit(Number(num.value))
   ElMessage.success('Deposit successful!')
-  num.value = null
+  num.value = 20
   radio2.value = ''
   value.value = ''
   showConfirmDeposit.value = false
@@ -250,7 +259,7 @@ body {
 .tab-toggle {
   background-color: #2f2fd1;
   border-radius: 999px;
-  padding: 0.30rem;
+  padding: 0.3rem;
   display: flex;
   flex: 1;
   width: 100%;
@@ -307,7 +316,6 @@ body {
   grid-template-columns: repeat(6, 1fr);
   gap: 4px;
 }
-
 
 ::v-deep(.amount-buttons .el-radio-button__inner) {
   font-size: 16px;
@@ -380,7 +388,6 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
   }
-
 }
 
 /* Medium devices (small laptops) */
@@ -396,5 +403,4 @@ body {
 @media (max-width: 1400px) {
   /* Styles for very large screens */
 }
-
 </style>
