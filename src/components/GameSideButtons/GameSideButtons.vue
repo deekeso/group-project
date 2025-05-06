@@ -1,6 +1,10 @@
 <template>
   <div class="side-buttons">
-    <AutopickButton @numberSelected="(number: number) => emit('numberSelected', number)" :max-number />
+    <AutopickButton
+      @numberSelected="(number: number) => emit('numberSelected', number)"
+      :max-number="maxNumber"
+      :key="currentIndex"
+    />
     <ClearButton class="clear-btn" @click="$emit('clear')" />
   </div>
 </template>
@@ -11,20 +15,20 @@ import ClearButton from './ClearButton.vue'
 
 const { maxNumber } = defineProps<{
   maxNumber: number
+  currentIndex: number
 }>()
 
 const emit = defineEmits<{
   (e: 'numberSelected', number: number): void
   (e: 'clear'): void
 }>()
-
 </script>
 
 <style scoped>
 .side-buttons {
   display: flex;
   flex-direction: column;
-  gap: 5px ;
+  gap: 5px;
 }
 .clear-btn {
   flex: 1;
