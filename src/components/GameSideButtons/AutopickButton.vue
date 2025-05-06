@@ -10,19 +10,6 @@
         cursor: isDrawing ? 'not-allowed' : 'pointer',
       }"
     >
-      <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
-      <div
-      v-for="number in numbers"
-      :key="number"
-      :class="['number', { selected: number === selectedNumber }]" <-- This one. Renders 2 times for some reason
-      @click="scrollToNumber(number)"
-      @scroll="onScroll"
-      ref="numberRefs">
-      
-      Did not explore this as we will not be using the .selected class
-      The autopick container will also have a gradient to indicate the center (selected item),
-      which makes this bug invisible.
-      >-->
       <div class="filler"></div>
       <div class="filler"></div>
       <div
@@ -63,6 +50,7 @@ const emit = defineEmits<{
 const numbers = ref<number[]>(Array.from({ length: maxNumber }, (_, i) => i + 1))
 const selectedNumber = ref<number>(1)
 const numberRefs = ref<(HTMLElement | null)[]>([])
+
 // Function to select a centered or clicked number
 const selectNumber = (number: number | null) => {
   if (number !== null) {
@@ -89,20 +77,19 @@ function applyWheelEffect() {
   numberRefs.value.forEach((numberRef, index) => {
     if (numberRef) {
       const rect = numberRef.getBoundingClientRect()
-      let distance = (rect.top + rect.height / 2 - centerY)
+      let distance = rect.top + rect.height / 2 - centerY
 
       let min = -150
       let max = 150
 
-      
-      let percent = 2 * ((distance - min)/(max - min)) - 1
+      let percent = 2 * ((distance - min) / (max - min)) - 1
       if (percent > 1) percent = 1
       if (percent < -1) percent = -1
 
       let scalePercent = Math.abs(percent)
       let angle = Math.max(-40, Math.min(percent * -90, 40))
-      
-      numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
+
+      numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1 - scalePercent * 1.1}`
     }
   })
 }
@@ -111,7 +98,6 @@ onMounted(applyWheelEffect)
 
 // Scroll logic to detect the center element
 const detectCenteredNumber = () => {
-
   nextTick(() => {
     const container = document.querySelector('.number-container') as HTMLElement
     const containerRect = container.getBoundingClientRect()
@@ -124,7 +110,7 @@ const detectCenteredNumber = () => {
       if (numberRef) {
         const rect = numberRef.getBoundingClientRect()
         const distance = Math.abs(rect.top + rect.height / 2 - centerY)
-        
+
         if (distance < closestDistance && numbers.value[index] !== undefined) {
           closestDistance = distance
           closestElement = numberRef
@@ -175,7 +161,8 @@ onMounted(() => {
   width: 100%;
   height: 300px;
 
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   scroll-snap-type: y mandatory;
 
   display: flex;

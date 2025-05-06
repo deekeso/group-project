@@ -49,7 +49,6 @@
                 @number-selected="autopickNumberSelected"
                 :max-number="payTable[gameType].length"
                 :game-is-drawing="isDrawing"
-                :cardIndex="index"
               />
             </div>
           </el-carousel-item>

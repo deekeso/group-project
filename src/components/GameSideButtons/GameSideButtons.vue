@@ -3,7 +3,6 @@
     <AutopickButton
       @numberSelected="(number: number) => emit('numberSelected', number)"
       :max-number="maxNumber"
-      :key="currentIndex"
     />
     <ClearButton class="clear-btn" @click="$emit('clear')" />
   </div>
@@ -15,7 +14,6 @@ import ClearButton from './ClearButton.vue'
 
 const { maxNumber } = defineProps<{
   maxNumber: number
-  currentIndex: number
 }>()
 
 const emit = defineEmits<{
