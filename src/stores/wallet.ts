@@ -22,7 +22,7 @@ export const useWalletStore = defineStore('wallet', () => {
     auth.user.balance = newBalance
 
     // Update in users array (persisted)
-    auth.users[index].balance = newBalance
+    auth.users[0].balance = newBalance
   }
 
   function deposit(amount: number) {

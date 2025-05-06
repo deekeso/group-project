@@ -9,7 +9,7 @@ const LOSE_STREAK_THRESHOLD = 20
 
 export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
-  const drawnNumbers = ref<number>()
+  const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
   const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
   const wager = ref<number>(MIN_WAGER)
@@ -49,7 +49,7 @@ export const useGameStore = defineStore('game', () => {
         'keno-game',
         JSON.stringify({
           selected: selectedNumbers.value,
-          drawn: drawnNumbers,
+          drawn: drawnNumbers.value,
           matched: matchedNumbers.value,
           wager: wager.value,
           winnings: winnings.value,
@@ -80,7 +80,7 @@ export const useGameStore = defineStore('game', () => {
     if (saved) {
       const parsed = JSON.parse(saved)
       selectedNumbers.value = parsed.selected || []
-      drawnNumbers.value = 0
+      drawnNumbers.value = parsed.drawn || []
       matchedNumbers.value = parsed.matched || []
       wager.value = parsed.wager || 20
       winnings.value = parsed.winnings || 0
@@ -114,7 +114,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function setDrawnNumbers(numbers: number[]) {
-    drawnNumbers.value = 0
+    drawnNumbers.value = numbers
     matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
   }
 
@@ -122,7 +122,7 @@ export const useGameStore = defineStore('game', () => {
     if (!preserveSelectedNumbers) {
       selectedNumbers.value = []
     }
-    drawnNumbers.value = 0
+    drawnNumbers.value = []
     matchedNumbers.value = []
     winnings.value = 0
   }
