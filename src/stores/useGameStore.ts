@@ -12,9 +12,8 @@ export const useGameStore = defineStore('game', () => {
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
   const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
-
-  // moved to card states array
   const wager = ref<number>(MIN_WAGER)
+  // moved to card states array
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
 
@@ -33,7 +32,6 @@ export const useGameStore = defineStore('game', () => {
     Array<{
       selectedNumbers: number[]
       matchedNumbers: number[]
-      wager: number
       winnings: number
       result: 'win' | 'lose' | ''
     }>
@@ -109,7 +107,7 @@ export const useGameStore = defineStore('game', () => {
     cards.value = Array.from({ length: numberOfCards.value }, () => ({
       selectedNumbers: [],
       matchedNumbers: [],
-      wager: MIN_WAGER,
+      wager: ref(wager.value),
       winnings: 0,
       result: '',
     }))
@@ -119,7 +117,6 @@ export const useGameStore = defineStore('game', () => {
   function increaseWager() {
     if (wager.value < MAX_WAGER) wager.value++
   }
-
   function decreaseWager() {
     if (wager.value > MIN_WAGER) wager.value--
   }
@@ -140,7 +137,7 @@ export const useGameStore = defineStore('game', () => {
     //modified to detect match per card
     cards.value = cards.value.map((card) => ({
       ...card,
-      matchedNumbers: numbers.filter((n) => card.selectedNumbers.includes(n)),
+      matchedNumbers: numbers.filter((n) => card.selectedNumbers?.includes(n)),
     }))
   }
 
@@ -216,7 +213,6 @@ export const useGameStore = defineStore('game', () => {
     drawnNumbers,
     matchedNumbers,
     wager,
-    bet,
     MIN_WAGER,
     MAX_WAGER,
     winnings,

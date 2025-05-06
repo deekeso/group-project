@@ -114,7 +114,7 @@ const displayMatching = ref(false)
 const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
 
-const { calculatePayout, evaluateGame } = useKenoResult('classic')
+const { calculatePayout, evaluateGame } = useKenoResult(gameType)
 const showModal = ref(false)
 
 const allCardsHaveSelections = computed(
