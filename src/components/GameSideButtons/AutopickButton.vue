@@ -1,6 +1,6 @@
 <template>
   <div class="autopick-container">
-    <div class="gradient">
+    <div class="gradient" ref="gradientRef">
       <div></div>
     </div>
     <div
@@ -9,15 +9,16 @@
         pointerEvents: isDrawing ? 'none' : 'auto',
         cursor: isDrawing ? 'not-allowed' : 'pointer',
       }"
+      ref="containerRef"
     >
       <div class="filler"></div>
       <div class="filler"></div>
       <div
-        v-for="number in numbers"
+        v-for="(number, index) in numbers"
         :key="number"
         class="number"
         @click="scrollToNumber(number)"
-        ref="numberRefs"
+        :ref="(el) => (numberRefs[index] = el as HTMLElement | null)"
       >
         <span>{{ number }}</span>
       </div>
@@ -51,6 +52,10 @@ const numbers = ref<number[]>(Array.from({ length: maxNumber }, (_, i) => i + 1)
 const selectedNumber = ref<number>(1)
 const numberRefs = ref<(HTMLElement | null)[]>([])
 
+// Used refs (containerRef, gradientRef) for scoped DOM access per component instance.
+const containerRef = ref<HTMLElement | null>(null)
+const gradientRef = ref<HTMLElement | null>(null)
+
 // Function to select a centered or clicked number
 const selectNumber = (number: number | null) => {
   if (number !== null) {
@@ -70,7 +75,11 @@ const debounce = (func: Function, delay: number) => {
 }
 
 function applyWheelEffect() {
-  const container = document.querySelector('.gradient') as HTMLElement
+  console.log('wheel effect applied')
+
+  const container = gradientRef.value
+  if (!container) return
+  // const container = document.querySelector('.gradient') as HTMLElement
   const containerRect = container.getBoundingClientRect()
   const centerY = containerRect.top + containerRect.height / 2
 
@@ -99,7 +108,9 @@ onMounted(applyWheelEffect)
 // Scroll logic to detect the center element
 const detectCenteredNumber = () => {
   nextTick(() => {
-    const container = document.querySelector('.number-container') as HTMLElement
+    const container = containerRef.value
+    // const container = document.querySelector('.number-container') as HTMLElement
+    if (!container) return
     const containerRect = container.getBoundingClientRect()
     const centerY = containerRect.top + containerRect.height / 2
 
@@ -115,6 +126,7 @@ const detectCenteredNumber = () => {
           closestDistance = distance
           closestElement = numberRef
           selectedNumber.value = numbers.value[index]
+          console.log('detect center')
         }
       }
     })
@@ -141,7 +153,9 @@ const scrollToNumber = (number: number) => {
 
 // Attach debounced scroll detection
 onMounted(() => {
-  const container = document.querySelector('.number-container') as HTMLElement
+  // const container = document.querySelector('.number-container') as HTMLElement
+  const container = containerRef.value
+  if (!container) return
   container.addEventListener('scroll', debounce(detectCenteredNumber, 200)) // Adjust delay as needed
   container.addEventListener('scroll', applyWheelEffect) // Adjust delay as needed
 })
