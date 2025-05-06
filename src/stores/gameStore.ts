@@ -11,7 +11,7 @@ type TState = {
   win_music: number;
 
   four_random_cards: TCardType[];
-  selectedCards: TSelectedCard[];
+  selectedCards: string;
   currentSelectedCard: {
     index: number;
     card: TCardType;
@@ -44,7 +44,7 @@ export const useGameStore = defineStore('gameStore', {
     wheel_music: 100,
     win_music: 100,
 
-    selectedCards: [],
+    selectedCards: '',
     four_random_cards: [],
     currentSelectedCard: null,
 
@@ -124,7 +124,8 @@ export const useGameStore = defineStore('gameStore', {
     },
 
     setSelectedCards(newValue: TSelectedCard[]) {
-      this.selectedCards = newValue;
+      console.info(newValue)
+      this.selectedCards = 'newValue';
     },
 
     setCurrentSelectedCard(newValue: { index: number; card: TCardType } | null) {
