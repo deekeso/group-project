@@ -178,6 +178,7 @@ function directToTutorial() {
   font-variation-settings: 'wght' 700;
   color: #fcd119;
   text-shadow: 3px 3px 12px #bc4615;
+  animation: textGlow 1.5s ease-in-out infinite;
 }
 
 .slogan-body {
@@ -240,5 +241,18 @@ function directToTutorial() {
 
 ::v-deep(.el-dialogcenter) {
   display: none;
+}
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(254, 202, 67, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px #FECA43,
+                 0 0 30px #FECA43,
+                 0 0 40px #FECA43;
+  }
+  100% {
+    text-shadow: 0 0 10px rgba(254, 202, 67, 0.3);
+  }
 }
 </style>
