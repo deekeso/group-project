@@ -89,12 +89,12 @@ import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useKenoResult } from '@/composables/useKenoResult'
 import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import { useGameStore } from '@/stores/useGameStore'
-import { useWalletStore } from '@/stores/wallet'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import { provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { GameType } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 
 // import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
 import drawSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
@@ -111,7 +111,7 @@ const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
-const walletStore = useWalletStore()
+const { wallet } = useAuthStore()
 const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
   storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
@@ -163,7 +163,7 @@ useSyncGameMode('classic')
 
 async function startDraw() {
   // Check balance before playing
-  if (walletStore.balance < gameStore.wager) {
+  if (wallet.balance < gameStore.wager) {
     ElNotification({
       title: 'Insufficient Balance',
       message: 'Please top up your wallet or adjust your wager.',

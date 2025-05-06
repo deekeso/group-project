@@ -1,22 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
-import UserBalance from '@/components/UserBalance.vue'
-import { useWalletStore } from '@/stores/wallet'
 import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'
+import UserBalance from '@/components/UserBalance.vue'
+import { useAuthStore } from '@/stores/auth'
 import { User } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import UserMenuBalance from './UserMenuBalance.vue'
-
-const walletStore = useWalletStore()
-
-const isMenuOpen = ref(false)
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
 
 const handleLogout = async () => {
   try {

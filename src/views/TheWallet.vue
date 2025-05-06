@@ -18,7 +18,7 @@
               </el-icon>
             </button>
             <div class="wallet-header-text">
-              <p>Welcome, {{ auth.user?.firstname }}!</p>
+              <p>Welcome, {{ user?.firstname }}!</p>
               <h3>Your Current Balance is</h3>
               <h1>₱{{ wallet.balance.toFixed(2) }}</h1>
             </div>
@@ -105,7 +105,7 @@ import HomeButton from '@/components/HomeButton.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
-import { useWalletStore } from '@/stores/wallet'
+import { TransactionOperation } from '@/types'
 import { Back } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref, watch } from 'vue'
@@ -113,8 +113,8 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const wallet = useWalletStore()
-const auth = useAuthStore()
+const { performTransaction, user, wallet } = useAuthStore()
+
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 
@@ -163,7 +163,7 @@ function confirmDeposit() {
 }
 
 function handleConfirmedDeposit() {
-  wallet.deposit(Number(num.value))
+  performTransaction(TransactionOperation.Deposit, Number(num.value))
   ElMessage.success('Deposit successful!')
   num.value = 20
   radio2.value = ''

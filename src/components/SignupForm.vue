@@ -10,6 +10,7 @@ import { useAuthStore } from '@/stores/auth'
 import { watch } from 'vue'
 
 import SigninForm from './SigninForm.vue'
+import useUtils from '@/composables/useUtils'
 
 // Add emit definition
 const emit = defineEmits(['close', 'open-signin'])
@@ -26,7 +27,7 @@ const loading = ref(false)
 // Update the validateForm function to properly validate using a Promise
 const validateForm = () => {
   if (!formRef.value) return Promise.resolve(false)
-  
+
   return formRef.value.validate()
     .then(() => true)
     .catch(() => false)
@@ -104,17 +105,10 @@ watch(
       form.age = ''
       return
     }
+    const { calculateAge } = useUtils()
 
-    const birthDate = new Date(newVal)
-    const today = new Date()
-    let calculatedAge = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      calculatedAge--
-    }
-
-    form.age = calculatedAge >= 0 ? calculatedAge.toString() : ''
+    const age = calculateAge(new Date(newVal))
+    form.age = age >= 0 ? age.toString() : ''
   },
 )
 
@@ -219,7 +213,7 @@ const handleSubmit = async (e: Event) => {
       'Registration Successful',
       'Welcome to Keno Plus! Your account has been successfully created.',
     )
-    
+
     emit('close')
     router.push('/home')
   } catch (error: unknown) {

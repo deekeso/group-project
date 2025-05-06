@@ -6,11 +6,11 @@
 </template>
 
 <script setup lang="ts">
-import { useWalletStore } from '@/stores/wallet'
+import { useAuthStore } from '@/stores/auth'
 import { WalletFilled } from '@element-plus/icons-vue'
 import { computed } from 'vue'
 
-const wallet = useWalletStore()
+const { wallet } = useAuthStore()
 const balance = computed(() => wallet.balance)
 </script>
 
