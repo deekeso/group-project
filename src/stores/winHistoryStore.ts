@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useWinHistoryStore = defineStore('winHistory', {
   state: () => ({
-    history: [] as { round: number; winner: string }[],
+    history:  { round: Number, winner: String },
   }),
   actions: {
     addWin(round: number, winner: string) {
