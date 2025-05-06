@@ -1,6 +1,6 @@
 <template>
   <div class="autopick-container">
-    <div class="gradient">
+    <div class="gradient" ref="gradientRef">
       <div></div>
     </div>
     <div
@@ -9,6 +9,7 @@
         pointerEvents: isDrawing ? 'none' : 'auto',
         cursor: isDrawing ? 'not-allowed' : 'pointer',
       }"
+      ref="containerRef"
     >
       <!-- TODO: [Comment 1] Check for possible rendering bug, might cause inefficiency. Specifically,
       <div
@@ -18,7 +19,7 @@
       @click="scrollToNumber(number)"
       @scroll="onScroll"
       ref="numberRefs">
-      
+
       Did not explore this as we will not be using the .selected class
       The autopick container will also have a gradient to indicate the center (selected item),
       which makes this bug invisible.
@@ -26,11 +27,11 @@
       <div class="filler"></div>
       <div class="filler"></div>
       <div
-        v-for="number in numbers"
+        v-for="(number, index) in numbers"
         :key="number"
         class="number"
         @click="scrollToNumber(number)"
-        ref="numberRefs"
+        :ref="(el) => (numberRefs[index] = el as HTMLElement | null)"
       >
         <span>{{ number }}</span>
       </div>
@@ -63,6 +64,11 @@ const emit = defineEmits<{
 const numbers = ref<number[]>(Array.from({ length: maxNumber }, (_, i) => i + 1))
 const selectedNumber = ref<number>(1)
 const numberRefs = ref<(HTMLElement | null)[]>([])
+
+// Used refs (containerRef, gradientRef) for scoped DOM access per component instance.
+const containerRef = ref<HTMLElement | null>(null)
+const gradientRef = ref<HTMLElement | null>(null)
+
 // Function to select a centered or clicked number
 const selectNumber = (number: number | null) => {
   if (number !== null) {
@@ -82,27 +88,28 @@ const debounce = (func: Function, delay: number) => {
 }
 
 function applyWheelEffect() {
-  const container = document.querySelector('.gradient') as HTMLElement
+  const container = gradientRef.value
+  if (!container) return
+  // const container = document.querySelector('.gradient') as HTMLElement
   const containerRect = container.getBoundingClientRect()
   const centerY = containerRect.top + containerRect.height / 2
 
   numberRefs.value.forEach((numberRef, index) => {
     if (numberRef) {
       const rect = numberRef.getBoundingClientRect()
-      let distance = (rect.top + rect.height / 2 - centerY)
+      let distance = rect.top + rect.height / 2 - centerY
 
       let min = -150
       let max = 150
 
-      
-      let percent = 2 * ((distance - min)/(max - min)) - 1
+      let percent = 2 * ((distance - min) / (max - min)) - 1
       if (percent > 1) percent = 1
       if (percent < -1) percent = -1
 
       let scalePercent = Math.abs(percent)
       let angle = Math.max(-40, Math.min(percent * -90, 40))
-      
-      numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1-scalePercent*1.1}`
+
+      numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1 - scalePercent * 1.1}`
     }
   })
 }
@@ -111,9 +118,10 @@ onMounted(applyWheelEffect)
 
 // Scroll logic to detect the center element
 const detectCenteredNumber = () => {
-
   nextTick(() => {
-    const container = document.querySelector('.number-container') as HTMLElement
+    const container = containerRef.value
+    // const container = document.querySelector('.number-container') as HTMLElement
+    if (!container) return
     const containerRect = container.getBoundingClientRect()
     const centerY = containerRect.top + containerRect.height / 2
 
@@ -124,7 +132,7 @@ const detectCenteredNumber = () => {
       if (numberRef) {
         const rect = numberRef.getBoundingClientRect()
         const distance = Math.abs(rect.top + rect.height / 2 - centerY)
-        
+
         if (distance < closestDistance && numbers.value[index] !== undefined) {
           closestDistance = distance
           closestElement = numberRef
@@ -142,7 +150,6 @@ const detectCenteredNumber = () => {
 
 // Scroll a clicked number to the center
 const scrollToNumber = (number: number) => {
-  console.log(number)
   // Check [Comment 1] above. Because of the rendering bug, i had to use number - 1
   // Will not explore for now as I have other things to do but if you encounter this,
   // try exploring it.
@@ -155,7 +162,9 @@ const scrollToNumber = (number: number) => {
 
 // Attach debounced scroll detection
 onMounted(() => {
-  const container = document.querySelector('.number-container') as HTMLElement
+  // const container = document.querySelector('.number-container') as HTMLElement
+  const container = containerRef.value
+  if (!container) return
   container.addEventListener('scroll', debounce(detectCenteredNumber, 200)) // Adjust delay as needed
   container.addEventListener('scroll', applyWheelEffect) // Adjust delay as needed
 })
@@ -175,7 +184,8 @@ onMounted(() => {
   width: 100%;
   height: 300px;
 
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
   scroll-snap-type: y mandatory;
 
   display: flex;

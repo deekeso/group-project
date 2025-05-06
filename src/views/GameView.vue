@@ -45,11 +45,11 @@
                 :cardIndex="index"
               />
               <GameSideButtons
-                @clear="resetGame"
+                @clear="resetGame(index)"
                 @number-selected="autopickNumberSelected"
                 :max-number="payTable[gameType].length"
                 :game-is-drawing="isDrawing"
-                :cardIndex="index"
+                :card-index="index"
               />
             </div>
           </el-carousel-item>
@@ -210,15 +210,15 @@ async function startDraw() {
   }, 150)
 }
 
-function autopickNumberSelected(number: number) {
+function autopickNumberSelected(number: number, cardIndex: number) {
   if (isDrawing.value) return
   isDrawing.value = true
-  resetAutopicked()
+  resetAutopicked(cardIndex)
   isRoundFinished.value = true
   let count = 0
 
   const interval = setInterval(() => {
-    kenoAutopick(number, gameType)
+    kenoAutopick(number, gameType, cardIndex)
     count++
 
     if (count >= number) {
@@ -234,9 +234,9 @@ function resetRound() {
   isRoundFinished.value = false
 }
 
-function resetGame() {
+function resetGame(cardIndex: number) {
   if (isDrawing.value) return
-  gameStore.resetGame()
+  gameStore.resetCard(cardIndex)
 }
 
 function setSelectedNumbers(numbers: number[]) {
