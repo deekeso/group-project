@@ -1,6 +1,11 @@
 <template>
   <el-container class="classic-page">
-    <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" class="home-confirmation-dialog" align-center>
+    <el-dialog
+      v-model="confirmExitDialogVisible"
+      title="Exit game?"
+      class="home-confirmation-dialog"
+      align-center
+    >
       <span>
         You're about to go back to the home page. You will lose your progress after exiting. Are you
         sure?
@@ -17,14 +22,14 @@
     <el-header>
       <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
       <div class="nav-container">
-        <!-- <HelpBtn @click="dialogVisible = true" /> -->
-        <HelpBtn @click="startTour" />
+        <HelpBtn @click="dialogVisible = true" />
+        <!-- <HelpBtn @click="startTour" /> -->
         <UserBalance @wallet="directToWallet" />
       </div>
     </el-header>
     <el-main>
       <div class="grid-paytable-container">
-        <TheLegend class="legend"/>
+        <TheLegend class="legend" />
         <PayTable
           kenoType="classic"
           :selectedCellsCount="selectedNumbers.length"
@@ -61,21 +66,7 @@
         <NoWin v-if="result === 'lose' && showModal" />
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
-
-      <el-tour v-model="open" style="color: black">
-        <el-tour-step
-          v-for="(step, index) in tourSteps"
-          :key="index"
-          :target="step.target"
-          :title="step.title"
-          :placement="step.placement"
-        >
-          {{ step.description }}
-        </el-tour-step>
-        <template #indicators="{ current, total }">
-          <span>{{ current + 1 }} / {{ total }}</span>
-        </template>
-      </el-tour>
+      <HelpTour v-model="open" />
     </el-main>
   </el-container>
 </template>
@@ -91,6 +82,8 @@ import PayTable from '@/components/PayTable/PayTable.vue'
 import TheLegend from '@/components/TheLegend.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import WithWin from '@/components/WithWin.vue'
+import HelpTour from '@/components/HelpTour.vue'
+import TutorialDialog from '@/components/TutorialDialog.vue'
 import { gameIsDrawingKey } from '@/composables/keys'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useKenoResult } from '@/composables/useKenoResult'
@@ -112,7 +105,7 @@ import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import { useTour } from '@/composables/useTour'
 
-const { open, currentStep, tourSteps, startTour, nextStep } = useTour()
+const { open } = useTour()
 
 const router = useRouter()
 const route = useRoute()
@@ -289,13 +282,13 @@ function exitGame() {
 
 <style scoped>
 * {
-  -webkit-touch-callout:none;
-  -webkit-user-select:none;
-  -khtml-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
-  -webkit-tap-highlight-color:rgba(0,0,0,0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 .classic-page {
   min-height: 100vh;
@@ -362,11 +355,6 @@ function exitGame() {
 
 ::v-deep(.el-overlay-dialog:has(.home-confirmation-dialog)) {
   padding: 0 40px;
-}
-
-/* TODO: Try to move this to TutorialDialog.vue */
-::v-deep(.help-dialog) {
-  background-color: #060351;
 }
 
 ::v-deep(.el-dialog__body) {

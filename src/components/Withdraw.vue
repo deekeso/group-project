@@ -87,7 +87,7 @@ watch(num, (val) => {
 
 function confirmWithdraw() {
   if (!value.value) {
-    ElMessage.error('Please select a withdrawal method.')
+    ElMessage.error('Please select an e-wallet for the withdrawal.')
     return
   }
 
