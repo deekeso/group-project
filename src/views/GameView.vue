@@ -41,7 +41,7 @@
         >
           <el-carousel-item v-for="(card, index) in cards" :key="index" height="auto">
             <PayTable
-              kenoType="classic"
+              :kenoType="gameType"
               :selectedCellsCount="cards[index].selectedNumbers.length"
               :matchedCellsCount="displayMatching ? cards[index].matchedNumbers.length : -1"
               style="padding-bottom: 24px"

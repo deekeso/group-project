@@ -74,7 +74,10 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
     evaluateRound()
-    // console.log(`Total: ${totalWinnings}`)
+    console.log('mode:', mode)
+    console.log('table entries', tableEntries.value)
+    console.log('win values', winValues.value)
+    console.log(`Total: ${totalWinnings}`)
     totalWins.value = totalWinnings
   }
 
