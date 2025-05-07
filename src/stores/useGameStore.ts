@@ -28,14 +28,20 @@ export const useGameStore = defineStore('game', () => {
   const purchaseMode = ref<'single' | 'multiple'>()
   const numberOfCards = ref<number>(0)
 
+  //card state
   const cards = ref<
     Array<{
       selectedNumbers: number[]
       matchedNumbers: number[]
+      multiplier?: number
       winnings: number
       result: 'win' | 'lose' | ''
     }>
   >([])
+
+  //result states
+  const hasWin = ref<boolean>(false)
+  const totalWins = ref(0)
 
   // autosave to local storage
   watch(
@@ -107,6 +113,7 @@ export const useGameStore = defineStore('game', () => {
     cards.value = Array.from({ length: numberOfCards.value }, () => ({
       selectedNumbers: [],
       matchedNumbers: [],
+      multiplier: 0,
       winnings: 0,
       result: '',
     }))
@@ -239,6 +246,8 @@ export const useGameStore = defineStore('game', () => {
     purchaseMode,
     numberOfCards,
     cards,
+    hasWin,
+    totalWins,
     initializeCards,
     increaseWager,
     decreaseWager,

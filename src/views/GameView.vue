@@ -30,7 +30,6 @@
     <el-main>
       <div class="grid-paytable-container">
         <TheLegend class="legend" />
-
         <!--Display in carousel if there are multiple cards-->
         <el-carousel
           height="auto"
@@ -42,7 +41,7 @@
         >
           <el-carousel-item v-for="(card, index) in cards" :key="index" height="auto">
             <PayTable
-              kenoType="classic"
+              :kenoType="gameType"
               :selectedCellsCount="cards[index].selectedNumbers.length"
               :matchedCellsCount="displayMatching ? cards[index].matchedNumbers.length : -1"
               style="padding-bottom: 24px"
@@ -71,13 +70,9 @@
           :disabled="!allCardsHaveSelections"
         />
         <Transition name="bounce">
-          <WithWin
-            v-if="result === 'win' && showModal"
-            :winValue="winnings"
-            @close="showModal = false"
-          />
+          <WithWin v-if="hasWin && showModal" :winValue="winnings" @close="showModal = false" />
         </Transition>
-        <NoWin v-if="result === 'lose' && showModal" />
+        <NoWin v-if="!hasWin && showModal" />
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
       <HelpTour v-model="open" />
@@ -126,7 +121,7 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const { wallet } = useAuthStore()
-const { winnings, result, hasPurchasedCards, numberOfCards, cards } = storeToRefs(gameStore)
+const { winnings, hasPurchasedCards, numberOfCards, cards, hasWin } = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)

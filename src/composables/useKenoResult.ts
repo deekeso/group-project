@@ -13,7 +13,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
   const { performTransaction } = useAuthStore()
   const gameStore = useGameStore()
   // const walletStore = useWalletStore()
-  const { wager, cards } = storeToRefs(gameStore)
+  const { wager, cards, hasWin, totalWins } = storeToRefs(gameStore)
 
   // Compute paytable entry per card based on its selected number count
   const tableEntries = computed(() =>
@@ -40,25 +40,45 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     })
   }
 
+  // determine if a round has a winning card
+  function evaluateRound() {
+    if (winValues.value.some((win) => win > 0)) {
+      hasWin.value = true
+    } else {
+      hasWin.value = false
+    }
+  }
+
   // Apply payout or deduct wager per card
   function calculatePayout() {
+    let totalWinnings = 0
+
     cards.value.forEach((card, index) => {
       const multiplier = winValues.value[index]
       const winnings = wager.value * multiplier
 
       if (multiplier > 0) {
         // Add win to wallet
+        totalWinnings += winnings
         performTransaction(TransactionOperation.Payout, winnings)
         // walletStore.addPayout(winnings)
-      } else {
-        // Deduct shared wager for losing card
-        // walletStore.deductLostBet(wager.value)
-        performTransaction(TransactionOperation.Wage, wager.value)
       }
+      // else {
+      //   Deduct shared wager for losing card
+      //   walletStore.deductLostBet(wager.value)
+      //   performTransaction(TransactionOperation.Wage, wager.value)
+      // }
 
       card.winnings = winnings
+      card.multiplier = multiplier
       console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
+    evaluateRound()
+    console.log('mode:', mode)
+    console.log('table entries', tableEntries.value)
+    console.log('win values', winValues.value)
+    console.log(`Total: ${totalWinnings}`)
+    totalWins.value = totalWinnings
   }
 
   return {
