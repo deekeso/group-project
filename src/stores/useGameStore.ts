@@ -40,6 +40,7 @@ export const useGameStore = defineStore('game', () => {
 
   //result states
   const hasWin = ref<boolean>(false)
+  const totalWins = ref(0)
 
   // autosave to local storage
   watch(
@@ -244,6 +245,7 @@ export const useGameStore = defineStore('game', () => {
     numberOfCards,
     cards,
     hasWin,
+    totalWins,
     initializeCards,
     increaseWager,
     decreaseWager,

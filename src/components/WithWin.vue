@@ -12,7 +12,7 @@
       ></path>
     </svg>
     <p>YOU WON</p>
-    <h1>₱{{ props.winValue }}</h1>
+    <h1>₱{{ totalWins }}</h1>
 
     <div>
       <img src="/src/assets/gold-trunk-win.png" alt="" />
@@ -24,11 +24,15 @@
 <script setup lang="ts">
 import GameDialog from '../components/GameDialog.vue'
 import winSound from '@/assets/sounds/withwin/8-bit-video-game-win-level-sound-version-1-145827.mp3'
+import { useGameStore } from '@/stores/useGameStore'
+import { storeToRefs } from 'pinia'
 import { onMounted } from 'vue'
 
-const props = defineProps<{
-  winValue: number
-}>()
+const gameStore = useGameStore()
+const { totalWins } = storeToRefs(gameStore)
+// const props = defineProps<{
+//   winValue: number
+// }>()
 
 const playWinSound = () => {
   const audio = new Audio(winSound)
