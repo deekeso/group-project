@@ -11,7 +11,7 @@ export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
-  const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
+  // const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
   const wager = ref<number>(MIN_WAGER)
   // moved to card states array
   const winnings = ref<number>(0)
@@ -38,6 +38,9 @@ export const useGameStore = defineStore('game', () => {
       result: 'win' | 'lose' | ''
     }>
   >([])
+  const watchedMatchedNumbers = computed(() =>
+    cards.value.map((card) => structuredClone(toRaw(card.matchedNumbers))),
+  )
 
   //result states
   const hasWin = ref<boolean>(false)
@@ -78,10 +81,23 @@ export const useGameStore = defineStore('game', () => {
     { deep: true },
   )
 
+  // watch(
+  //   watchedMatchedNumbers,
+  //   (newVal, oldVal) => {
+  //     if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+  //   },
+  //   { deep: true },
+  // )
   watch(
     watchedMatchedNumbers,
     (newVal, oldVal) => {
-      if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+      // Flatten arrays for comparison
+      const newTotalMatches = newVal.flat().length
+      const oldTotalMatches = oldVal.flat().length
+
+      if (newTotalMatches > 0 && newTotalMatches !== oldTotalMatches) {
+        matchCallback(newTotalMatches)
+      }
     },
     { deep: true },
   )
@@ -213,6 +229,8 @@ export const useGameStore = defineStore('game', () => {
 
   function setMatchCallback(callback: (i: number) => void) {
     matchCallback = callback
+    console.log('setMatchCallback')
+    console.log('matchCallback', matchCallback)
   }
 
   function resetWinnings() {
