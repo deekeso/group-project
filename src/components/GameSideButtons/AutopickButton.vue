@@ -20,6 +20,7 @@
       @scroll="onScroll"
       ref="numberRefs">
 
+
       Did not explore this as we will not be using the .selected class
       The autopick container will also have a gradient to indicate the center (selected item),
       which makes this bug invisible.

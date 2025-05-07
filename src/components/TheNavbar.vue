@@ -1,21 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { ElMessageBox } from 'element-plus'
-import UserBalance from '@/components/UserBalance.vue'
-import { useWalletStore } from '@/stores/wallet'
 import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'
+import UserBalance from '@/components/UserBalance.vue'
+import { useAuthStore } from '@/stores/auth'
 import { User } from '@element-plus/icons-vue'
-
-const walletStore = useWalletStore()
-
-const isMenuOpen = ref(false)
-
-const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
-}
+import { ElMessageBox } from 'element-plus'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import UserMenuBalance from './UserMenuBalance.vue'
 
 const handleLogout = async () => {
   try {
@@ -65,98 +57,75 @@ const authStore = useAuthStore()
 </script>
 
 <template>
+  <el-dialog v-model="isSigninVisible" style="background-color: transparent" center @close="signinFormRef?.resetForm()">
+    <SigninForm ref="signinFormRef" @close="isSigninVisible = false" @open-signup="handleOpenSignup" />
+  </el-dialog>
+
+  <el-dialog v-model="isSignupVisible" style="background-color: transparent" center @close="signupFormRef?.resetForm()">
+    <SignupForm ref="signupFormRef" @close="isSignupVisible = false" @open-signin="
+      () => {
+        isSignupVisible = false
+        isSigninVisible = true
+      }
+    " />
+  </el-dialog>
   <nav class="navbar">
     <div class="nav-content">
-      <div class="logo-container">
-        <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
-      </div>
+      <img src="@/assets/Group 27.png" alt="Keno Plus Logo" class="logo" />
       <div class="profile-container">
+
         <div class="userbal-button" v-if="authStore.isAuthenticated">
           <UserBalance @wallet="directToWallet" />
         </div>
+
         <!-- If authenticated, show the user icon inside el-dropdown -->
-        <el-dropdown v-if="authStore.isAuthenticated">
+        <el-dropdown v-if="authStore.isAuthenticated" trigger="click">
           <div class="profile-icon">
             <el-icon size="large" class="profile-icon">
               <User />
             </el-icon>
           </div>
+
           <template #dropdown>
-            <el-menu>
-              <el-menu-item index="1" @click="handleLogout">Logout</el-menu-item>
-            </el-menu>
+            <el-dropdown-menu>
+
+              <el-dropdown-item index="1" @click="directToWallet" class="user-menu-balance">
+                <UserMenuBalance />
+              </el-dropdown-item>
+
+              <el-dropdown-item index="2" @click="handleLogout">Logout</el-dropdown-item>
+
+            </el-dropdown-menu>
           </template>
         </el-dropdown>
+
         <el-button v-else class="signin-button" @click="showSigninModal">Sign In</el-button>
       </div>
     </div>
   </nav>
-
-  <el-dialog
-    v-model="isSigninVisible"
-    style="background-color: transparent"
-    center
-    @close="signinFormRef?.resetForm()"
-  >
-    <SigninForm
-      ref="signinFormRef"
-      @close="isSigninVisible = false"
-      @open-signup="handleOpenSignup"
-    />
-  </el-dialog>
-
-  <el-dialog
-    v-model="isSignupVisible"
-    style="background-color: transparent"
-    center
-    @close="signupFormRef?.resetForm()"
-  >
-    <SignupForm
-      ref="signupFormRef"
-      @close="isSignupVisible = false"
-      @open-signin="
-        () => {
-          isSignupVisible = false
-          isSigninVisible = true
-        }
-      "
-    />
-  </el-dialog>
 </template>
 
 <style scoped>
 .navbar {
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
-  height: 100px;
+  height: auto;
   width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
+  padding: 20px 40px;
 }
 
 .nav-content {
+  width: 100%;
   max-width: 1440px;
-  margin: 0 auto;
-  height: 100%;
+  height: auto;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 0 40px;
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  height: 100px;
-  grid-column: 2;
-  justify-content: center;
+  margin: 0 auto;
 }
 
 .logo {
-  height: 150px;
-  width: auto;
-  margin-top: 25px;
+  grid-column: 2;
+  height: 100%;
 }
 
 .profile-container {
@@ -166,6 +135,7 @@ const authStore = useAuthStore()
   grid-column: 3;
   justify-self: end;
 }
+
 .profile-icon {
   width: 40px;
   height: 40px;
@@ -192,6 +162,10 @@ const authStore = useAuthStore()
   height: 38px;
 }
 
+::v-deep(.el-dropdown-menu__item.user-menu-balance) {
+  display: none;
+}
+
 ::v-deep(.el-dialog__header) {
   display: none;
 }
@@ -215,5 +189,42 @@ const authStore = useAuthStore()
 :deep(.el-dialog__body) {
   padding: 0;
   overflow: auto;
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  .logo {
+    height: 70%;
+  }
+
+  .userbal-button {
+    display: none;
+  }
+
+  ::v-deep(.el-dropdown-menu__item.user-menu-balance) {
+    display: block;
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+
+  /* Styles for desktops */
+  .logo {
+    grid-column: 1;
+  }
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

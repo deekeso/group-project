@@ -1,71 +1,79 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import useUtils from '@/composables/useUtils'
+import type { TransactionOperation, User, UserDetails } from '@/types.ts'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { useWalletsStore, type Wallet } from './wallet'
 
-interface User {
-  firstname?: string
-  lastname?: string
-  email: string
-  username?: string
-  dateOfBirth?: Date
-  age?: number
-  password: string
-  balance?: number
-}
+export const useAuthStore = defineStore('auth', {
+  state: () => ({
+    users: [] as User[],
+    user: null as User | null,
+    isAuthenticated: false
+  }),
 
-export const useAuthStore = defineStore(
-  'auth',
-  () => {
-    const users = ref<User[]>([])
-    const user = ref<User | null>(null)
-    const isAuthenticated = ref(false)
-
-    function login(email: string, password: string) {
-      const foundUser = users.value.find((u) => u.email === email && u.password === password)
+  actions: {
+    login(email: string, password: string) {
+      const foundUser = this.users.find((u) => u.email === email && u.password === password)
 
       if (!foundUser) {
         throw new Error('Invalid email or password')
       }
 
-      user.value = foundUser
-      isAuthenticated.value = true
-    }
+      this.user = foundUser
+      this.isAuthenticated = true
+    },
 
-    function logout() {
-      user.value = null
-      isAuthenticated.value = false
-    }
+    logout() {
+      this.user = null
+      this.isAuthenticated = false
+    },
 
-    function register(userData: User) {
+    register(userData: UserDetails) {
+      const { createWallet } = useWalletsStore()
       // Check for duplicate email
-      if (users.value.some((u) => u.email === userData.email)) {
+      if (this.users.some((u) => u.email === userData.email)) {
         throw new Error('Email already registered')
       }
 
       // Check for duplicate username
-      if (users.value.some((u) => u.username === userData.username)) {
+      if (this.users.some((u) => u.username === userData.username)) {
         throw new Error('Username already taken')
       }
 
-      users.value.push({ ...userData, balance: 0 })
-      user.value = { ...userData, balance: 0 }
-      isAuthenticated.value = true
-    }
+      const newUser: User = {
+        ...userData,
+        wallet: createWallet()
+      }
 
-    return {
-      user,
-      users,
-      isAuthenticated,
-      login,
-      logout,
-      register,
+      this.users.push(newUser)
+      this.user = newUser
+      this.isAuthenticated = true
+    },
+
+    performTransaction(operation: TransactionOperation, amount: number) {
+      const { performTransaction } = useWalletsStore()
+      console.log(performTransaction(this.wallet.id, operation, amount))
     }
   },
-  {
-    persist: {
-      key: 'auth-store',
-      storage: localStorage,
-      paths: ['users', 'user', 'isAuthenticated'],
-    } as any,
+
+  getters: {
+    age(state) {
+      if (!state.isAuthenticated || !state.user) throw new Error('User is not authenticated.')
+      const { calculateAge } = useUtils()
+      return calculateAge(state.user.dateOfBirth)
+    },
+
+    wallet(state): Wallet {
+      const { findWallet } = useWalletsStore()
+      if (!state.isAuthenticated || !state.user) throw new Error('User is not authenticated.')
+
+      return findWallet(state.user.wallet)
+    }
   },
-)
+
+  persist: {
+    key: 'auth-store',
+    storage: localStorage,
+    paths: ['users', 'user', 'isAuthenticated'],
+  } as any,
+})

@@ -2,12 +2,15 @@ import { computed } from 'vue'
 import paytable from '../components/PayTable/payTable.json'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
+import { useAuthStore } from '@/stores/auth'
 import { useWalletStore } from '@/stores/wallet'
+import { TransactionOperation } from '@/types'
 
 export function useKenoResult(mode: 'mini' | 'classic') {
   const kenoPayout = paytable as Paytable
   const kenoTable = computed<PaytableEntry[]>(() => kenoPayout[mode])
 
+  const { performTransaction } = useAuthStore()
   const gameStore = useGameStore()
   const walletStore = useWalletStore()
   const { wager, cards } = storeToRefs(gameStore)
@@ -44,9 +47,11 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       const winnings = wager.value * multiplier
 
       if (multiplier > 0) {
+        // performTransaction(TransactionOperation.Payout, payout)
         walletStore.addPayout(winnings) // Add win to wallet
       } else {
         walletStore.deductLostBet(wager.value) // Deduct shared wager for losing card
+        // performTransaction(TransactionOperation.Wage, wager.value)
       }
 
       card.winnings = winnings

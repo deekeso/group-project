@@ -2,11 +2,9 @@
 import { ref } from 'vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus' // Changed to type-only import
 import { useAuthStore } from '@/stores/auth'
-import type { FormRules } from 'element-plus'
-import { useFormValidation } from '@/composables/useFormValidation'
-import { useSuccessModal } from '@/composables/useSuccessModal'
 import SignupForm from './SignupForm.vue'
 
 // Add emit definition
@@ -17,10 +15,47 @@ const showSigninForm = ref(true)
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { formRef, loading, validateForm } = useFormValidation()
-const { showSuccessModal } = useSuccessModal()
 
-const form = reactive({
+// Form validation logic directly in component
+const formRef = ref<FormInstance>()
+const loading = ref(false)
+
+// Update the validateForm function to properly handle validation
+const validateForm = () => {
+  if (!formRef.value) return Promise.resolve(false)
+  
+  return formRef.value.validate()
+    .then(() => true)
+    .catch(() => {
+      ElMessage.error('Please fill in all required fields correctly')
+      return false
+    })
+}
+
+// Success modal logic directly in component
+const showSuccessModal = (title: string, message: string) => {
+  try {
+    ElMessageBox.alert(message, title, {
+      confirmButtonText: 'OK',
+      type: 'success',
+      center: true,
+      customClass: 'success-modal',
+      showClose: false
+    })
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Add this interface before the form declaration
+interface SigninFormData {
+  email: string;
+  password: string;
+}
+
+// Update the form declaration to use the interface
+const form = reactive<SigninFormData>({
   email: '',
   password: '',
 })
@@ -38,6 +73,7 @@ const rules = reactive<FormRules>({
   ],
 })
 
+// Update handleSubmit to properly await validation
 const handleSubmit = async (e: Event) => {
   e.preventDefault()
   if (loading.value) return
@@ -47,20 +83,33 @@ const handleSubmit = async (e: Event) => {
   try {
     const isValid = await validateForm()
     if (!isValid) {
-      ElMessage.error('Please check your input')
+      loading.value = false
+      return
+    }
+
+    // Check for empty fields explicitly
+    if (!form.email.trim() || !form.password.trim()) {
+      ElMessage.error('Please fill in all required fields')
+      loading.value = false
       return
     }
 
     await authStore.login(form.email, form.password)
-    await showSuccessModal('Login Successful', 'Welcome back to Keno Plus!')
+    const modalShown = showSuccessModal('Login Successful', 'Welcome back to Keno Plus!')
     
-    // Emit close event after successful login
+    if (!modalShown) {
+      ElMessage({
+        message: 'Login successful! Welcome back to Keno Plus!',
+        type: 'success',
+      })
+    }
+    
     emit('close')
-    
     const redirect = (router.currentRoute.value.query.redirect as string) || '/home'
     router.push(redirect)
-  } catch (error: any) {
-    ElMessage.error(error.message || 'An error occurred during login')
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'An error occurred during login'
+    ElMessage.error(errorMessage)
   } finally {
     loading.value = false
   }

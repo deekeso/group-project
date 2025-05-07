@@ -30,6 +30,7 @@ import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
 import { GameType } from '@/types'
 import { storeToRefs } from 'pinia'
+import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import { computed } from 'vue'
 
 const gameStore = useGameStore()
@@ -58,11 +59,14 @@ function toggleNumber(number: number): void {
     drawnNumbers.value = []
     emit('resetRound')
   }
+  const selectionLimit = gameType === GameType.Classic ? 15 : 10
   const index = card.value.selectedNumbers.indexOf(number)
   if (index > -1) {
     card.value.selectedNumbers.splice(index, 1) //multcard
-  } else if (card.value.selectedNumbers.length < 15) {
+    new Audio(toggleSoundEffect).play()
+  } else if (card.value.selectedNumbers.length < selectionLimit) {
     card.value.selectedNumbers.push(number)
+    new Audio(toggleSoundEffect).play()
   }
   // emit('numberSelected', card.selectedNumbers) not necessary
 }

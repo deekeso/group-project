@@ -1,28 +1,32 @@
 <template>
   <el-container>
     <el-header>
-    <HomeButton @home="directToHome" />
-  </el-header>
-  <el-main class="wallet-page">
+      <HomeButton @home="directToHome" />
+    </el-header>
+    <el-main class="wallet-page">
       <el-container class="wallet-box">
         <div class="wallet-header">
           <div class="balance-section">
-            <button class="back-button" v-if="route.query['redirect'] && route.query['redirect'] !== ''"
-              title="Return to game" @click="router.push({ name: route.query['redirect'] as string })">
+            <button
+              class="back-button"
+              v-if="route.query['redirect'] && route.query['redirect'] !== ''"
+              title="Return to game"
+              @click="router.push({ name: route.query['redirect'] as string })"
+            >
               <el-icon size="40" color="white">
                 <Back />
               </el-icon>
             </button>
-            <div>
-              <p>Welcome, {{ auth.user?.username }}!</p>
+            <div class="wallet-header-text">
+              <p>Welcome, {{ user?.firstname }}!</p>
               <h3>Your Current Balance is</h3>
               <h1>₱{{ wallet.balance.toFixed(2) }}</h1>
             </div>
           </div>
 
-          <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="min-width: 204px;">
-            <el-radio-button label="1" class="deposit-tab">Deposit</el-radio-button>
-            <el-radio-button label="2" class="withdraw-tab">Withdraw</el-radio-button>
+          <el-radio-group v-model="radio1" size="large" class="tab-toggle" style="min-width: 204px">
+            <el-radio-button value="1" class="deposit-tab">Deposit</el-radio-button>
+            <el-radio-button value="2" class="withdraw-tab">Withdraw</el-radio-button>
           </el-radio-group>
         </div>
 
@@ -31,31 +35,43 @@
           <div class="section">
             <label class="section-title">Payment Method</label>
             <el-select v-model="value" placeholder="Select Method" class="select-method">
-              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
-
           </div>
 
           <div class="section">
             <label class="section-title">Deposit Amount</label>
-            <el-radio-group v-model="radio2" class="amount-buttons">
-              <el-radio-button label="20">₱20</el-radio-button>
-              <el-radio-button label="50">₱50</el-radio-button>
-              <el-radio-button label="100">₱100</el-radio-button>
-              <el-radio-button label="200">₱200</el-radio-button>
-              <el-radio-button label="500">₱500</el-radio-button>
-              <el-radio-button label="1000">₱1,000</el-radio-button>
+            <el-radio-group v-model="radio2" size="large" class="amount-buttons">
+              <el-radio-button
+                v-for="amount in withdrawAmounts"
+                :key="amount.label"
+                :label="amount.label"
+              >
+                {{ amount.display }}
+              </el-radio-button>
             </el-radio-group>
 
-            <el-input-number v-model="num" :min="20" :max="500000" class="custom-input"
-              placeholder="Enter amount 20 - 500,000">
+            <el-input-number
+              v-model="num"
+              :min="20"
+              :max="500000"
+              class="custom-input"
+              placeholder="Enter amount 20 - 500,000"
+            >
               <template #prefix>
                 <span>₱</span>
               </template>
             </el-input-number>
           </div>
 
-          <el-button class="deposit-btn" type="warning" round @click="confirmDeposit">Deposit</el-button>
+          <el-button class="deposit-btn" type="warning" round @click="confirmDeposit"
+            >Deposit</el-button
+          >
           <el-dialog v-model="showConfirmDeposit" title="Confirm Deposit" width="300px" center>
             <span>Are you sure you want to deposit ₱{{ num }} using {{ value }}?</span>
             <template #footer>
@@ -68,26 +84,20 @@
       </el-container>
 
       <!-- Withdraw Component (Shown if selected) -->
-
-  </el-main>
+    </el-main>
   </el-container>
-  <el-dialog
-  v-model="confirmExitDialogVisible"
-  title="Exit game?"
-  width="500"
-  align-center
->
-  <span>
-    You're about to go back to the home page. You will lose your progress after exiting. Are you sure?
-  </span>
-  <template #footer>
-    <div class="dialog-footer">
-      <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
-      <el-button type="primary" @click="router.push('/home')">Yes, take me home</el-button>
-    </div>
-  </template>
-</el-dialog>
-
+  <el-dialog v-model="confirmExitDialogVisible" title="Exit game?" width="500" align-center>
+    <span>
+      You're about to go back to the home page. You will lose your progress after exiting. Are you
+      sure?
+    </span>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="confirmExitDialogVisible = false">No, I'll keep playing</el-button>
+        <el-button type="primary" @click="router.push('/home')">Yes, take me home</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -95,7 +105,7 @@ import HomeButton from '@/components/HomeButton.vue'
 import Withdraw from '@/components/Withdraw.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
-import { useWalletStore } from '@/stores/wallet'
+import { TransactionOperation } from '@/types'
 import { Back } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref, watch } from 'vue'
@@ -103,21 +113,27 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const wallet = useWalletStore()
-const auth = useAuthStore()
+const { performTransaction, user, wallet } = useAuthStore()
+
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 
-
-const num = ref<number | null>(null)
+const num = ref(20)
 const radio1 = ref('1')
 const value = ref('')
 const radio2 = ref('')
+const withdrawAmounts = [
+  { label: '20', display: '₱20' },
+  { label: '50', display: '₱50' },
+  { label: '100', display: '₱100' },
+  { label: '200', display: '₱200' },
+  { label: '500', display: '₱500' },
+  { label: '1000', display: '₱1,000' },
+] as const
 const options = [
   { value: 'GCash', label: 'GCash' },
   { value: 'Maya', label: 'Maya' },
 ]
-
 
 watch(radio2, (val) => {
   if (val) {
@@ -132,10 +148,9 @@ watch(num, (val) => {
   }
 })
 
-
 function confirmDeposit() {
   if (!value.value) {
-    ElMessage.error('Please select a payment method.')
+    ElMessage.error('Please select an e-wallet for the payment method.')
     return
   }
 
@@ -148,9 +163,9 @@ function confirmDeposit() {
 }
 
 function handleConfirmedDeposit() {
-  wallet.deposit(Number(num.value))
+  performTransaction(TransactionOperation.Deposit, Number(num.value))
   ElMessage.success('Deposit successful!')
-  num.value = null
+  num.value = 20
   radio2.value = ''
   value.value = ''
   showConfirmDeposit.value = false
@@ -162,7 +177,6 @@ function directToHome() {
     router.push('/home')
   }
 }
-
 </script>
 
 <style scoped>
@@ -194,9 +208,13 @@ body {
 }
 
 .wallet-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.wallet-header-text {
   display: flex;
-  justify-content: space-between;
-  align-items: start;
+  flex-direction: column;
 }
 
 .back-button {
@@ -241,12 +259,18 @@ body {
 .tab-toggle {
   background-color: #2f2fd1;
   border-radius: 999px;
-  padding: 0.30rem;
+  padding: 0.3rem;
   display: flex;
   flex: 1;
   width: 100%;
   /* Fill available space */
-  max-width: 204px;
+  place-self: start;
+  justify-self: end;
+  width: 100%;
+}
+
+.el-radio-button {
+  flex-grow: 1;
 }
 
 :deep(.el-radio-group) {
@@ -259,7 +283,6 @@ body {
   border-radius: 999px 0 0 999px;
   width: 100%;
   text-align: center;
-
 }
 
 ::v-deep(.withdraw-tab .el-radio-button__inner) {
@@ -267,7 +290,6 @@ body {
   width: 100%;
   text-align: center;
 }
-
 
 .section {
   margin-top: 1rem;
@@ -277,45 +299,38 @@ body {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: bold;
-
 }
 
 .select-method {
   width: 100%;
-
 }
 
 :deep(.select-method .el-select__wrapper) {
   border-radius: 1rem;
 }
 
-.amount-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+:deep(.amount-buttons) {
+  width: 100%;
   margin-bottom: 1rem;
-
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
 }
 
 ::v-deep(.amount-buttons .el-radio-button__inner) {
   font-size: 16px;
   /* Increase font size */
-  height: 56px;
-  /* Increase height */
   line-height: 45px;
   /* Adjust line height */
-
 }
-
 
 :deep(.amount-buttons .el-radio-button__inner) {
   border-radius: 2rem !important;
   /* or any value like 8px */
-  padding: 0.4rem 1rem;
   /* optional: spacing inside buttons */
   border: 1px solid #dcdfe6;
-  /* optional: add a custom border */
-  width: 92px;
+  width: 100%;
+  padding: 0;
 }
 
 .custom-input {
@@ -330,9 +345,8 @@ body {
   border-radius: 1rem;
 }
 
-
 .deposit-btn {
-  background-color: #F8AB00;
+  background-color: #f8ab00;
   color: black;
   font-weight: bold;
   width: 100%;
@@ -348,5 +362,45 @@ body {
   top: 0;
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
   width: 100%;
+  z-index: 1000;
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  .wallet-header {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-header-text {
+    align-items: center;
+  }
+
+  .tab-toggle {
+    grid-row: 1;
+    margin-bottom: 20px;
+  }
+
+  :deep(.amount-buttons) {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
 }
 </style>

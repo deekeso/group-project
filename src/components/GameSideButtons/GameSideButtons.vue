@@ -11,6 +11,9 @@
 <script setup lang="ts">
 import AutopickButton from './AutopickButton.vue'
 import ClearButton from './ClearButton.vue'
+import { useTour } from '@/composables/useTour'
+
+const { tourSteps } = useTour()
 
 const { maxNumber } = defineProps<{
   maxNumber: number
