@@ -33,6 +33,7 @@ export const useGameStore = defineStore('game', () => {
     Array<{
       selectedNumbers: number[]
       matchedNumbers: number[]
+      multiplier?: number
       winnings: number
       result: 'win' | 'lose' | ''
     }>
@@ -112,6 +113,7 @@ export const useGameStore = defineStore('game', () => {
     cards.value = Array.from({ length: numberOfCards.value }, () => ({
       selectedNumbers: [],
       matchedNumbers: [],
+      multiplier: 0,
       winnings: 0,
       result: '',
     }))

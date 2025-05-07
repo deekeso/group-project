@@ -70,6 +70,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       // }
 
       card.winnings = winnings
+      card.multiplier = multiplier
       console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
     evaluateRound()
