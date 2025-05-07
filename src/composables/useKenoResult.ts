@@ -13,7 +13,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
   const { performTransaction } = useAuthStore()
   const gameStore = useGameStore()
   // const walletStore = useWalletStore()
-  const { wager, cards } = storeToRefs(gameStore)
+  const { wager, cards, hasWin } = storeToRefs(gameStore)
 
   // Compute paytable entry per card based on its selected number count
   const tableEntries = computed(() =>
@@ -40,6 +40,14 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     })
   }
 
+  function evaluateRound() {
+    if (winValues.value.some((win) => win > 0)) {
+      hasWin.value = true
+    } else {
+      hasWin.value = false
+    }
+  }
+
   // Apply payout or deduct wager per card
   function calculatePayout() {
     cards.value.forEach((card, index) => {
@@ -59,6 +67,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       card.winnings = winnings
       console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
+    evaluateRound()
   }
 
   return {

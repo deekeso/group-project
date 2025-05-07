@@ -163,6 +163,7 @@ const scrollToNumber = (number: number) => {
 
 // Attach debounced scroll detection
 onMounted(() => {
+  applyWheelEffect()
   // const container = document.querySelector('.number-container') as HTMLElement
   const container = containerRef.value
   if (!container) return
