@@ -95,20 +95,20 @@ function applyWheelEffect() {
   const containerRect = container.getBoundingClientRect()
   const centerY = containerRect.top + containerRect.height / 2
 
-  numberRefs.value.forEach((numberRef, index) => {
+  numberRefs.value.forEach((numberRef) => {
     if (numberRef) {
       const rect = numberRef.getBoundingClientRect()
-      let distance = rect.top + rect.height / 2 - centerY
+      const distance = rect.top + rect.height / 2 - centerY
 
-      let min = -150
-      let max = 150
+      const min = -150
+      const max = 150
 
       let percent = 2 * ((distance - min) / (max - min)) - 1
       if (percent > 1) percent = 1
       if (percent < -1) percent = -1
 
-      let scalePercent = Math.abs(percent)
-      let angle = Math.max(-40, Math.min(percent * -90, 40))
+      const scalePercent = Math.abs(percent)
+      const angle = Math.max(-40, Math.min(percent * -90, 40))
 
       numberRef.style = `transform: scale(${1.22 - scalePercent}) rotateX(${angle}deg); opacity: ${1 - scalePercent * 1.1}`
     }
