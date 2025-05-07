@@ -131,7 +131,7 @@ const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked 
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
-const miniGridSelectedNumbers = ref<number[]>([])
+// const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
 const dialogVisible = ref(false)
 
@@ -260,10 +260,10 @@ function resetGame(cardIndex: number) {
   gameStore.resetCard(cardIndex)
 }
 
-function setSelectedNumbers(numbers: number[]) {
-  miniGridSelectedNumbers.value = numbers
-  displayMatching.value = false
-}
+// function setSelectedNumbers(numbers: number[]) {
+//   miniGridSelectedNumbers.value = numbers
+//   displayMatching.value = false
+// }
 
 function directToHome() {
   router.push('/home')
