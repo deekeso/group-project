@@ -62,11 +62,12 @@ export function useKenoResult(mode: 'mini' | 'classic') {
         totalWinnings += winnings
         performTransaction(TransactionOperation.Payout, winnings)
         // walletStore.addPayout(winnings)
-      } else {
-        // Deduct shared wager for losing card
-        // walletStore.deductLostBet(wager.value)
-        performTransaction(TransactionOperation.Wage, wager.value)
       }
+      // else {
+      //   Deduct shared wager for losing card
+      //   walletStore.deductLostBet(wager.value)
+      //   performTransaction(TransactionOperation.Wage, wager.value)
+      // }
 
       card.winnings = winnings
       console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
