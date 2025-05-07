@@ -20,11 +20,6 @@ export const useGameStore = defineStore('game', () => {
   const mode = ref<GameMode>('classic')
   const loseStreak = ref(0)
 
-  //new
-  const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
-    [],
-  )
-
   let loseStreakCallback: () => void = function () {}
   let matchCallback: (i: number) => void = function () {}
 
@@ -162,6 +157,7 @@ export const useGameStore = defineStore('game', () => {
 
     //reset all cards
     cards.value = cards.value.map((card) => ({
+      // selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
       selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
       matchedNumbers: [],
       winnings: 0,

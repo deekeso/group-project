@@ -3,7 +3,7 @@ import paytable from '../components/PayTable/payTable.json'
 import { useGameStore } from '@/stores/useGameStore'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
-import { useWalletStore } from '@/stores/wallet'
+// import { useWalletStore } from '@/stores/wallet'
 import { TransactionOperation } from '@/types'
 
 export function useKenoResult(mode: 'mini' | 'classic') {
@@ -12,7 +12,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
 
   const { performTransaction } = useAuthStore()
   const gameStore = useGameStore()
-  const walletStore = useWalletStore()
+  // const walletStore = useWalletStore()
   const { wager, cards } = storeToRefs(gameStore)
 
   // Compute paytable entry per card based on its selected number count
@@ -47,11 +47,13 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       const winnings = wager.value * multiplier
 
       if (multiplier > 0) {
-        // performTransaction(TransactionOperation.Payout, payout)
-        walletStore.addPayout(winnings) // Add win to wallet
+        // Add win to wallet
+        performTransaction(TransactionOperation.Payout, winnings)
+        // walletStore.addPayout(winnings)
       } else {
-        walletStore.deductLostBet(wager.value) // Deduct shared wager for losing card
-        // performTransaction(TransactionOperation.Wage, wager.value)
+        // Deduct shared wager for losing card
+        // walletStore.deductLostBet(wager.value)
+        performTransaction(TransactionOperation.Wage, wager.value)
       }
 
       card.winnings = winnings
