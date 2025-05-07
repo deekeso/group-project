@@ -20,7 +20,11 @@
     </el-dialog>
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+      <HomeButton
+        class="header-button"
+        @home="confirmExitDialogVisible = true"
+        :disabled="isDrawing"
+      />
       <div class="nav-container">
         <HelpBtn @click="dialogVisible = true" />
         <!-- <HelpBtn @click="startTour" /> -->
