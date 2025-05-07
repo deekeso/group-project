@@ -51,9 +51,9 @@ export const useWalletsStore = defineStore('wallets', {
 
       switch(operation) {
         case TransactionOperation.Deposit:
+        case TransactionOperation.Payout:
           wallet.balance += amount
         break
-        case TransactionOperation.Payout:
         case TransactionOperation.Wage:
         case TransactionOperation.Withdraw:
           wallet.balance -= amount
