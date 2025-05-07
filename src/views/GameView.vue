@@ -20,11 +20,14 @@
     </el-dialog>
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
-      <div class="nav-container">
-        <HelpBtn @click="dialogVisible = true" />
-        <!-- <HelpBtn @click="startTour" /> -->
-        <UserBalance @wallet="directToWallet" />
+      <DebugTools />
+      <div class="game-header">
+        <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+        <div class="nav-container">
+          <HelpBtn @click="dialogVisible = true" />
+          <!-- <HelpBtn @click="startTour" /> -->
+          <UserBalance @wallet="directToWallet" />
+        </div>
       </div>
     </el-header>
     <el-main>
@@ -104,6 +107,7 @@ import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import { useTour } from '@/composables/useTour'
+import DebugTools from '@/components/DebugTools.vue'
 
 const { open } = useTour()
 
@@ -302,11 +306,12 @@ function exitGame() {
   flex-direction: column;
 }
 
-.el-header {
+.game-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
   background: transparent;
+  height: 100%;
 }
 
 .el-main {

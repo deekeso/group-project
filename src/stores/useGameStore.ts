@@ -185,6 +185,10 @@ export const useGameStore = defineStore('game', () => {
     numberOfCards.value = 1
   }
 
+  function setLostStreak(count: number) {
+    loseStreak.value = count
+  }
+
   return {
     selectedNumbers,
     drawnNumbers,
@@ -216,5 +220,6 @@ export const useGameStore = defineStore('game', () => {
     setMatchCallback,
     makePurchase,
     resetPurchase,
+    setLostStreak,
   }
 })
