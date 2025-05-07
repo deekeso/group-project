@@ -12,10 +12,11 @@
       ></path>
     </svg>
     <p>YOU WON</p>
-    <h1>₱{{ totalWins }}</h1>
+    <h1>₱{{ count }}</h1>
 
-    <div>
+    <div class="twinkle-container">
       <img src="/src/assets/gold-trunk-win.png" alt="" />
+      <div class="twinkle"></div>
     </div>
     <div class="breakdown-container" v-if="numberOfCards > 1">
       <Transition name="bounce"
@@ -32,8 +33,8 @@
           </div>
         </div></Transition
       >
+      <el-button @click="showBreakdownToggle" class="view-btn">{{ dynamicButtonText() }}</el-button>
     </div>
-    <el-button @click="showBreakdownToggle" class="view-btn">{{ dynamicButtonText() }}</el-button>
     <!-- <button class="collect-btn">Collect</button> -->
   </GameDialog>
 </template>
@@ -66,8 +67,35 @@ const playWinSound = () => {
   audio.play()
 }
 
+const count = ref<number>(0)
+//function to start counting animation
+
+// const startCount = () => {
+//   for (let i = count.value; i <= totalWins.value; i++) {
+//     count.value++
+//   }
+//
+
+//count animation for total win value
+const startCount = () => {
+  const start = count.value
+  const end = totalWins.value
+  const duration = 800 // Animation duration in milliseconds
+  const startTime = performance.now()
+
+  function update(timestamp: number) {
+    const progress = Math.min((timestamp - startTime) / duration, 1)
+    count.value = Math.floor(start + (end - start) * progress)
+    if (progress < 1) {
+      requestAnimationFrame(update)
+    }
+  }
+  requestAnimationFrame(update)
+}
+
 onMounted(() => {
   playWinSound()
+  startCount()
 })
 </script>
 
@@ -123,6 +151,7 @@ p {
   border: none;
   padding-block: 10px;
   margin-top: 10px;
+  z-index: 100;
 }
 .view-btn:hover {
   background: #ffc13a;
@@ -171,6 +200,34 @@ p {
   }
   100% {
     transform: scale(1);
+  }
+}
+.twinkle-container {
+  position: relative;
+  display: inline-block;
+}
+
+.twinkle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: -10%;
+  left: 0%;
+  z-index: 1;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 10%, rgba(255, 255, 255, 0) 50%);
+  opacity: 0;
+  animation: twinkle-animation 2s infinite;
+}
+
+@keyframes twinkle-animation {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.25;
+    transform: scale(1.3);
   }
 }
 </style>
