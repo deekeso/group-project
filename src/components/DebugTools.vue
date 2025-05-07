@@ -1,16 +1,18 @@
 <template>
   <div class="debug-tools">
     <button @click="trigger20Losses">Trigger 20 losses</button>
+    <BonusSpin />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useGameStore } from '@/stores/useGameStore';
-  const { setLostStreak, setResult } = useGameStore()
-  function trigger20Losses() {
-    setLostStreak(19)
-    setResult('lose')
-  }
+import { useGameStore } from '@/stores/useGameStore'
+import BonusSpin from './BonusSpin.vue'
+const { setLostStreak, setResult } = useGameStore()
+function trigger20Losses() {
+  setLostStreak(19)
+  setResult('lose')
+}
 </script>
 
 <style scoped>
