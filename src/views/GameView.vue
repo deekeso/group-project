@@ -129,7 +129,7 @@ const dialogVisible = ref(false)
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
 
-gameStore.setLoseStreakEffect(() => {
+gameStore.setLoseStreakCallback(() => {
   alert("You lost 20 times. Here's a free spin!")
 })
 

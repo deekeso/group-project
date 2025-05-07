@@ -216,7 +216,7 @@ export const useGameStore = defineStore('game', () => {
     addWinnings,
     setResult,
     resetWinnings,
-    setLoseStreakEffect: setLoseStreakCallback,
+    setLoseStreakCallback,
     setMatchCallback,
     makePurchase,
     resetPurchase,
