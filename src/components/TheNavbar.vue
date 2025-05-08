@@ -31,6 +31,7 @@ const isSignupVisible = ref(false)
 
 // Add ref for the signin form
 const signinFormRef = ref()
+const signupFormRef = ref()
 
 const showSigninModal = () => {
   isSigninVisible.value = true

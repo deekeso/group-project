@@ -188,6 +188,7 @@ export const useGameStore = defineStore(
       setMatchCallback,
       makePurchase,
       resetPurchase,
+      setLostStreak
     }
   },
   {
