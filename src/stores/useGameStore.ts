@@ -11,18 +11,14 @@ export const useGameStore = defineStore('game', () => {
   const selectedNumbers = ref<number[]>([])
   const drawnNumbers = ref<number[]>([])
   const matchedNumbers = ref<number[]>([])
-  const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
+  // const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
   const wager = ref<number>(MIN_WAGER)
-  const bet = ref<number>(1)
+  // moved to card states array
   const winnings = ref<number>(0)
   const result = ref<'win' | 'lose' | ''>('')
+
   const mode = ref<GameMode>('classic')
   const loseStreak = ref(0)
-
-  //new
-  const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
-    [],
-  )
 
   let loseStreakCallback: () => void = function () {}
   let matchCallback: (i: number) => void = function () {}
@@ -31,6 +27,24 @@ export const useGameStore = defineStore('game', () => {
   const hasPurchasedCards = ref<boolean>(false)
   const purchaseMode = ref<'single' | 'multiple'>()
   const numberOfCards = ref<number>(0)
+
+  //card state
+  const cards = ref<
+    Array<{
+      selectedNumbers: number[]
+      matchedNumbers: number[]
+      multiplier?: number
+      winnings: number
+      result: 'win' | 'lose' | ''
+    }>
+  >([])
+  const watchedMatchedNumbers = computed(() =>
+    cards.value.map((card) => structuredClone(toRaw(card.matchedNumbers))),
+  )
+
+  //result states
+  const hasWin = ref<boolean>(false)
+  const totalWins = ref(0)
 
   // autosave to local storage
   watch(
@@ -43,6 +57,7 @@ export const useGameStore = defineStore('game', () => {
       hasPurchasedCards,
       purchaseMode,
       numberOfCards,
+      cards,
     ],
     () => {
       localStorage.setItem(
@@ -59,16 +74,30 @@ export const useGameStore = defineStore('game', () => {
           hasPurchasedCards: hasPurchasedCards.value,
           purchaseMode: purchaseMode.value,
           numberOfCards: numberOfCards.value,
+          cards: cards.value,
         }),
       )
     },
     { deep: true },
   )
 
+  // watch(
+  //   watchedMatchedNumbers,
+  //   (newVal, oldVal) => {
+  //     if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+  //   },
+  //   { deep: true },
+  // )
   watch(
     watchedMatchedNumbers,
     (newVal, oldVal) => {
-      if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+      // Flatten arrays for comparison
+      const newTotalMatches = newVal.flat().length
+      const oldTotalMatches = oldVal.flat().length
+
+      if (newTotalMatches > 0 && newTotalMatches !== oldTotalMatches) {
+        matchCallback(newTotalMatches)
+      }
     },
     { deep: true },
   )
@@ -91,14 +120,25 @@ export const useGameStore = defineStore('game', () => {
       hasPurchasedCards.value = parsed.hasPurchasedCards || false
       purchaseMode.value = parsed.purchaseMode || 'single'
       numberOfCards.value = parsed.numberOfCards || 1
+
+      cards.value = parsed.cards || []
     }
+  }
+
+  function initializeCards() {
+    cards.value = Array.from({ length: numberOfCards.value }, () => ({
+      selectedNumbers: [],
+      matchedNumbers: [],
+      multiplier: 0,
+      winnings: 0,
+      result: '',
+    }))
   }
 
   // wager counter
   function increaseWager() {
     if (wager.value < MAX_WAGER) wager.value++
   }
-
   function decreaseWager() {
     if (wager.value > MIN_WAGER) wager.value--
   }
@@ -115,16 +155,38 @@ export const useGameStore = defineStore('game', () => {
 
   function setDrawnNumbers(numbers: number[]) {
     drawnNumbers.value = numbers
-    matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
+
+    //modified to detect match per card
+    cards.value = cards.value.map((card) => ({
+      ...card,
+      matchedNumbers: numbers.filter((n) => card.selectedNumbers?.includes(n)),
+    }))
+  }
+
+  function resetCard(cardIndex: number) {
+    cards.value[cardIndex] = {
+      selectedNumbers: [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }
+    drawnNumbers.value = []
   }
 
   function resetGame(preserveSelectedNumbers: boolean = false) {
     if (!preserveSelectedNumbers) {
       selectedNumbers.value = []
     }
+
+    //reset all cards
+    cards.value = cards.value.map((card) => ({
+      // selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
+      selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }))
     drawnNumbers.value = []
-    matchedNumbers.value = []
-    winnings.value = 0
   }
 
   //mode switcher
@@ -167,6 +229,8 @@ export const useGameStore = defineStore('game', () => {
 
   function setMatchCallback(callback: (i: number) => void) {
     matchCallback = callback
+    console.log('setMatchCallback')
+    console.log('matchCallback', matchCallback)
   }
 
   function resetWinnings() {
@@ -190,7 +254,6 @@ export const useGameStore = defineStore('game', () => {
     drawnNumbers,
     matchedNumbers,
     wager,
-    bet,
     MIN_WAGER,
     MAX_WAGER,
     winnings,
@@ -200,7 +263,10 @@ export const useGameStore = defineStore('game', () => {
     hasPurchasedCards,
     purchaseMode,
     numberOfCards,
-    cards, //new
+    cards,
+    hasWin,
+    totalWins,
+    initializeCards,
     increaseWager,
     decreaseWager,
     setDrawnNumbers,
@@ -216,5 +282,6 @@ export const useGameStore = defineStore('game', () => {
     setMatchCallback,
     makePurchase,
     resetPurchase,
+    resetCard,
   }
 })

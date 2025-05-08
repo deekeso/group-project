@@ -32,42 +32,57 @@
       </div>
     </el-header>
     <el-main>
+      <TestCarousel />
       <div class="grid-paytable-container">
         <TheLegend class="legend" />
-        <PayTable
-          kenoType="classic"
-          :selectedCellsCount="selectedNumbers.length"
-          :matchedCellsCount="displayMatching ? matchedNumbers.length : -1"
-          style="padding-bottom: 24px"
-        />
-        <div class="grid-sidebtn-container">
-          <GameGrid
-            :game-type="gameType"
-            @number-selected="setSelectedNumbers"
-            :is-round-finished
-            @reset-round="resetRound"
-          />
-          <GameSideButtons
-            @clear="resetGame"
-            @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length"
-            :game-is-drawing="isDrawing"
-          />
-        </div>
+        <!--Display in carousel if there are multiple cards-->
+        <el-carousel
+          height="auto"
+          trigger="click"
+          :loop="false"
+          :autoplay="false"
+          :arrow="numberOfCards > 1 ? 'always' : 'never'"
+          :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
+        >
+          <el-carousel-item
+            v-for="(card, index) in cards"
+            :key="index"
+            :label="`Card ${index + 1}`"
+            height="auto"
+          >
+            <PayTable
+              :kenoType="gameType"
+              :selectedCellsCount="cards[index].selectedNumbers.length"
+              :matchedCellsCount="displayMatching ? cards[index].matchedNumbers.length : -1"
+              style="padding-bottom: 24px"
+            />
+            <div class="grid-sidebtn-container">
+              <GameGrid
+                :game-type="gameType"
+                :is-round-finished
+                @reset-round="resetRound"
+                :cardIndex="index"
+              />
+              <GameSideButtons
+                @clear="resetGame(index)"
+                @number-selected="autopickNumberSelected"
+                :max-number="payTable[gameType].length"
+                :game-is-drawing="isDrawing"
+                :card-index="index"
+              />
+            </div>
+          </el-carousel-item>
+        </el-carousel>
 
         <GameButtons
           @playGame="startDraw"
           :game-is-drawing="isDrawing"
-          :disabled="selectedNumbers.length < 1"
+          :disabled="!allCardsHaveSelections"
         />
         <Transition name="bounce">
-          <WithWin
-            v-if="result === 'win' && showModal"
-            :winValue="winnings"
-            @close="showModal = false"
-          />
+          <WithWin v-if="hasWin && showModal" :winValue="winnings" @close="showModal = false" />
         </Transition>
-        <NoWin v-if="result === 'lose' && showModal" />
+        <NoWin v-if="!hasWin && showModal" />
         <PurchaseCard v-if="!hasPurchasedCards" />
       </div>
       <HelpTour v-model="open" />
@@ -95,7 +110,7 @@ import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import { useGameStore } from '@/stores/useGameStore'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import { provide, readonly, ref } from 'vue'
+import { provide, readonly, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { GameType } from '@/types'
 import { useAuthStore } from '@/stores/auth'
@@ -118,18 +133,21 @@ const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
 const { wallet, performTransaction } = useAuthStore()
-const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
-  storeToRefs(gameStore)
+const { winnings, hasPurchasedCards, numberOfCards, cards, hasWin } = storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
 const isDrawing = ref(false)
 const isRoundFinished = ref(false)
 const displayMatching = ref(false)
-const miniGridSelectedNumbers = ref<number[]>([])
+// const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
 const dialogVisible = ref(false)
 
-const { calculatePayout, evaluateGame } = useKenoResult('classic')
+const { calculatePayout, evaluateGame } = useKenoResult(gameType)
 const showModal = ref(false)
+
+const allCardsHaveSelections = computed(
+  () => cards.value.length > 0 && cards.value.every((card) => card.selectedNumbers.length > 0),
+)
 
 gameStore.setLoseStreakEffect(() => {
   alert("You lost 20 times. Here's a free spin!")
@@ -168,8 +186,10 @@ provide(gameIsDrawingKey, readonly(isDrawing))
 useSyncGameMode('classic')
 
 async function startDraw() {
+  const totalWager = gameStore.wager * gameStore.numberOfCards
+
   // Check balance before playing
-  if (wallet.balance < gameStore.wager) {
+  if (wallet.balance < totalWager) {
     ElNotification({
       title: 'Insufficient Balance',
       message: 'Please top up your wallet or adjust your wager.',
@@ -181,7 +201,9 @@ async function startDraw() {
     return
   }
 
-  performTransaction(TransactionOperation.Wage, gameStore.wager)
+  //Perform wager deduction as a group for compatibility with multiple card
+  performTransaction(TransactionOperation.Wage, totalWager)
+  // performTransaction(TransactionOperation.Wage, gameStore.wager)
 
   resetDraw()
   displayMatching.value = true
@@ -222,15 +244,15 @@ async function startDraw() {
   }, 150)
 }
 
-function autopickNumberSelected(number: number) {
+function autopickNumberSelected(number: number, cardIndex: number) {
   if (isDrawing.value) return
   isDrawing.value = true
-  resetAutopicked()
+  resetAutopicked(cardIndex)
   isRoundFinished.value = true
   let count = 0
 
   const interval = setInterval(() => {
-    kenoAutopick(number, gameType)
+    kenoAutopick(number, gameType, cardIndex)
     count++
     playSoundEffect(0, toggleSoundEffect)
     if (count >= number) {
@@ -246,15 +268,15 @@ function resetRound() {
   isRoundFinished.value = false
 }
 
-function resetGame() {
+function resetGame(cardIndex: number) {
   if (isDrawing.value) return
-  gameStore.resetGame()
+  gameStore.resetCard(cardIndex)
 }
 
-function setSelectedNumbers(numbers: number[]) {
-  miniGridSelectedNumbers.value = numbers
-  displayMatching.value = false
-}
+// function setSelectedNumbers(numbers: number[]) {
+//   miniGridSelectedNumbers.value = numbers
+//   displayMatching.value = false
+// }
 
 function directToHome() {
   router.push('/home')
@@ -322,8 +344,62 @@ function exitGame() {
   place-items: center;
   background: transparent;
   flex: 1;
+  margin-top: 80px;
+}
+.card-number {
+  color: yellow;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  margin-top: -5px;
+}
+.el-carousel {
+  overflow: visible;
+}
+.el-carousel__item {
+  height: auto;
+}
+::v-deep(.el-carousel__arrow) {
+  background-color: #7674a7;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
+::v-deep(.el-carousel__arrow:hover) {
+  background-color: #8f8ec0;
+}
+::v-deep(.el-carousel__arrow--left) {
+  left: -50px;
+}
+::v-deep(.el-carousel__arrow--right) {
+  right: -50px;
+}
+:deep(.el-carousel__indicators) {
+  justify-content: center;
+  display: flex;
+  margin-top: 5px;
+}
+:deep(.el-carousel__indicator) {
+  width: 100%;
+  max-width: 120px;
+}
+:deep(.el-carousel__button) {
+  box-sizing: border-box;
+  width: 100%;
+  text-transform: uppercase;
+  border-radius: 5px;
+  color: white;
+  background: #524de0;
+  border: 3px solid #e7cfff;
+  border-radius: 10px;
+}
+:deep(.el-carousel__button span) {
+  width: 100%;
+}
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
@@ -331,8 +407,8 @@ function exitGame() {
 
 .grid-paytable-container {
   width: 100%;
-  max-width: 760px;
-  margin: 0 auto;
+  max-width: 800px;
+  padding: 35px;
 }
 
 .grid-sidebtn-container {
@@ -393,6 +469,21 @@ function exitGame() {
 
 /* Extra small devices (phones) */
 @media (max-width: 576px) {
+  .grid-paytable-container {
+    padding: 0px;
+  }
+  ::v-deep(.el-carousel__arrow) {
+    width: 20px;
+    height: 30px;
+    border-radius: 5px;
+    display: none;
+  }
+  ::v-deep(.el-carousel__arrow--left) {
+    left: -27px;
+  }
+  ::v-deep(.el-carousel__arrow--right) {
+    right: -27px;
+  }
 }
 
 /* Small devices (tablets) */

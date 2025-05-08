@@ -18,7 +18,7 @@ export interface Wallet {
 
 export const useWalletsStore = defineStore('wallets', {
   state: () => ({
-    wallets: [] as Wallet[]
+    wallets: [] as Wallet[],
   }),
 
   actions: {
@@ -27,7 +27,7 @@ export const useWalletsStore = defineStore('wallets', {
       let newWallet: Wallet = {
         id,
         balance: 0,
-        transactions: []
+        transactions: [],
       }
 
       this.wallets.push(newWallet)
@@ -36,12 +36,12 @@ export const useWalletsStore = defineStore('wallets', {
 
     findWallet(id: string) {
       const foundWallet = this.wallets.find((wallet) => wallet.id === id)
-  
+
       if (!foundWallet) {
         throw new Error('Wallet not found!')
       }
-  
-      return foundWallet 
+
+      return foundWallet
     },
 
     performTransaction(id: string, operation: TransactionOperation, amount: number): Transaction {
@@ -49,15 +49,15 @@ export const useWalletsStore = defineStore('wallets', {
 
       const oldBalance = wallet.balance
 
-      switch(operation) {
+      switch (operation) {
         case TransactionOperation.Deposit:
-          wallet.balance += amount
-        break
         case TransactionOperation.Payout:
+          wallet.balance += amount
+          break
         case TransactionOperation.Wage:
         case TransactionOperation.Withdraw:
           wallet.balance -= amount
-        break
+          break
       }
 
       const transaction = {
@@ -65,12 +65,12 @@ export const useWalletsStore = defineStore('wallets', {
         operation,
         amount,
         newBalance: wallet.balance,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       wallet.transactions.push(transaction)
       return transaction
-    }
+    },
   },
 
   persist: {

@@ -1,8 +1,8 @@
 <template>
   <div class="side-buttons">
     <AutopickButton
-      @numberSelected="(number: number) => emit('numberSelected', number)"
-      :max-number
+      @numberSelected="(number: number) => emit('numberSelected', number, cardIndex)"
+      :max-number="maxNumber"
     />
     <ClearButton class="clear-btn" @click="$emit('clear')" />
   </div>
@@ -17,10 +17,11 @@ const { tourSteps } = useTour()
 
 const { maxNumber } = defineProps<{
   maxNumber: number
+  cardIndex: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'numberSelected', number: number): void
+  (e: 'numberSelected', number: number, cardIndex: number): void
   (e: 'clear'): void
 }>()
 </script>
