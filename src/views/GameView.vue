@@ -20,15 +20,18 @@
     </el-dialog>
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton
-        class="header-button"
-        @home="confirmExitDialogVisible = true"
-        :disabled="isDrawing"
-      />
-      <div class="nav-container">
-        <HelpBtn @click="dialogVisible = true" />
-        <!-- <HelpBtn @click="startTour" /> -->
-        <UserBalance @wallet="directToWallet" />
+      <DebugTools />
+      <div class="game-header">
+        <HomeButton
+          class="header-button"
+          @home="confirmExitDialogVisible = true"
+          :disabled="isDrawing"
+        />
+        <div class="nav-container">
+          <HelpBtn @click="dialogVisible = true" />
+          <!-- <HelpBtn @click="startTour" /> -->
+          <UserBalance @wallet="directToWallet" />
+        </div>
       </div>
     </el-header>
     <el-main>
@@ -108,7 +111,7 @@ import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import { useTour } from '@/composables/useTour'
-
+import DebugTools from '@/components/DebugTools.vue'
 import { TransactionOperation } from '@/types'
 
 const { open } = useTour()
@@ -131,7 +134,7 @@ const dialogVisible = ref(false)
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
 
-gameStore.setLoseStreakEffect(() => {
+gameStore.setLoseStreakCallback(() => {
   alert("You lost 20 times. Here's a free spin!")
 })
 
@@ -315,11 +318,12 @@ function exitGame() {
   flex-direction: column;
 }
 
-.el-header {
+.game-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
   background: transparent;
+  height: 100%;
 }
 
 .el-main {

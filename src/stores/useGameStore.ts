@@ -153,8 +153,8 @@ export const useGameStore = defineStore(
       numberOfCards.value = 1
     }
 
-    function asdfasfd(gameMode: GameMode) {
-      mode.value = gameMode
+    function setLostStreak(count: number) {
+      loseStreak.value = count
     }
 
     return {
@@ -184,11 +184,10 @@ export const useGameStore = defineStore(
       addWinnings,
       setResult,
       resetWinnings,
-      setLoseStreakEffect: setLoseStreakCallback,
+      setLoseStreakCallback,
       setMatchCallback,
       makePurchase,
       resetPurchase,
-      asdfasfd,
     }
   },
   {
