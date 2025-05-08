@@ -20,7 +20,11 @@
     </el-dialog>
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton class="header-button" @home="confirmExitDialogVisible = true" />
+      <HomeButton
+        class="header-button"
+        @home="confirmExitDialogVisible = true"
+        :disabled="isDrawing"
+      />
       <div class="nav-container">
         <HelpBtn @click="dialogVisible = true" />
         <!-- <HelpBtn @click="startTour" /> -->
@@ -105,13 +109,15 @@ import PurchaseCard from '@/components/PurchaseCard.vue'
 
 import { useTour } from '@/composables/useTour'
 
+import { TransactionOperation } from '@/types'
+
 const { open } = useTour()
 
 const router = useRouter()
 const route = useRoute()
 const gameType: GameType = route.meta.gameType as GameType
 const gameStore = useGameStore()
-const { wallet } = useAuthStore()
+const { wallet, performTransaction } = useAuthStore()
 const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
   storeToRefs(gameStore)
 const { classicKenoDraw, miniKenoDraw, kenoAutopick, resetDraw, resetAutopicked } = useKenoDraw()
@@ -174,6 +180,8 @@ async function startDraw() {
     })
     return
   }
+
+  performTransaction(TransactionOperation.Wage, gameStore.wager)
 
   resetDraw()
   displayMatching.value = true
