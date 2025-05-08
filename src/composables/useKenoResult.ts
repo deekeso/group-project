@@ -33,11 +33,6 @@ export function useKenoResult(mode: 'mini' | 'classic') {
   function calculatePayout() {
     const payout = wager.value * winValue.value
 
-    if (winValue.value <= 0) {
-      performTransaction(TransactionOperation.Wage, wager.value)
-      // walletStore.deductLostBet(wager.value)
-      return
-    }
     gameStore.addWinnings(payout)
     performTransaction(TransactionOperation.Payout, payout)
     // walletStore.addPayout(payout)

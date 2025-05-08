@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { HomeFilled } from '@element-plus/icons-vue'
+import { HomeFilled } from '@element-plus/icons-vue'
 </script>
 
 <style scoped>
@@ -22,6 +22,6 @@
   transition: all 100ms;
 }
 .button-container:hover {
- transform: scale(1.05);
+  transform: scale(1.05);
 }
 </style>
