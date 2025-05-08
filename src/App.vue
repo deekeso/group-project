@@ -9,8 +9,12 @@ gameStore.loadFromStorage()
 
 onMounted(() => {
   const { commitPendingTransactions } = useWalletsStore()
-  const { wallet } = useAuthStore()
-  commitPendingTransactions(wallet.id)
+  try {
+    const { wallet } = useAuthStore()
+    commitPendingTransactions(wallet.id)
+  } catch (err) {
+    console.warn(err)
+  }
 })
 
 // Just router view, no other components needed

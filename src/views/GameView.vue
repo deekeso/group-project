@@ -104,7 +104,10 @@ import { onMounted, provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 // import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
-import { default as drawSoundEffect, default as toggleSoundEffect } from '@/assets/sounds/drawn/75250__creek23__click.wav'
+import {
+  default as drawSoundEffect,
+  default as toggleSoundEffect,
+} from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
