@@ -66,3 +66,7 @@ a,
 .success-modal .el-button:hover {
   background: #f5f5f5 !important;
 }
+
+.confetti-canvas {
+  z-index: 3000;
+}

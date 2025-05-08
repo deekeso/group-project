@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
-import BonusSpin from '@/components/BonusSpin.vue'
+import BonusSpin from '@/components/BonusSpinDialog.vue'
 
 const { setLostStreak, setResult } = useGameStore()
 function trigger20Losses() {

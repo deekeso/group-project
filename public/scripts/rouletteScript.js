@@ -1,6 +1,6 @@
 function spinRoulette(callback) { callback('') }
 
-function loadRoulette(items) {
+function loadRoulette(items, width, height) {
   //=============== Cubic Bezier calculation
   var NEWTON_ITERATIONS = 4;
   var NEWTON_MIN_SLOPE = 0.001;
@@ -111,8 +111,8 @@ function loadRoulette(items) {
 
 
   let padding = { top: 20, right: 60, bottom: 20, left: 60 };
-  let w = 600 - padding.left - padding.right;
-  let h = 600 - padding.top - padding.bottom;
+  let w = width - padding.left - padding.right;
+  let h = height - padding.top - padding.bottom;
   let r = Math.min(w, h) / 2;
   let rotation = 0;
   let oldrotation = 0;
@@ -130,11 +130,14 @@ function loadRoulette(items) {
   let itemTextJustify = "middle"
 
   let svg = d3.select('#chart')
-    .append("svg")
+  .append("svg")
     .datum(items)
     .style("transform", "rotate(-90deg)")
-    .attr("width", w + padding.left + padding.right)
-    .attr("height", h + padding.top + padding.bottom);
+    // .attr("width", w + padding.left + padding.right)
+    // .attr("height", h + padding.top + padding.bottom);
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", "0 0 600 600")
 
   let container = svg.append("g")
     .attr("class", "chartholder")
