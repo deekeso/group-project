@@ -75,7 +75,7 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     totalWins.value = totalWinnings
 
     //Add total winnings to wallet instead of having one transaction per card
-    performTransaction(TransactionOperation.Payout, totalWinnings)
+    if (totalWinnings > 0) performTransaction(TransactionOperation.Payout, totalWinnings)
   }
 
   return {
