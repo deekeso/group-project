@@ -1,8 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useGameStore } from './stores/useGameStore'
+import { useWalletsStore } from './stores/wallet'
+import { useAuthStore } from './stores/auth'
 
 const gameStore = useGameStore()
 gameStore.loadFromStorage()
+
+onMounted(() => {
+  const { commitPendingTransactions } = useWalletsStore()
+  const { wallet } = useAuthStore()
+  commitPendingTransactions(wallet.id)
+})
 
 // Just router view, no other components needed
 </script>

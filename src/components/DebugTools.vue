@@ -1,13 +1,15 @@
 <template>
   <div class="debug-tools">
     <button @click="trigger20Losses">Trigger 20 losses</button>
-    <BonusSpin />
+    <!-- <BonusSpin /> -->
+     <BonusSpin />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
-import BonusSpin from './BonusSpin.vue'
+import BonusSpin from '@/components/BonusSpin.vue'
+
 const { setLostStreak, setResult } = useGameStore()
 function trigger20Losses() {
   setLostStreak(19)
