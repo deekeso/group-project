@@ -60,14 +60,8 @@ export function useKenoResult(mode: 'mini' | 'classic') {
       if (multiplier > 0) {
         // Add win to wallet
         totalWinnings += winnings
-        performTransaction(TransactionOperation.Payout, winnings)
-        // walletStore.addPayout(winnings)
+        // performTransaction(TransactionOperation.Payout, winnings)
       }
-      // else {
-      //   Deduct shared wager for losing card
-      //   walletStore.deductLostBet(wager.value)
-      //   performTransaction(TransactionOperation.Wage, wager.value)
-      // }
 
       card.winnings = winnings
       card.multiplier = multiplier
@@ -79,6 +73,9 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     console.log('win values', winValues.value)
     console.log(`Total: ${totalWinnings}`)
     totalWins.value = totalWinnings
+
+    //Add total winnings to wallet instead of having one transaction per card
+    performTransaction(TransactionOperation.Payout, totalWinnings)
   }
 
   return {
