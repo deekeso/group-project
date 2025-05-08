@@ -3,11 +3,9 @@ import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 import { useGameStore } from './useGameStore'
 
-interface Transaction {
-  oldBalance: number
-  operation: TransactionOperation
+interface BaseTransaction {
   amount: number
-  newBalance: number
+  operation: TransactionOperation
   timestamp: Date
   metadata?: {
     gameMode?: string
@@ -16,15 +14,31 @@ interface Transaction {
   }
 }
 
+interface TransactionRecord extends BaseTransaction {
+  oldBalance: number
+  newBalance: number
+  timestamp: Date
+}
+
+interface TransactionRecord extends BaseTransaction {
+  oldBalance: number
+  newBalance: number
+}
+
+export interface PendingTransaction extends BaseTransaction {
+  walletId: string
+}
+
 export interface Wallet {
   id: string
   balance: number
-  transactions: Transaction[]
+  transactions: TransactionRecord[]
 }
 
 export const useWalletsStore = defineStore('wallets', {
   state: () => ({
     wallets: [] as Wallet[],
+    pendingTransactions: [] as PendingTransaction[],
   }),
 
   actions: {
@@ -50,7 +64,12 @@ export const useWalletsStore = defineStore('wallets', {
       return foundWallet
     },
 
-    performTransaction(id: string, operation: TransactionOperation, amount: number): Transaction {
+    performTransaction(
+      id: string,
+      operation: TransactionOperation,
+      amount: number,
+      timestamp?: Date,
+    ): TransactionRecord {
       const wallet = this.findWallet(id)
 
       const oldBalance = wallet.balance
@@ -72,21 +91,57 @@ export const useWalletsStore = defineStore('wallets', {
         amount,
         newBalance: wallet.balance,
         timestamp: new Date(),
-        metadata: {
-          gameMode: ['Wage', 'Payout'].includes(operation) ? gameStore.mode : undefined,
-          purchaseMode: gameStore.purchaseMode,
-          numberOfCards: gameStore.numberOfCards || 0,
-        },
       }
 
       wallet.transactions.push(transaction)
       return transaction
+    },
+
+    createPendingTransaction(amount: number, operation: TransactionOperation, walletId: string) {
+      const foundWallet = this.wallets.find((wallet) => wallet.id === walletId)
+
+      if (!foundWallet) {
+        throw new Error('Wallet not found!')
+      }
+
+      const pendingTransaction: PendingTransaction = {
+        amount,
+        operation,
+        walletId,
+        timestamp: new Date(),
+      }
+
+      this.pendingTransactions.push(pendingTransaction)
+    },
+
+    commitPendingTransactions(walletId: string) {
+      const transactionsForRemoval = [] as number[]
+
+      const pendingTransactions = this.pendingTransactions.filter((pendingTransaction, index) => {
+        if (pendingTransaction.walletId === walletId) {
+          transactionsForRemoval.push(index)
+          return true
+        }
+        return false
+      })
+
+      transactionsForRemoval.reverse().forEach((index) => {
+        this.pendingTransactions.splice(index, 1)
+      })
+
+      pendingTransactions.forEach((pendingTransaction) => {
+        this.performTransaction(
+          pendingTransaction.walletId,
+          pendingTransaction.operation,
+          pendingTransaction.amount,
+          pendingTransaction.timestamp,
+        )
+      })
     },
   },
 
   persist: {
     key: 'wallet-store',
     storage: localStorage,
-    paths: ['wallet'],
   } as any,
 })

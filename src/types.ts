@@ -31,3 +31,10 @@ export enum TransactionOperation {
   'Wage' = 'wage',
   'Payout' = 'payout',
 }
+
+export enum RouletteItems {
+  'OneTwenty' = '120%',
+  'OneHundred' = '100%',
+  'Fifty' = '50%',
+  'TwentyFive' = '25%',
+}
