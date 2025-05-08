@@ -19,6 +19,7 @@ export const useGameStore = defineStore(
     const result = ref<'win' | 'lose' | ''>('')
     const mode = ref<GameMode>(GameMode.Classic)
     const loseStreak = ref(0)
+    const cumulativeLoseStreakWager = ref(0)
 
     //new
     const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
@@ -121,9 +122,10 @@ export const useGameStore = defineStore(
           loseStreakCallback()
         }
       }
-
+      
       if (status === 'win') {
         loseStreak.value = 0
+        cumulativeLoseStreakWager.value = 0
       }
 
       result.value = status
@@ -157,6 +159,14 @@ export const useGameStore = defineStore(
       loseStreak.value = count
     }
 
+    function increaseCumulativeLoseStreakWager(latestWager: number) {
+      cumulativeLoseStreakWager.value += latestWager
+    }
+
+    function resetCumulativeLoseStreakWager() {
+      cumulativeLoseStreakWager.value = 0
+    }
+
     return {
       selectedNumbers,
       drawnNumbers,
@@ -173,6 +183,7 @@ export const useGameStore = defineStore(
       purchaseMode,
       numberOfCards,
       cards, //new
+      cumulativeLoseStreakWager,
       increaseWager,
       decreaseWager,
       setDrawnNumbers,
@@ -188,7 +199,9 @@ export const useGameStore = defineStore(
       setMatchCallback,
       makePurchase,
       resetPurchase,
-      setLostStreak
+      setLostStreak,
+      increaseCumulativeLoseStreakWager,
+      resetCumulativeLoseStreakWager,
     }
   },
   {

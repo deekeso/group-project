@@ -18,6 +18,7 @@
         </el-space>
       </template>
     </el-dialog>
+    <BonusSpinDialog v-model:dialog-visible="rouletteDialogVisible" />
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
       <DebugTools />
@@ -81,38 +82,37 @@
 <script setup lang="ts">
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
-import HomeButton from '@/components/HomeButton.vue'
 import HelpBtn from '@/components/Help-Btn.vue'
+import HelpTour from '@/components/HelpTour.vue'
+import HomeButton from '@/components/HomeButton.vue'
 import NoWin from '@/components/NoWin.vue'
 import payTable from '@/components/PayTable/payTable.json'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import TheLegend from '@/components/TheLegend.vue'
+import TutorialDialog from '@/components/TutorialDialog.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import WithWin from '@/components/WithWin.vue'
-import HelpTour from '@/components/HelpTour.vue'
-import TutorialDialog from '@/components/TutorialDialog.vue'
 import { gameIsDrawingKey } from '@/composables/keys'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useKenoResult } from '@/composables/useKenoResult'
-import { useSyncGameMode } from '@/composables/useSyncGameMode'
+import { useAuthStore } from '@/stores/auth'
 import { useGameStore } from '@/stores/useGameStore'
+import { GameMode } from '@/types'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import { computed, onActivated, onMounted, onUpdated, provide, readonly, ref } from 'vue'
+import { onMounted, provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { GameMode } from '@/types'
-import { useAuthStore } from '@/stores/auth'
 
 // import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
-import drawSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
+import { default as drawSoundEffect, default as toggleSoundEffect } from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 
-import { useTour } from '@/composables/useTour'
 import DebugTools from '@/components/DebugTools.vue'
+import { useTour } from '@/composables/useTour'
 import { TransactionOperation } from '@/types'
+import BonusSpinDialog from '@/components/BonusSpinDialog.vue'
 
 const { open } = useTour()
 
@@ -131,11 +131,14 @@ const miniGridSelectedNumbers = ref<number[]>([])
 const confirmExitDialogVisible = ref(false)
 const dialogVisible = ref(false)
 
+const rouletteDialogVisible = ref(false)
+
 const { calculatePayout, evaluateGame } = useKenoResult('classic')
 const showModal = ref(false)
 
 gameStore.setLoseStreakCallback(() => {
-  alert("You lost 20 times. Here's a free spin!")
+  // alert("You lost 20 times. Here's a free spin!")
+  rouletteDialogVisible.value = true
 })
 
 const audioContext = new window.AudioContext()
@@ -189,6 +192,7 @@ async function startDraw() {
   }
 
   performTransaction(TransactionOperation.Wage, gameStore.wager)
+  gameStore.increaseCumulativeLoseStreakWager(gameStore.wager)
 
   resetDraw()
   displayMatching.value = true
