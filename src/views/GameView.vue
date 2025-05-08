@@ -193,7 +193,10 @@ async function startDraw() {
     return
   }
 
-  performTransaction(TransactionOperation.Wage, gameStore.wager)
+  //Perform wager deduction as a group for compatibility with multiple card
+  const totalWager = gameStore.wager * gameStore.numberOfCards
+  performTransaction(TransactionOperation.Wage, totalWager)
+  // performTransaction(TransactionOperation.Wage, gameStore.wager)
 
   resetDraw()
   displayMatching.value = true
