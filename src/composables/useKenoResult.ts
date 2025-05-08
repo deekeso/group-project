@@ -36,7 +36,6 @@ export function useKenoResult(mode: 'mini' | 'classic') {
     cards.value.forEach((card, index) => {
       const isWin = winValues.value[index] > 0
       card.result = isWin ? 'win' : 'lose'
-      console.log(`Card ${index + 1} result: ${card.result}`)
     })
   }
 
@@ -65,13 +64,9 @@ export function useKenoResult(mode: 'mini' | 'classic') {
 
       card.winnings = winnings
       card.multiplier = multiplier
-      console.log(`Card ${index + 1}: result=${card.result}, winnings=${card.winnings}`)
     })
     evaluateRound()
-    console.log('mode:', mode)
-    console.log('table entries', tableEntries.value)
-    console.log('win values', winValues.value)
-    console.log(`Total: ${totalWinnings}`)
+
     totalWins.value = totalWinnings
 
     //Add total winnings to wallet instead of having one transaction per card
