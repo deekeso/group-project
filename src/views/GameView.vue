@@ -32,6 +32,7 @@
       </div>
     </el-header>
     <el-main>
+      <TestCarousel />
       <div class="grid-paytable-container">
         <TheLegend class="legend" />
         <!--Display in carousel if there are multiple cards-->
@@ -43,7 +44,12 @@
           :arrow="numberOfCards > 1 ? 'always' : 'never'"
           :indicator-position="numberOfCards > 1 ? 'outside' : 'none'"
         >
-          <el-carousel-item v-for="(card, index) in cards" :key="index" height="auto">
+          <el-carousel-item
+            v-for="(card, index) in cards"
+            :key="index"
+            :label="`Card ${index + 1}`"
+            height="auto"
+          >
             <PayTable
               :kenoType="gameType"
               :selectedCellsCount="cards[index].selectedNumbers.length"
@@ -339,6 +345,14 @@ function exitGame() {
   flex: 1;
   margin-top: 80px;
 }
+.card-number {
+  color: yellow;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  margin-top: -5px;
+}
 .el-carousel {
   overflow: visible;
 }
@@ -363,35 +377,28 @@ function exitGame() {
 ::v-deep(.el-carousel__arrow--right) {
   right: -50px;
 }
-
-/* carousel indicator styles ::v-deep(.el-carousel__indicator) {
-  height: 30px;
-  width: 30px;
-  background-color: lime;
-  border-radius: 50%;
-  margin: 10px 5px 5px 0px;
+:deep(.el-carousel__indicators) {
+  justify-content: center;
+  display: flex;
+  margin-top: 5px;
 }
-::v-deep(.el-carousel__indicator.is-active) {
-  background-color: #00ff99;
-  animation: ease-in-out;
-  transform: scale(1.1);
-} */
-::v-deep(.el-carousel__button) {
-  content: '5';
-  height: 30px;
-  width: 30px;
-  background-color: yellow;
-  text-align: center;
+:deep(.el-carousel__indicator) {
+  width: 100%;
+  max-width: 120px;
+}
+:deep(.el-carousel__button) {
+  box-sizing: border-box;
+  width: 100%;
+  text-transform: uppercase;
+  border-radius: 5px;
+  color: white;
+  background: #524de0;
+  border: 3px solid #e7cfff;
   border-radius: 10px;
 }
-::v-deep(.el-carousel__button::before) {
-  content: '5';
-}
-/* ::v-deep(.el-carousel__indicators--outside button) {
-  height: 100%;
+:deep(.el-carousel__button span) {
   width: 100%;
-} */
-
+}
 .drawn-numbers {
   display: flex;
   margin-block: 10px;
