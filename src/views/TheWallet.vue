@@ -112,8 +112,8 @@
     class="history-drawer"
   >
     <div class="history-content">
-      <div v-for="(transaction, index) in recentTransactions" 
-           :key="index" 
+      <div v-for="(transaction, index) in recentTransactions"
+           :key="index"
            class="transaction-card"
       >
         <div class="transaction-header">
@@ -126,51 +126,11 @@
         </div>
 
         <div class="transaction-details">
-          <template v-if="transaction.gameDetails">
-            <div class="numbers-section">
-              <div class="number-group">
-                <h4>Selected Numbers</h4>
-                <div class="number-balls">
-                  <span v-for="num in transaction.gameDetails.selected" 
-                        :key="num" 
-                        class="number-ball selected"
-                  >
-                    {{ num }}
-                  </span>
-                </div>
-              </div>
-              
-              <div class="number-group">
-                <h4>Matched Numbers</h4>
-                <div class="number-balls">
-                  <span v-for="num in transaction.gameDetails.matched" 
-                        :key="num" 
-                        class="number-ball matched"
-                  >
-                    {{ num }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="number-group">
-                <h4>System Numbers (No Match)</h4>
-                <div class="number-balls">
-                  <span v-for="num in getUnmatchedNumbers(transaction.gameDetails)" 
-                        :key="num" 
-                        class="number-ball unmatched"
-                  >
-                    {{ num }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </template>
-
           <div class="amount-section">
             <div class="balance-change">
               <span>Balance Change:</span>
               <span :class="{'positive': isPositiveOperation(transaction.operation)}">
-                {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{ transaction.amount.toFixed(2) }}
+                {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{ transaction.amount ? Number(transaction.amount).toFixed(2) : "0.00" }}
               </span>
             </div>
             <div class="final-balance">
@@ -227,7 +187,7 @@ const recentTransactions = computed(() => {
     .slice(0, 10)
     .map(transaction => ({
       ...transaction,
-      gameDetails: transaction.operation === TransactionOperation.Wage || 
+      gameDetails: transaction.operation === TransactionOperation.Wage ||
                   transaction.operation === TransactionOperation.Payout
         ? JSON.parse(localStorage.getItem('keno-game') || '{}')
         : null
@@ -293,20 +253,8 @@ function formatDate(date: Date) {
 }
 
 function isPositiveOperation(operation: TransactionOperation) {
-  return operation === TransactionOperation.Deposit || 
+  return operation === TransactionOperation.Deposit ||
          operation === TransactionOperation.Payout
-}
-
-interface GameDetails {
-  drawn: number[];
-  matched: number[];
-}
-
-function getUnmatchedNumbers(gameDetails: GameDetails) {
-  if (!gameDetails?.drawn || !gameDetails?.matched) return []
-  return gameDetails.drawn.filter((num: number) => 
-    !gameDetails.matched.includes(num)
-  )
 }
 </script>
 
