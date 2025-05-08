@@ -108,7 +108,7 @@
     v-model="showHistory"
     title="Transaction History"
     direction="rtl"
-    size="50%"
+    size="30%"
     class="history-drawer"
   >
     <div class="history-content">
@@ -118,6 +118,15 @@
             <span class="transaction-type" :class="transaction.operation.toLowerCase()">
               {{ formatOperationType(transaction.operation) }}
             </span>
+          </div>
+
+          <span class="transaction-date">
+            {{ formatDate(transaction.timestamp) }}
+          </span>
+        </div>
+
+        <div class="transaction-details">
+          <div class="amount-section">
             <div v-if="transaction.metadata?.gameMode" class="game-mode">
               <span>Game Mode:</span>
               <span>{{
@@ -125,7 +134,6 @@
                 transaction.metadata.gameMode.slice(1)
               }}</span>
             </div>
-
             <div
               v-if="
                 transaction.metadata?.purchaseMode &&
@@ -140,17 +148,9 @@
                   transaction.metadata.purchaseMode.slice(1)
                 }}
                 - {{ transaction.metadata.numberOfCards }}
+                Card/s
               </span>
             </div>
-          </div>
-
-          <span class="transaction-date">
-            {{ formatDate(transaction.timestamp) }}
-          </span>
-        </div>
-
-        <div class="transaction-details">
-          <div class="amount-section">
             <div class="final-balance">
               <span>Old Balance:</span>
               <span>₱{{ transaction.oldBalance.toFixed(2) }}</span>
@@ -521,20 +521,13 @@ body {
   gap: 8px;
 }
 
-.transaction-type,
-.game-mode,
-.purchase-info {
+.transaction-type {
   font-weight: bold;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.9rem;
 }
-.game-mode {
-  background: #693382;
-}
-.purchase-info {
-  background: #59baff;
-}
+
 .transaction-type.deposit {
   background: #4caf50;
 }
@@ -598,7 +591,8 @@ body {
   padding-top: 1rem;
   margin-top: 1rem;
 }
-
+.game-mode,
+.purchase-info,
 .balance-change,
 .final-balance {
   display: flex;
