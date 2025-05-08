@@ -131,7 +131,12 @@
             </div>
             <div class="balance-change">
               <span>Balance Change:</span>
-              <span :class="{ positive: isPositiveOperation(transaction.operation) }">
+              <span
+                :class="{
+                  positive: isPositiveOperation(transaction.operation),
+                  negative: !isPositiveOperation(transaction.operation),
+                }"
+              >
                 {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{
                   transaction.amount ? Number(transaction.amount).toFixed(2) : '0.00'
                 }}
@@ -500,12 +505,12 @@ body {
   background: #f44336;
 }
 .transaction-type.wage {
-  background: #2196f3;
+  background: #f44336;
 }
 .transaction-type.payout {
-  background: #f8ab00;
+  background: #4caf50;
 }
-
+/* #f8ab00 */
 .transaction-date {
   color: #ffffff80;
   font-size: 0.9rem;
@@ -566,6 +571,10 @@ body {
 
 .positive {
   color: #4caf50;
+}
+
+.negative {
+  color: #f44336;
 }
 
 :deep(.el-drawer__header) {
