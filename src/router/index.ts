@@ -77,6 +77,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     // alert('clear')
     useGameStore().resetGame()
+    useGameStore().resetPurchase()
   }
 
   next()

@@ -37,7 +37,15 @@ export const useGameStore = defineStore('game', () => {
       winnings: number
       result: 'win' | 'lose' | ''
     }>
-  >([])
+  >([
+    {
+      selectedNumbers: [],
+      matchedNumbers: [],
+      multiplier: 0,
+      winnings: 0,
+      result: 'lose',
+    },
+  ])
   const watchedMatchedNumbers = computed(() =>
     cards.value.map((card) => structuredClone(toRaw(card.matchedNumbers))),
   )
