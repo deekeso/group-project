@@ -12,7 +12,6 @@ export const useGameStore = defineStore(
     const selectedNumbers = ref<number[]>([])
     const drawnNumbers = ref<number[]>([])
     const matchedNumbers = ref<number[]>([])
-    const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
     const wager = ref<number>(MIN_WAGER)
     const bet = ref<number>(1)
     const winnings = ref<number>(0)
@@ -21,26 +20,82 @@ export const useGameStore = defineStore(
     const loseStreak = ref(0)
     const cumulativeLoseStreakWager = ref(0)
 
-    //new
-    const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
-      [],
-    )
 
     let loseStreakCallback: () => void = function () {}
     let matchCallback: (i: number) => void = function () {}
 
-    //states for card purchase
-    const hasPurchasedCards = ref<boolean>(false)
-    const purchaseMode = ref<'single' | 'multiple'>()
-    const numberOfCards = ref<number>(0)
+  //states for card purchase
+  const hasPurchasedCards = ref<boolean>(false)
+  const purchaseMode = ref<'single' | 'multiple'>()
+  const numberOfCards = ref<number>(0)
 
-    watch(
-      watchedMatchedNumbers,
-      (newVal, oldVal) => {
-        if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
-      },
-      { deep: true },
-    )
+  //card state
+  const cards = ref<
+    Array<{
+      selectedNumbers: number[]
+      matchedNumbers: number[]
+      multiplier?: number
+      winnings: number
+      result: 'win' | 'lose' | ''
+    }>
+  >([])
+  const watchedMatchedNumbers = computed(() =>
+    cards.value.map((card) => structuredClone(toRaw(card.matchedNumbers))),
+  )
+
+  //result states
+  const hasWin = ref<boolean>(false)
+  const totalWins = ref(0)
+
+  // autosave to local storage
+  watch(
+    [
+      selectedNumbers,
+      drawnNumbers,
+      matchedNumbers,
+      wager,
+      mode,
+      hasPurchasedCards,
+      purchaseMode,
+      numberOfCards,
+      cards,
+    ],
+    () => {
+      localStorage.setItem(
+        'keno-game',
+        JSON.stringify({
+          selected: selectedNumbers.value,
+          drawn: drawnNumbers.value,
+          matched: matchedNumbers.value,
+          wager: wager.value,
+          winnings: winnings.value,
+          result: result.value,
+          mode: mode.value,
+          loseStreak: loseStreak.value,
+          hasPurchasedCards: hasPurchasedCards.value,
+          purchaseMode: purchaseMode.value,
+          numberOfCards: numberOfCards.value,
+          cards: cards.value,
+        }),
+      )
+    },
+    { deep: true },
+  )
+
+
+  watch(
+    watchedMatchedNumbers,
+    (newVal, oldVal) => {
+      // Flatten arrays for comparison
+      const newTotalMatches = newVal.flat().length
+      const oldTotalMatches = oldVal.flat().length
+
+      if (newTotalMatches > 0 && newTotalMatches !== oldTotalMatches) {
+        matchCallback(newTotalMatches)
+      }
+    },
+    { deep: true },
+  )
 
     // load from local storage
     function loadFromStorage() {
@@ -57,11 +112,23 @@ export const useGameStore = defineStore(
         mode.value = parsed.mode || 'classic'
         loseStreak.value = parsed.loseStreak
 
-        hasPurchasedCards.value = parsed.hasPurchasedCards || false
-        purchaseMode.value = parsed.purchaseMode || 'single'
-        numberOfCards.value = parsed.numberOfCards || 1
-      }
+      hasPurchasedCards.value = parsed.hasPurchasedCards || false
+      purchaseMode.value = parsed.purchaseMode || 'single'
+      numberOfCards.value = parsed.numberOfCards || 1
+
+      cards.value = parsed.cards || []
     }
+  }
+
+  function initializeCards() {
+    cards.value = Array.from({ length: numberOfCards.value }, () => ({
+      selectedNumbers: [],
+      matchedNumbers: [],
+      multiplier: 0,
+      winnings: 0,
+      result: '',
+    }))
+  }
 
     // wager counter
     function increaseWager() {
@@ -82,19 +149,41 @@ export const useGameStore = defineStore(
       wager.value = Math.max(newWager, MIN_WAGER)
     }
 
-    function setDrawnNumbers(numbers: number[]) {
-      drawnNumbers.value = numbers
-      matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
+  function setDrawnNumbers(numbers: number[]) {
+    drawnNumbers.value = numbers
+
+    //modified to detect match per card
+    cards.value = cards.value.map((card) => ({
+      ...card,
+      matchedNumbers: numbers.filter((n) => card.selectedNumbers?.includes(n)),
+    }))
+  }
+
+  function resetCard(cardIndex: number) {
+    cards.value[cardIndex] = {
+      selectedNumbers: [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }
+    drawnNumbers.value = []
+  }
+
+  function resetGame(preserveSelectedNumbers: boolean = false) {
+    if (!preserveSelectedNumbers) {
+      selectedNumbers.value = []
     }
 
-    function resetGame(preserveSelectedNumbers: boolean = false) {
-      if (!preserveSelectedNumbers) {
-        selectedNumbers.value = []
-      }
-      drawnNumbers.value = []
-      matchedNumbers.value = []
-      winnings.value = 0
-    }
+    //reset all cards
+    cards.value = cards.value.map((card) => ({
+      // selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
+      selectedNumbers: preserveSelectedNumbers ? card.selectedNumbers : [],
+      matchedNumbers: [],
+      winnings: 0,
+      result: '',
+    }))
+    drawnNumbers.value = []
+  }
 
     //mode switcher
     function setGameMode(newMode: GameMode) {
@@ -149,11 +238,11 @@ export const useGameStore = defineStore(
       numberOfCards.value = mode === 'multiple' ? number : 1
     }
 
-    function resetPurchase() {
-      hasPurchasedCards.value = false
-      purchaseMode.value = 'single'
-      numberOfCards.value = 1
-    }
+  function resetPurchase() {
+    hasPurchasedCards.value = false
+    purchaseMode.value = 'single'
+    numberOfCards.value = 1
+  }
 
     function setLostStreak(count: number) {
       loseStreak.value = count
@@ -167,47 +256,46 @@ export const useGameStore = defineStore(
       cumulativeLoseStreakWager.value = 0
     }
 
-    return {
-      selectedNumbers,
-      drawnNumbers,
-      matchedNumbers,
-      wager,
-      bet,
-      MIN_WAGER,
-      MAX_WAGER,
-      winnings,
-      result,
-      mode,
-      loseStreak,
-      hasPurchasedCards,
-      purchaseMode,
-      numberOfCards,
-      cards, //new
-      cumulativeLoseStreakWager,
-      increaseWager,
-      decreaseWager,
-      setDrawnNumbers,
-      resetGame,
-      loadFromStorage,
-      doubleWager,
-      halfWager,
-      setGameMode,
-      addWinnings,
-      setResult,
-      resetWinnings,
-      setLoseStreakCallback,
-      setMatchCallback,
-      makePurchase,
-      resetPurchase,
-      setLostStreak,
-      increaseCumulativeLoseStreakWager,
-      resetCumulativeLoseStreakWager,
-    }
-  },
-  {
-    persist: {
-      key: 'keno-game',
-      storage: localStorage,
-    } as any,
-  },
-)
+  return {
+    selectedNumbers,
+    drawnNumbers,
+    matchedNumbers,
+    wager,
+    bet,
+    MIN_WAGER,
+    MAX_WAGER,
+    winnings,
+    result,
+    mode,
+    loseStreak,
+    hasPurchasedCards,
+    purchaseMode,
+    numberOfCards,
+    cards,
+    hasWin,
+    totalWins,
+    initializeCards,
+    increaseWager,
+    decreaseWager,
+    setDrawnNumbers,
+    resetGame,
+    loadFromStorage,
+    doubleWager,
+    halfWager,
+    setGameMode,
+    addWinnings,
+    setResult,
+    resetWinnings,
+    setLoseStreakEffect: setLoseStreakCallback,
+    setMatchCallback,
+    makePurchase,
+    resetPurchase,
+    resetCard,
+  }
+},
+{
+  persist: {
+    key: 'keno-game',
+    storage: localStorage,
+  } as any,
+},)

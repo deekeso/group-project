@@ -8,11 +8,11 @@
           class="keno-cell"
           :class="[
             'cell',
-            matchedNumbers.includes(number)
+            card.matchedNumbers.includes(number)
               ? 'matched'
               : drawnNumbers.includes(number) && !selectedNumbers.includes(number)
                 ? 'missed'
-                : selectedNumbers.includes(number)
+                : card.selectedNumbers.includes(number)
                   ? 'selected'
                   : '',
           ]"
@@ -31,42 +31,45 @@ import { useGameStore } from '@/stores/useGameStore'
 import { GameMode } from '@/types'
 import { storeToRefs } from 'pinia'
 import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
+import { computed } from 'vue'
 
 const gameStore = useGameStore()
-const { selectedNumbers, matchedNumbers, drawnNumbers } = storeToRefs(gameStore)
+const { selectedNumbers, drawnNumbers, cards } = storeToRefs(gameStore)
 const isDrawing = useGameDrawing()
-
 const emit = defineEmits<{
   (e: 'numberSelected', numbers: number[]): void
   (e: 'resetRound'): void
 }>()
 
-const { isRoundFinished, gameMode } = defineProps<{
+const { isRoundFinished, gameMode, cardIndex } = defineProps<{
   isRoundFinished: boolean
   gameMode: GameMode
+  cardIndex: number
 }>()
 
 const cellCount = gameMode === GameMode.Classic ? 80 : gameMode === GameMode.Mini ? 49 : 80
+
+const card = computed(() => cards.value[cardIndex])
 
 // Function to toggle number selection
 function toggleNumber(number: number): void {
   if (isDrawing.value) return
   if (isRoundFinished) {
-    matchedNumbers.value = []
+    card.value.matchedNumbers = []
     drawnNumbers.value = []
     emit('resetRound')
   }
 
   const selectionLimit = gameMode === GameMode.Classic ? 15 : 10
-  const index = selectedNumbers.value.indexOf(number)
+  const index = card.value.selectedNumbers.indexOf(number)
   if (index > -1) {
-    selectedNumbers.value.splice(index, 1)
+    card.value.selectedNumbers.splice(index, 1) //multcard
     new Audio(toggleSoundEffect).play()
-  } else if (selectedNumbers.value.length < selectionLimit) {
-    selectedNumbers.value.push(number)
+  } else if (card.value.selectedNumbers.length < selectionLimit) {
+    card.value.selectedNumbers.push(number)
     new Audio(toggleSoundEffect).play()
   }
-  emit('numberSelected', selectedNumbers.value)
+  // emit('numberSelected', card.selectedNumbers) not necessary
 }
 </script>
 
