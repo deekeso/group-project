@@ -286,11 +286,14 @@ export const useGameStore = defineStore(
     addWinnings,
     setResult,
     resetWinnings,
-    setLoseStreakEffect: setLoseStreakCallback,
+    setLoseStreakCallback,
     setMatchCallback,
     makePurchase,
     resetPurchase,
     resetCard,
+    setLostStreak,
+    increaseCumulativeLoseStreakWager,
+    resetCumulativeLoseStreakWager,
   }
 },
 {
