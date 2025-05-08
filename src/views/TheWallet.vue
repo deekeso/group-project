@@ -112,14 +112,12 @@
     class="history-drawer"
   >
     <div class="history-content">
-      <div v-for="(transaction, index) in recentTransactions"
-           :key="index"
-           class="transaction-card"
-      >
+      <div v-for="(transaction, index) in recentTransactions" :key="index" class="transaction-card">
         <div class="transaction-header">
           <span class="transaction-type" :class="transaction.operation.toLowerCase()">
             {{ formatOperationType(transaction.operation) }}
           </span>
+
           <span class="transaction-date">
             {{ formatDate(transaction.timestamp) }}
           </span>
@@ -127,10 +125,16 @@
 
         <div class="transaction-details">
           <div class="amount-section">
+            <div class="final-balance">
+              <span>Old Balance:</span>
+              <span>₱{{ transaction.oldBalance.toFixed(2) }}</span>
+            </div>
             <div class="balance-change">
               <span>Balance Change:</span>
-              <span :class="{'positive': isPositiveOperation(transaction.operation)}">
-                {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{ transaction.amount ? Number(transaction.amount).toFixed(2) : "0.00" }}
+              <span :class="{ positive: isPositiveOperation(transaction.operation) }">
+                {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{
+                  transaction.amount ? Number(transaction.amount).toFixed(2) : '0.00'
+                }}
               </span>
             </div>
             <div class="final-balance">
@@ -185,12 +189,13 @@ const recentTransactions = computed(() => {
     .slice()
     .reverse()
     .slice(0, 10)
-    .map(transaction => ({
+    .map((transaction) => ({
       ...transaction,
-      gameDetails: transaction.operation === TransactionOperation.Wage ||
-                  transaction.operation === TransactionOperation.Payout
-        ? JSON.parse(localStorage.getItem('keno-game') || '{}')
-        : null
+      gameDetails:
+        transaction.operation === TransactionOperation.Wage ||
+        transaction.operation === TransactionOperation.Payout
+          ? JSON.parse(localStorage.getItem('keno-game') || '{}')
+          : null,
     }))
 })
 
@@ -239,12 +244,17 @@ function directToHome() {
 }
 
 function formatOperationType(operation: TransactionOperation) {
-  switch(operation) {
-    case TransactionOperation.Deposit: return 'Deposit'
-    case TransactionOperation.Withdraw: return 'Withdraw'
-    case TransactionOperation.Wage: return 'Game Wager'
-    case TransactionOperation.Payout: return 'Game Payout'
-    default: return operation
+  switch (operation) {
+    case TransactionOperation.Deposit:
+      return 'Deposit'
+    case TransactionOperation.Withdraw:
+      return 'Withdraw'
+    case TransactionOperation.Wage:
+      return 'Game Wager'
+    case TransactionOperation.Payout:
+      return 'Game Payout'
+    default:
+      return operation
   }
 }
 
@@ -253,8 +263,7 @@ function formatDate(date: Date) {
 }
 
 function isPositiveOperation(operation: TransactionOperation) {
-  return operation === TransactionOperation.Deposit ||
-         operation === TransactionOperation.Payout
+  return operation === TransactionOperation.Deposit || operation === TransactionOperation.Payout
 }
 </script>
 
@@ -484,10 +493,18 @@ body {
   font-size: 0.9rem;
 }
 
-.transaction-type.deposit { background: #4CAF50; }
-.transaction-type.withdraw { background: #f44336; }
-.transaction-type.wage { background: #2196F3; }
-.transaction-type.payout { background: #f8ab00; }
+.transaction-type.deposit {
+  background: #4caf50;
+}
+.transaction-type.withdraw {
+  background: #f44336;
+}
+.transaction-type.wage {
+  background: #2196f3;
+}
+.transaction-type.payout {
+  background: #f8ab00;
+}
 
 .transaction-date {
   color: #ffffff80;
@@ -524,9 +541,15 @@ body {
   font-weight: bold;
 }
 
-.number-ball.selected { background: #f8ab00; }
-.number-ball.matched { background: #4CAF50; }
-.number-ball.unmatched { background: #f44336; }
+.number-ball.selected {
+  background: #f8ab00;
+}
+.number-ball.matched {
+  background: #4caf50;
+}
+.number-ball.unmatched {
+  background: #f44336;
+}
 
 .amount-section {
   border-top: 1px solid #ffffff20;
@@ -534,14 +557,15 @@ body {
   margin-top: 1rem;
 }
 
-.balance-change, .final-balance {
+.balance-change,
+.final-balance {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
 .positive {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 :deep(.el-drawer__header) {

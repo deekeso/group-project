@@ -42,7 +42,7 @@
         />
         <div class="grid-sidebtn-container">
           <GameGrid
-            :game-type="gameType"
+            :gameMode="gameMode"
             @number-selected="setSelectedNumbers"
             :is-round-finished
             @reset-round="resetRound"
@@ -50,7 +50,7 @@
           <GameSideButtons
             @clear="resetGame"
             @number-selected="autopickNumberSelected"
-            :max-number="payTable[gameType].length"
+            :max-number="payTable[gameMode].length"
             :game-is-drawing="isDrawing"
           />
         </div>
@@ -95,9 +95,9 @@ import { useSyncGameMode } from '@/composables/useSyncGameMode'
 import { useGameStore } from '@/stores/useGameStore'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import { provide, readonly, ref } from 'vue'
+import { computed, onActivated, onMounted, onUpdated, provide, readonly, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { GameType } from '@/types'
+import { GameMode } from '@/types'
 import { useAuthStore } from '@/stores/auth'
 
 // import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
@@ -115,7 +115,7 @@ const { open } = useTour()
 
 const router = useRouter()
 const route = useRoute()
-const gameType: GameType = route.meta.gameType as GameType
+const gameMode: GameMode = route.meta.gameMode as GameMode
 const gameStore = useGameStore()
 const { wallet, performTransaction } = useAuthStore()
 const { matchedNumbers, selectedNumbers, winnings, result, hasPurchasedCards } =
@@ -162,10 +162,15 @@ async function playSoundEffect(i: number, soundEffect: string) {
 gameStore.setMatchCallback((i) => {
   playSoundEffect(i, matchSoundEffect)
 })
-//
-provide(gameIsDrawingKey, readonly(isDrawing))
 
-useSyncGameMode('classic')
+onMounted(() => {
+  gameStore.mode = gameMode
+})
+
+console.log(gameMode)
+gameStore.asdfasfd(gameMode)
+
+provide(gameIsDrawingKey, readonly(isDrawing))
 
 async function startDraw() {
   // Check balance before playing
@@ -203,14 +208,14 @@ async function startDraw() {
   }
 
   const interval = setInterval(() => {
-    if (gameType === GameType.Classic) {
+    if (gameMode === GameMode.Classic) {
       classicKenoDraw()
-    } else if (gameType === GameType.Mini) {
+    } else if (gameMode === GameMode.Mini) {
       miniKenoDraw()
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    const maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameMode === GameMode.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
@@ -230,7 +235,7 @@ function autopickNumberSelected(number: number) {
   let count = 0
 
   const interval = setInterval(() => {
-    kenoAutopick(number, gameType)
+    kenoAutopick(number, gameMode)
     count++
     playSoundEffect(0, toggleSoundEffect)
     if (count >= number) {
@@ -261,9 +266,9 @@ function directToHome() {
 }
 
 function directToWallet() {
-  let r = GameType.Classic
+  let r = GameMode.Classic
 
-  if (gameType === GameType.Mini) r = GameType.Mini
+  if (gameMode === GameMode.Mini) r = GameMode.Mini
 
   router.push({
     name: 'wallet',

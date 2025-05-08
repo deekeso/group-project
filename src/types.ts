@@ -1,6 +1,6 @@
-export enum GameType {
+export enum GameMode {
   'Mini' = 'mini',
-  'Classic' = 'classic'
+  'Classic' = 'classic',
 }
 
 export enum RouteName {
@@ -9,7 +9,7 @@ export enum RouteName {
   'ClassicGame' = 'classic',
   'MiniGame' = 'mini',
   'PurchaseCards' = 'purchase',
-  'Tutorial' = 'tutorial'
+  'Tutorial' = 'tutorial',
 }
 
 export interface UserDetails {
@@ -29,5 +29,5 @@ export enum TransactionOperation {
   'Deposit' = 'deposit',
   'Withdraw' = 'withdraw',
   'Wage' = 'wage',
-  'Payout' = 'payout'
+  'Payout' = 'payout',
 }

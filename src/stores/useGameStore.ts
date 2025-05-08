@@ -1,220 +1,200 @@
+import { GameMode } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref, toRaw, watch } from 'vue'
-
-export type GameMode = 'classic' | 'mini'
 
 const MIN_WAGER = 20
 const MAX_WAGER = 500
 const LOSE_STREAK_THRESHOLD = 20
 
-export const useGameStore = defineStore('game', () => {
-  const selectedNumbers = ref<number[]>([])
-  const drawnNumbers = ref<number[]>([])
-  const matchedNumbers = ref<number[]>([])
-  const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
-  const wager = ref<number>(MIN_WAGER)
-  const bet = ref<number>(1)
-  const winnings = ref<number>(0)
-  const result = ref<'win' | 'lose' | ''>('')
-  const mode = ref<GameMode>('classic')
-  const loseStreak = ref(0)
+export const useGameStore = defineStore(
+  'game',
+  () => {
+    const selectedNumbers = ref<number[]>([])
+    const drawnNumbers = ref<number[]>([])
+    const matchedNumbers = ref<number[]>([])
+    const watchedMatchedNumbers = computed(() => structuredClone(toRaw(matchedNumbers.value)))
+    const wager = ref<number>(MIN_WAGER)
+    const bet = ref<number>(1)
+    const winnings = ref<number>(0)
+    const result = ref<'win' | 'lose' | ''>('')
+    const mode = ref<GameMode>(GameMode.Classic)
+    const loseStreak = ref(0)
 
-  //new
-  const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
-    [],
-  )
+    //new
+    const cards = ref<Array<{ id: number[]; selectedNumbers: number[]; matchedNumbers: number[] }>>(
+      [],
+    )
 
-  let loseStreakCallback: () => void = function () {}
-  let matchCallback: (i: number) => void = function () {}
+    let loseStreakCallback: () => void = function () {}
+    let matchCallback: (i: number) => void = function () {}
 
-  //states for card purchase
-  const hasPurchasedCards = ref<boolean>(false)
-  const purchaseMode = ref<'single' | 'multiple'>()
-  const numberOfCards = ref<number>(0)
+    //states for card purchase
+    const hasPurchasedCards = ref<boolean>(false)
+    const purchaseMode = ref<'single' | 'multiple'>()
+    const numberOfCards = ref<number>(0)
 
-  // autosave to local storage
-  watch(
-    [
+    watch(
+      watchedMatchedNumbers,
+      (newVal, oldVal) => {
+        if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
+      },
+      { deep: true },
+    )
+
+    // load from local storage
+    function loadFromStorage() {
+      const saved = localStorage.getItem('keno-game')
+
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        selectedNumbers.value = parsed.selected || []
+        drawnNumbers.value = parsed.drawn || []
+        matchedNumbers.value = parsed.matched || []
+        wager.value = parsed.wager || 20
+        winnings.value = parsed.winnings || 0
+        result.value = parsed.result || ''
+        mode.value = parsed.mode || 'classic'
+        loseStreak.value = parsed.loseStreak
+
+        hasPurchasedCards.value = parsed.hasPurchasedCards || false
+        purchaseMode.value = parsed.purchaseMode || 'single'
+        numberOfCards.value = parsed.numberOfCards || 1
+      }
+    }
+
+    // wager counter
+    function increaseWager() {
+      if (wager.value < MAX_WAGER) wager.value++
+    }
+
+    function decreaseWager() {
+      if (wager.value > MIN_WAGER) wager.value--
+    }
+
+    function doubleWager() {
+      const newWager = wager.value * 2
+      wager.value = newWager >= MAX_WAGER ? MAX_WAGER : newWager
+    }
+
+    function halfWager() {
+      const newWager = Math.floor(wager.value / 2)
+      wager.value = Math.max(newWager, MIN_WAGER)
+    }
+
+    function setDrawnNumbers(numbers: number[]) {
+      drawnNumbers.value = numbers
+      matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
+    }
+
+    function resetGame(preserveSelectedNumbers: boolean = false) {
+      if (!preserveSelectedNumbers) {
+        selectedNumbers.value = []
+      }
+      drawnNumbers.value = []
+      matchedNumbers.value = []
+      winnings.value = 0
+    }
+
+    //mode switcher
+    function setGameMode(newMode: GameMode) {
+      if (mode.value !== newMode) {
+        resetGame()
+      }
+
+      // Handle trimming after reset so selectedNumbers is guaranteed fresh
+      if (newMode === 'mini' && selectedNumbers.value.length > 10) {
+        selectedNumbers.value = selectedNumbers.value.slice(0, 10)
+      }
+
+      mode.value = newMode
+    }
+
+    function addWinnings(amount: number) {
+      winnings.value = amount
+    }
+
+    function setResult(status: 'win' | 'lose') {
+      if (status === 'lose') {
+        loseStreak.value++
+        if (loseStreak.value >= LOSE_STREAK_THRESHOLD) {
+          loseStreak.value = 0
+          loseStreakCallback()
+        }
+      }
+
+      if (status === 'win') {
+        loseStreak.value = 0
+      }
+
+      result.value = status
+    }
+
+    function setLoseStreakCallback(callback: () => void) {
+      loseStreakCallback = callback
+    }
+
+    function setMatchCallback(callback: (i: number) => void) {
+      matchCallback = callback
+    }
+
+    function resetWinnings() {
+      winnings.value = 0
+    }
+
+    function makePurchase(mode: 'single' | 'multiple', number: number) {
+      hasPurchasedCards.value = true
+      purchaseMode.value = mode
+      numberOfCards.value = mode === 'multiple' ? number : 1
+    }
+
+    function resetPurchase() {
+      hasPurchasedCards.value = false
+      purchaseMode.value = 'single'
+      numberOfCards.value = 1
+    }
+
+    function asdfasfd(gameMode: GameMode) {
+      mode.value = gameMode
+    }
+
+    return {
       selectedNumbers,
       drawnNumbers,
       matchedNumbers,
       wager,
+      bet,
+      MIN_WAGER,
+      MAX_WAGER,
+      winnings,
+      result,
       mode,
+      loseStreak,
       hasPurchasedCards,
       purchaseMode,
       numberOfCards,
-    ],
-    () => {
-      localStorage.setItem(
-        'keno-game',
-        JSON.stringify({
-          selected: selectedNumbers.value,
-          drawn: drawnNumbers.value,
-          matched: matchedNumbers.value,
-          wager: wager.value,
-          winnings: winnings.value,
-          result: result.value,
-          mode: mode.value,
-          loseStreak: loseStreak.value,
-          hasPurchasedCards: hasPurchasedCards.value,
-          purchaseMode: purchaseMode.value,
-          numberOfCards: numberOfCards.value,
-        }),
-      )
-    },
-    { deep: true },
-  )
-
-  watch(
-    watchedMatchedNumbers,
-    (newVal, oldVal) => {
-      if (newVal.length > 0 && newVal.length !== oldVal.length) matchCallback(newVal.length)
-    },
-    { deep: true },
-  )
-
-  // load from local storage
-  function loadFromStorage() {
-    const saved = localStorage.getItem('keno-game')
-
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      selectedNumbers.value = parsed.selected || []
-      drawnNumbers.value = parsed.drawn || []
-      matchedNumbers.value = parsed.matched || []
-      wager.value = parsed.wager || 20
-      winnings.value = parsed.winnings || 0
-      result.value = parsed.result || ''
-      mode.value = parsed.mode || 'classic'
-      loseStreak.value = parsed.loseStreak
-
-      hasPurchasedCards.value = parsed.hasPurchasedCards || false
-      purchaseMode.value = parsed.purchaseMode || 'single'
-      numberOfCards.value = parsed.numberOfCards || 1
+      cards, //new
+      increaseWager,
+      decreaseWager,
+      setDrawnNumbers,
+      resetGame,
+      loadFromStorage,
+      doubleWager,
+      halfWager,
+      setGameMode,
+      addWinnings,
+      setResult,
+      resetWinnings,
+      setLoseStreakEffect: setLoseStreakCallback,
+      setMatchCallback,
+      makePurchase,
+      resetPurchase,
+      asdfasfd,
     }
-  }
-
-  // wager counter
-  function increaseWager() {
-    if (wager.value < MAX_WAGER) wager.value++
-  }
-
-  function decreaseWager() {
-    if (wager.value > MIN_WAGER) wager.value--
-  }
-
-  function doubleWager() {
-    const newWager = wager.value * 2
-    wager.value = newWager >= MAX_WAGER ? MAX_WAGER : newWager
-  }
-
-  function halfWager() {
-    const newWager = Math.floor(wager.value / 2)
-    wager.value = Math.max(newWager, MIN_WAGER)
-  }
-
-  function setDrawnNumbers(numbers: number[]) {
-    drawnNumbers.value = numbers
-    matchedNumbers.value = numbers.filter((n) => selectedNumbers.value.includes(n))
-  }
-
-  function resetGame(preserveSelectedNumbers: boolean = false) {
-    if (!preserveSelectedNumbers) {
-      selectedNumbers.value = []
-    }
-    drawnNumbers.value = []
-    matchedNumbers.value = []
-    winnings.value = 0
-  }
-
-  //mode switcher
-  function setGameMode(newMode: GameMode) {
-    if (mode.value !== newMode) {
-      resetGame()
-    }
-
-    // Handle trimming after reset so selectedNumbers is guaranteed fresh
-    if (newMode === 'mini' && selectedNumbers.value.length > 10) {
-      selectedNumbers.value = selectedNumbers.value.slice(0, 10)
-    }
-
-    mode.value = newMode
-  }
-
-  function addWinnings(amount: number) {
-    winnings.value = amount
-  }
-
-  function setResult(status: 'win' | 'lose') {
-    if (status === 'lose') {
-      loseStreak.value++
-      if (loseStreak.value >= LOSE_STREAK_THRESHOLD) {
-        loseStreak.value = 0
-        loseStreakCallback()
-      }
-    }
-
-    if (status === 'win') {
-      loseStreak.value = 0
-    }
-
-    result.value = status
-  }
-
-  function setLoseStreakCallback(callback: () => void) {
-    loseStreakCallback = callback
-  }
-
-  function setMatchCallback(callback: (i: number) => void) {
-    matchCallback = callback
-  }
-
-  function resetWinnings() {
-    winnings.value = 0
-  }
-
-  function makePurchase(mode: 'single' | 'multiple', number: number) {
-    hasPurchasedCards.value = true
-    purchaseMode.value = mode
-    numberOfCards.value = mode === 'multiple' ? number : 1
-  }
-
-  function resetPurchase() {
-    hasPurchasedCards.value = false
-    purchaseMode.value = 'single'
-    numberOfCards.value = 1
-  }
-
-  return {
-    selectedNumbers,
-    drawnNumbers,
-    matchedNumbers,
-    wager,
-    bet,
-    MIN_WAGER,
-    MAX_WAGER,
-    winnings,
-    result,
-    mode,
-    loseStreak,
-    hasPurchasedCards,
-    purchaseMode,
-    numberOfCards,
-    cards, //new
-    increaseWager,
-    decreaseWager,
-    setDrawnNumbers,
-    resetGame,
-    loadFromStorage,
-    doubleWager,
-    halfWager,
-    setGameMode,
-    addWinnings,
-    setResult,
-    resetWinnings,
-    setLoseStreakEffect: setLoseStreakCallback,
-    setMatchCallback,
-    makePurchase,
-    resetPurchase,
-  }
-})
+  },
+  {
+    persist: {
+      key: 'keno-game',
+      storage: localStorage,
+    } as any,
+  },
+)

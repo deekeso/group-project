@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import HomeView from '@/views/HomeView.vue'
-import { GameType, RouteName } from '@/types'
+import { GameMode, RouteName } from '@/types'
 import { useGameStore } from '@/stores/useGameStore'
 
 const router = createRouter({
@@ -29,7 +29,7 @@ const router = createRouter({
       component: () => import('@/views/GameView.vue'),
       meta: {
         requiresAuth: true,
-        gameType: GameType.Classic,
+        gameMode: GameMode.Classic,
       },
     },
     {
@@ -38,7 +38,7 @@ const router = createRouter({
       component: () => import('@/views/GameView.vue'),
       meta: {
         requiresAuth: true,
-        gameType: GameType.Mini,
+        gameMode: GameMode.Mini,
       },
     },
     {
