@@ -2,7 +2,7 @@
   <div class="debug-tools">
     <button @click="trigger20Losses">Trigger 20 losses</button>
     <!-- <BonusSpin /> -->
-     <BonusSpin />
+    <!-- <BonusSpin /> -->
   </div>
 </template>
 

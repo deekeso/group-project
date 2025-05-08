@@ -17,12 +17,6 @@ interface BaseTransaction {
 interface TransactionRecord extends BaseTransaction {
   oldBalance: number
   newBalance: number
-  timestamp: Date
-}
-
-interface TransactionRecord extends BaseTransaction {
-  oldBalance: number
-  newBalance: number
 }
 
 export interface PendingTransaction extends BaseTransaction {
@@ -69,7 +63,7 @@ export const useWalletsStore = defineStore('wallets', {
       operation: TransactionOperation,
       amount: number,
       timestamp?: Date,
-    ): TransactionRecord {
+    ): BaseTransaction {
       const wallet = this.findWallet(id)
 
       const oldBalance = wallet.balance
@@ -91,6 +85,17 @@ export const useWalletsStore = defineStore('wallets', {
         amount,
         newBalance: wallet.balance,
         timestamp: new Date(),
+      } as TransactionRecord
+
+      if (operation === TransactionOperation.Payout || operation === TransactionOperation.Wage) {
+        transaction = {
+          ...transaction,
+          metadata: {
+            gameMode: gameStore.mode,
+            purchaseMode: gameStore.purchaseMode,
+            numberOfCards: gameStore.numberOfCards,
+          },
+        }
       }
 
       wallet.transactions.push(transaction)

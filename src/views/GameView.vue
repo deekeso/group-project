@@ -171,7 +171,6 @@ onMounted(() => {
 })
 
 console.log(gameMode)
-gameStore.asdfasfd(gameMode)
 
 provide(gameIsDrawingKey, readonly(isDrawing))
 
