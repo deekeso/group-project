@@ -186,8 +186,10 @@ provide(gameIsDrawingKey, readonly(isDrawing))
 useSyncGameMode('classic')
 
 async function startDraw() {
+  const totalWager = gameStore.wager * gameStore.numberOfCards
+
   // Check balance before playing
-  if (wallet.balance < gameStore.wager) {
+  if (wallet.balance < totalWager) {
     ElNotification({
       title: 'Insufficient Balance',
       message: 'Please top up your wallet or adjust your wager.',
@@ -200,7 +202,6 @@ async function startDraw() {
   }
 
   //Perform wager deduction as a group for compatibility with multiple card
-  const totalWager = gameStore.wager * gameStore.numberOfCards
   performTransaction(TransactionOperation.Wage, totalWager)
   // performTransaction(TransactionOperation.Wage, gameStore.wager)
 
