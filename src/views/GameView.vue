@@ -415,7 +415,7 @@ function exitGame() {
   place-items: center;
   background: transparent;
   flex: 1;
-  margin-top: 80px;
+  /* margin-top: 80px; */
 }
 .card-number {
   color: yellow;
