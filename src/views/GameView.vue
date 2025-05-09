@@ -390,6 +390,11 @@ function exitGame() {
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+:deep(.el-header) {
+  height: min-content;
+}
+
 .classic-page {
   min-height: 100vh;
   width: 100%;
@@ -408,6 +413,7 @@ function exitGame() {
   padding-top: 20px;
   background: transparent;
   height: 100%;
+  max-height: 60px;
 }
 
 .el-main {
