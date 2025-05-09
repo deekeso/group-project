@@ -252,4 +252,9 @@ function scrollToGames() {
     text-shadow: 0 0 10px rgba(254, 202, 67, 0.3);
   }
 }
+
+:deep(.el-dialog.el-dialog--center) {
+  width: 100%;
+  max-width: 700px;
+}
 </style>
