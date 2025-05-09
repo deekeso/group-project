@@ -21,6 +21,10 @@
               <p>Welcome, {{ user?.firstname }}!</p>
               <h3>Your Current Balance is</h3>
               <h1>₱{{ wallet.balance.toFixed(2) }}</h1>
+              <a href="#" class="history-link" @click.prevent="showHistory = true">
+                View Transaction History
+                <el-icon><ArrowRight /></el-icon>
+              </a>
             </div>
           </div>
 
@@ -98,6 +102,82 @@
       </div>
     </template>
   </el-dialog>
+
+  <!-- Add the drawer -->
+  <el-drawer
+    v-model="showHistory"
+    title="Transaction History"
+    direction="rtl"
+    size="100%"
+    class="history-drawer"
+    style="width: 100%; max-width: 500px;"
+  >
+    <div class="history-content">
+      <div v-for="(transaction, index) in recentTransactions" :key="index" class="transaction-card">
+        <div class="transaction-header">
+          <div class="transaction-header-left">
+            <span class="transaction-type" :class="transaction.operation.toLowerCase()">
+              {{ formatOperationType(transaction.operation) }}
+            </span>
+          </div>
+
+          <span class="transaction-date">
+            {{ formatDate(transaction.timestamp) }}
+          </span>
+        </div>
+
+        <div class="transaction-details">
+          <div class="amount-section">
+            <div v-if="transaction.metadata?.gameMode" class="game-mode">
+              <span>Game Mode:</span>
+              <span>{{
+                transaction.metadata.gameMode.charAt(0).toUpperCase() +
+                transaction.metadata.gameMode.slice(1)
+              }}</span>
+            </div>
+            <div
+              v-if="
+                transaction.metadata?.purchaseMode &&
+                transaction.metadata?.numberOfCards !== undefined
+              "
+              class="purchase-info"
+            >
+              <span>Purchase Mode:</span>
+              <span>
+                {{
+                  transaction.metadata.purchaseMode.charAt(0).toUpperCase() +
+                  transaction.metadata.purchaseMode.slice(1)
+                }}
+                - {{ transaction.metadata.numberOfCards }}
+                Card/s
+              </span>
+            </div>
+            <div class="final-balance">
+              <span>Old Balance:</span>
+              <span>₱{{ transaction.oldBalance.toFixed(2) }}</span>
+            </div>
+            <div class="balance-change">
+              <span>Balance Change:</span>
+              <span
+                :class="{
+                  positive: isPositiveOperation(transaction.operation),
+                  negative: !isPositiveOperation(transaction.operation),
+                }"
+              >
+                {{ isPositiveOperation(transaction.operation) ? '+' : '-' }}₱{{
+                  transaction.amount ? Number(transaction.amount).toFixed(2) : '0.00'
+                }}
+              </span>
+            </div>
+            <div class="final-balance">
+              <span>Final Balance:</span>
+              <span>₱{{ transaction.newBalance.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
@@ -106,9 +186,9 @@ import Withdraw from '@/components/Withdraw.vue'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { TransactionOperation } from '@/types'
-import { Back } from '@element-plus/icons-vue'
+import { Back, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -117,6 +197,26 @@ const { performTransaction, user, wallet } = useAuthStore()
 
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
+const showHistory = ref(false)
+// const drawerWidth = ref('40%')
+
+// function updateWidth() {
+//   if (window.innerWidth < 1000) {
+//     drawerWidth.value = '60%'
+//   }
+//   if (window.innerWidth < 700) {
+//     drawerWidth.value = '100%'
+//   }
+// }
+
+// Watch for window resize events
+// onMounted(() => {
+//   window.addEventListener('resize', updateWidth)
+// })
+
+// onUnmounted(() => {
+//   window.removeEventListener('resize', updateWidth)
+// })
 
 const num = ref(20)
 const radio1 = ref('1')
@@ -134,6 +234,21 @@ const options = [
   { value: 'GCash', label: 'GCash' },
   { value: 'Maya', label: 'Maya' },
 ]
+
+const recentTransactions = computed(() => {
+  return wallet.transactions
+    .slice()
+    .reverse()
+    .slice(0, 10)
+    .map((transaction) => ({
+      ...transaction,
+      gameDetails:
+        transaction.operation === TransactionOperation.Wage ||
+        transaction.operation === TransactionOperation.Payout
+          ? JSON.parse(localStorage.getItem('keno-game') || '{}')
+          : null,
+    }))
+})
 
 watch(radio2, (val) => {
   if (val) {
@@ -170,12 +285,36 @@ function handleConfirmedDeposit() {
   value.value = ''
   showConfirmDeposit.value = false
 }
+
 function directToHome() {
   if (route.query['redirect']) {
     confirmExitDialogVisible.value = true
   } else {
     router.push('/home')
   }
+}
+
+function formatOperationType(operation: TransactionOperation) {
+  switch (operation) {
+    case TransactionOperation.Deposit:
+      return 'Deposit'
+    case TransactionOperation.Withdraw:
+      return 'Withdraw'
+    case TransactionOperation.Wage:
+      return 'Game Wager'
+    case TransactionOperation.Payout:
+      return 'Game Payout'
+    default:
+      return operation
+  }
+}
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleString()
+}
+
+function isPositiveOperation(operation: TransactionOperation) {
+  return operation === TransactionOperation.Deposit || operation === TransactionOperation.Payout
 }
 </script>
 
@@ -215,6 +354,16 @@ body {
 .wallet-header-text {
   display: flex;
   flex-direction: column;
+}
+
+.history-link {
+  color: #f8ab00;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .back-button {
@@ -272,7 +421,9 @@ body {
 .el-radio-button {
   flex-grow: 1;
 }
-
+.el-drawer.rtl {
+  background-color: transparent;
+}
 :deep(.el-radio-group) {
   display: flex;
   flex: 1;
@@ -363,6 +514,131 @@ body {
   background: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(255, 255, 255, 0) 100%);
   width: 100%;
   z-index: 1000;
+}
+
+/* .history-drawer {
+  background-color: #f8f9fa;
+  color: #212529;
+} */
+
+.history-content {
+  padding: 1rem;
+}
+
+.transaction-card {
+  background: #2f2fd1;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.transaction-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.transaction-header-left {
+  display: flex;
+  gap: 8px;
+}
+
+.transaction-type {
+  font-weight: bold;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.transaction-type.deposit {
+  background: #4caf50;
+}
+.transaction-type.withdraw {
+  background: #f44336;
+}
+.transaction-type.wage {
+  background: #f44336;
+}
+.transaction-type.payout {
+  background: #4caf50;
+}
+/* #f8ab00 */
+.transaction-date {
+  color: #ffffff80;
+  font-size: 0.9rem;
+}
+
+.numbers-section {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.number-group h4 {
+  margin: 0 0 0.5rem 0;
+  color: #ffffff80;
+  font-size: 0.9rem;
+}
+
+.number-balls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.number-ball {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.number-ball.selected {
+  background: #f8ab00;
+}
+.number-ball.matched {
+  background: #4caf50;
+}
+.number-ball.unmatched {
+  background: #f44336;
+}
+
+.amount-section {
+  border-top: 1px solid #ffffff20;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+.game-mode,
+.purchase-info,
+.balance-change,
+.final-balance {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.positive {
+  color: #4caf50;
+}
+
+.negative {
+  color: #f44336;
+}
+
+:deep(.el-drawer__header) {
+  margin-bottom: 0;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+:deep(.el-drawer__body) {
+  padding: 0;
+  overflow-y: auto;
 }
 
 /* Extra small devices (phones) */

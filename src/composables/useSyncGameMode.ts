@@ -2,8 +2,9 @@
 import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGameStore } from '@/stores/useGameStore'
+import type { GameMode } from '@/types'
 
-export function useSyncGameMode(expectedMode: 'mini' | 'classic') {
+export function useSyncGameMode(expectedMode: GameMode) {
   const route = useRoute()
   const gameStore = useGameStore()
 

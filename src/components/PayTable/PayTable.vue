@@ -76,6 +76,7 @@ updatePayTableData()
           <el-text tag="p" size="large">Hits</el-text>
         </div>
       </div>
+      <!-- SORRY FOR THIS DISASTER, BUT WILL HAVE TO DO FOR NOW. WILL FIX IT IN THE FUTURE -->
       <div v-for="data in payTableData" class="pay-data" :key="data.hit">
         <!-- PAY CELL -->
         <div v-if="data.endIndex != null" class="multiplier-cell-tight" :class="{

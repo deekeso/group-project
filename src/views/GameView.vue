@@ -18,17 +18,21 @@
         </el-space>
       </template>
     </el-dialog>
+    <BonusSpinDialog v-model:dialog-visible="rouletteDialogVisible" />
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <HomeButton
-        class="header-button"
-        @home="confirmExitDialogVisible = true"
-        :disabled="isDrawing"
-      />
-      <div class="nav-container">
-        <HelpBtn @click="dialogVisible = true" />
-        <!-- <HelpBtn @click="startTour" /> -->
-        <UserBalance @wallet="directToWallet" />
+      <DebugTools @pick-numbers="startPredefinedDraw" />
+      <div class="game-header">
+        <HomeButton
+          class="header-button"
+          @home="confirmExitDialogVisible = true"
+          :disabled="isDrawing"
+        />
+        <div class="nav-container">
+          <HelpBtn @click="dialogVisible = true" />
+          <!-- <HelpBtn @click="startTour" /> -->
+          <UserBalance @wallet="directToWallet" />
+        </div>
       </div>
     </el-header>
     <el-main>
@@ -51,14 +55,14 @@
             height="auto"
           >
             <PayTable
-              :kenoType="gameType"
+              :kenoType="gameMode"
               :selectedCellsCount="cards[index].selectedNumbers.length"
               :matchedCellsCount="displayMatching ? cards[index].matchedNumbers.length : -1"
               style="padding-bottom: 24px"
             />
             <div class="grid-sidebtn-container">
               <GameGrid
-                :game-type="gameType"
+                :gameMode="gameMode"
                 :is-round-finished
                 @reset-round="resetRound"
                 :cardIndex="index"
@@ -66,7 +70,7 @@
               <GameSideButtons
                 @clear="resetGame(index)"
                 @number-selected="autopickNumberSelected"
-                :max-number="payTable[gameType].length"
+                :max-number="payTable[gameMode].length"
                 :game-is-drawing="isDrawing"
                 :card-index="index"
               />
@@ -93,44 +97,46 @@
 <script setup lang="ts">
 import GameButtons from '@/components/GameButtons.vue'
 import GameSideButtons from '@/components/GameSideButtons/GameSideButtons.vue'
-import HomeButton from '@/components/HomeButton.vue'
 import HelpBtn from '@/components/Help-Btn.vue'
+import HelpTour from '@/components/HelpTour.vue'
+import HomeButton from '@/components/HomeButton.vue'
 import NoWin from '@/components/NoWin.vue'
 import payTable from '@/components/PayTable/payTable.json'
 import PayTable from '@/components/PayTable/PayTable.vue'
 import TheLegend from '@/components/TheLegend.vue'
+import TutorialDialog from '@/components/TutorialDialog.vue'
 import UserBalance from '@/components/UserBalance.vue'
 import WithWin from '@/components/WithWin.vue'
-import HelpTour from '@/components/HelpTour.vue'
-import TutorialDialog from '@/components/TutorialDialog.vue'
 import { gameIsDrawingKey } from '@/composables/keys'
 import { useKenoDraw } from '@/composables/useKenoDraw'
 import { useKenoResult } from '@/composables/useKenoResult'
-import { useSyncGameMode } from '@/composables/useSyncGameMode'
+import { useAuthStore } from '@/stores/auth'
 import { useGameStore } from '@/stores/useGameStore'
+import { GameMode } from '@/types'
 import { ElNotification } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import { provide, readonly, ref, computed } from 'vue'
+import { onMounted, provide, readonly, ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { GameType } from '@/types'
-import { useAuthStore } from '@/stores/auth'
 
 // import drawSoundEffect from '@/assets/sounds/drawn/612877__sonically_sound__laser-1.flac'
-import drawSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
+import {
+  default as drawSoundEffect,
+  default as toggleSoundEffect,
+} from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import matchSoundEffect from '@/assets/sounds/match/546974__finix473__ui_click.wav'
-import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import GameGrid from '@/components/GameGrid.vue'
 import PurchaseCard from '@/components/PurchaseCard.vue'
 
+import DebugTools from '@/components/DebugTools.vue'
 import { useTour } from '@/composables/useTour'
-
 import { TransactionOperation } from '@/types'
+import BonusSpinDialog from '@/components/BonusSpinDialog.vue'
 
 const { open } = useTour()
 
 const router = useRouter()
 const route = useRoute()
-const gameType: GameType = route.meta.gameType as GameType
+const gameMode: GameMode = route.meta.gameMode as GameMode
 const gameStore = useGameStore()
 const { wallet, performTransaction } = useAuthStore()
 const { winnings, hasPurchasedCards, numberOfCards, cards, hasWin } = storeToRefs(gameStore)
@@ -142,15 +148,18 @@ const displayMatching = ref(false)
 const confirmExitDialogVisible = ref(false)
 const dialogVisible = ref(false)
 
-const { calculatePayout, evaluateGame } = useKenoResult(gameType)
+const rouletteDialogVisible = ref(false)
+
+const { calculatePayout, evaluateGame } = useKenoResult(gameMode)
 const showModal = ref(false)
 
 const allCardsHaveSelections = computed(
   () => cards.value.length > 0 && cards.value.every((card) => card.selectedNumbers.length > 0),
 )
 
-gameStore.setLoseStreakEffect(() => {
-  alert("You lost 20 times. Here's a free spin!")
+gameStore.setLoseStreakCallback(() => {
+  // alert("You lost 20 times. Here's a free spin!")
+  rouletteDialogVisible.value = true
 })
 
 const audioContext = new window.AudioContext()
@@ -180,10 +189,14 @@ async function playSoundEffect(i: number, soundEffect: string) {
 gameStore.setMatchCallback((i) => {
   playSoundEffect(i, matchSoundEffect)
 })
-//
-provide(gameIsDrawingKey, readonly(isDrawing))
 
-useSyncGameMode('classic')
+onMounted(() => {
+  gameStore.mode = gameMode
+})
+
+console.log(gameMode)
+
+provide(gameIsDrawingKey, readonly(isDrawing))
 
 async function startDraw() {
   const totalWager = gameStore.wager * gameStore.numberOfCards
@@ -201,9 +214,8 @@ async function startDraw() {
     return
   }
 
-  //Perform wager deduction as a group for compatibility with multiple card
   performTransaction(TransactionOperation.Wage, totalWager)
-  // performTransaction(TransactionOperation.Wage, gameStore.wager)
+  gameStore.increaseCumulativeLoseStreakWager(totalWager)
 
   resetDraw()
   displayMatching.value = true
@@ -225,14 +237,72 @@ async function startDraw() {
   }
 
   const interval = setInterval(() => {
-    if (gameType === GameType.Classic) {
+    if (gameMode === GameMode.Classic) {
       classicKenoDraw()
-    } else if (gameType === GameType.Mini) {
+    } else if (gameMode === GameMode.Mini) {
       miniKenoDraw()
     }
     playSoundEffect(count, drawSoundEffect)
     count++
-    const maxDraw = gameType === GameType.Classic ? 20 : 10
+    const maxDraw = gameMode === GameMode.Classic ? 20 : 10
+    if (count >= maxDraw) {
+      clearInterval(interval)
+      isDrawing.value = false
+      isRoundFinished.value = true
+
+      evaluateGame()
+      displayResult()
+    }
+  }, 150)
+}
+
+async function startPredefinedDraw() {
+  const totalWager = gameStore.wager * gameStore.numberOfCards
+
+  // Check balance before playing
+  if (wallet.balance < totalWager) {
+    ElNotification({
+      title: 'Insufficient Balance',
+      message: 'Please top up your wallet or adjust your wager.',
+      type: 'error',
+      position: 'top-right',
+      duration: 2000,
+      showClose: true,
+    })
+    return
+  }
+
+  performTransaction(TransactionOperation.Wage, totalWager)
+  gameStore.increaseCumulativeLoseStreakWager(totalWager)
+
+  resetDraw()
+  displayMatching.value = true
+
+  isDrawing.value = true
+  let count = 0
+
+  async function playSoundEffect(i: number, soundEffect: string) {
+    const response = await fetch(soundEffect)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    const source = audioContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    source.playbackRate.value = 1 + i * 0.005 // Increase pitch each time
+
+    source.connect(audioContext.destination)
+    source.start()
+  }
+
+  const interval = setInterval(() => {
+    if (gameMode === GameMode.Classic) {
+      classicKenoDraw(true)
+    } else if (gameMode === GameMode.Mini) {
+      miniKenoDraw(true)
+    }
+    playSoundEffect(count, drawSoundEffect)
+    count++
+    const maxDraw = gameMode === GameMode.Classic ? 20 : 10
     if (count >= maxDraw) {
       clearInterval(interval)
       isDrawing.value = false
@@ -252,7 +322,7 @@ function autopickNumberSelected(number: number, cardIndex: number) {
   let count = 0
 
   const interval = setInterval(() => {
-    kenoAutopick(number, gameType, cardIndex)
+    kenoAutopick(number, gameMode, cardIndex)
     count++
     playSoundEffect(0, toggleSoundEffect)
     if (count >= number) {
@@ -266,9 +336,12 @@ function autopickNumberSelected(number: number, cardIndex: number) {
 function resetRound() {
   gameStore.resetGame(true)
   isRoundFinished.value = false
+  displayMatching.value = false
 }
 
 function resetGame(cardIndex: number) {
+  isRoundFinished.value = false
+  displayMatching.value = false
   if (isDrawing.value) return
   gameStore.resetCard(cardIndex)
 }
@@ -283,9 +356,9 @@ function directToHome() {
 }
 
 function directToWallet() {
-  let r = GameType.Classic
+  let r = GameMode.Classic
 
-  if (gameType === GameType.Mini) r = GameType.Mini
+  if (gameMode === GameMode.Mini) r = GameMode.Mini
 
   router.push({
     name: 'wallet',
@@ -320,6 +393,11 @@ function exitGame() {
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+:deep(.el-header) {
+  height: min-content;
+}
+
 .classic-page {
   min-height: 100vh;
   width: 100%;
@@ -332,11 +410,13 @@ function exitGame() {
   flex-direction: column;
 }
 
-.el-header {
+.game-header {
   display: flex;
   justify-content: space-between;
   padding-top: 20px;
   background: transparent;
+  height: 100%;
+  max-height: 60px;
 }
 
 .el-main {

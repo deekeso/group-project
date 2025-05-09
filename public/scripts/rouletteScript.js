@@ -1,0 +1,406 @@
+function spinRoulette(callback) { callback('') }
+
+function loadRoulette(items, width, height) {
+  //=============== Cubic Bezier calculation
+  var NEWTON_ITERATIONS = 4;
+  var NEWTON_MIN_SLOPE = 0.001;
+  var SUBDIVISION_PRECISION = 0.0000001;
+  var SUBDIVISION_MAX_ITERATIONS = 10;
+
+  var kSplineTableSize = 11;
+  var kSampleStepSize = 1.0 / (kSplineTableSize - 1.0);
+
+  var float32ArraySupported = typeof Float32Array === 'function';
+
+  function A(aA1, aA2) {
+    return 1.0 - 3.0 * aA2 + 3.0 * aA1;
+  }
+
+  function B(aA1, aA2) {
+    return 3.0 * aA2 - 6.0 * aA1;
+  }
+
+  function C(aA1) {
+    return 3.0 * aA1;
+  }
+
+  function calcBezier(aT, aA1, aA2) {
+    return ((A(aA1, aA2) * aT + B(aA1, aA2)) * aT + C(aA1)) * aT;
+  }
+
+  function getSlope(aT, aA1, aA2) {
+    return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1);
+  }
+
+  function binarySubdivide(aX, aA, aB, mX1, mX2) {
+    var currentX, currentT, i = 0;
+    do {
+      currentT = aA + (aB - aA) / 2.0;
+      currentX = calcBezier(currentT, mX1, mX2) - aX;
+      if (currentX > 0.0) {
+        aB = currentT;
+      } else {
+        aA = currentT;
+      }
+    } while (Math.abs(currentX) > SUBDIVISION_PRECISION && ++i < SUBDIVISION_MAX_ITERATIONS);
+    return currentT;
+  }
+
+  function newtonRaphsonIterate(aX, aGuessT, mX1, mX2) {
+    for (var i = 0; i < NEWTON_ITERATIONS; ++i) {
+      var currentSlope = getSlope(aGuessT, mX1, mX2);
+      if (currentSlope === 0.0) {
+        return aGuessT;
+      }
+      var currentX = calcBezier(aGuessT, mX1, mX2) - aX;
+      aGuessT -= currentX / currentSlope;
+    }
+    return aGuessT;
+  }
+
+  function LinearEasing(x) {
+    return x;
+  }
+
+  function getTForX(aX, mX1, mX2) {
+    var intervalStart = 0.0;
+    var currentSample = 1;
+    var lastSample = kSplineTableSize - 1;
+
+    // Declare sampleValues here
+    var sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
+    for (var i = 0; i < kSplineTableSize; ++i) {
+      sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
+    }
+
+    for (; currentSample !== lastSample && sampleValues[currentSample] <= aX; ++currentSample) {
+      intervalStart += kSampleStepSize;
+    }
+    --currentSample;
+
+    var dist = (aX - sampleValues[currentSample]) / (sampleValues[currentSample + 1] - sampleValues[currentSample]);
+    var guessForT = intervalStart + dist * kSampleStepSize;
+
+    var initialSlope = getSlope(guessForT, mX1, mX2);
+    if (initialSlope >= NEWTON_MIN_SLOPE) {
+      return newtonRaphsonIterate(aX, guessForT, mX1, mX2);
+    } else if (initialSlope === 0.0) {
+      return guessForT;
+    } else {
+      return binarySubdivide(aX, intervalStart, intervalStart + kSampleStepSize, mX1, mX2);
+    }
+  }
+
+  function BezierEasing(mX1, mY1, mX2, mY2) {
+    if (mX1 === mY1 && mX2 === mY2) {
+      return LinearEasing;
+    }
+
+    var sampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
+    for (var i = 0; i < kSplineTableSize; ++i) {
+      sampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
+    }
+
+    return function (x) {
+      if (x === 0 || x === 1) {
+        return x;
+      }
+      return calcBezier(getTForX(x, mX1, mX2), mY1, mY2);
+    };
+  }
+
+
+  let padding = { top: 50, right: 50, bottom: 50, left: 50 };
+  let w = width - padding.left - padding.right;
+  let h = height - padding.top - padding.bottom;
+  let r = Math.min(w, h) / 2;
+  let rotation = 0;
+  let oldrotation = 0;
+  let picked = 100000;
+
+  let spinDuration = 10;
+  let minSpinCount = 10;
+
+  let duration = 1000 * spinDuration;
+  let minimumSpins = minSpinCount;
+
+  // let longEntryAdjustment = 'wrap'
+  let alignmentMargin = 0
+  let maxTextWidth = 20
+  let itemTextJustify = "middle"
+
+  let svg = d3.select('#chart')
+  .append("svg")
+    .datum(items)
+    .style("transform", "rotate(-90deg)")
+    // .attr("width", w + padding.left + padding.right)
+    // .attr("height", h + padding.top + padding.bottom);
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("viewBox", `0 0 ${width} ${height}`)
+
+  let container = svg.append("g")
+    .attr("class", "chartholder")
+    .attr("transform", `translate(${w / 2 + padding.left},${h / 2 + padding.top})`);
+
+
+  container.insert("circle")
+    .attr("class", "roulette-shadow")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", r + 21)
+    .attr("fill", "#fcba03")
+    .attr("stroke", "#a67a00")
+    .attr("stroke-width", "4px");
+
+
+  container.insert("circle")
+    .attr("cx", 0)
+    .attr("cy", 0)
+    .attr("r", r + 2)
+    .attr("fill", "#fcba03")
+    .attr("stroke", "#a67a00")
+    .attr("stroke-width", "4px");
+
+  let vis = container.append("g");
+
+  let pie = d3.pie().sort(null).value(() => 1);
+  let arc = d3.arc().outerRadius(r).innerRadius(0);
+
+  let arcs = vis.selectAll("g.slice")
+    .data(pie(items))
+    .enter()
+    .append("g")
+    .attr("class", "slice")
+
+
+  arcs.append("path")
+    .attr("fill", (d, i) => {
+      //if (items.length % 2 === 0)
+      return i % 2 === 0 ? "#0b25ae" : "#2d67f6";
+      //return i % 3 === 0 ? "#cab6fa" : i % 3 === 1 ? "#{primaryColor}" : "#b1a4ec";
+    })
+    .attr("d", arc);
+
+  arcs.append("text")
+    .attr("transform", (d) => {
+      d.innerRadius = 0;
+      d.outerRadius = r;
+      d.angle = (d.startAngle + d.endAngle) / 2;
+      if (itemTextJustify === "middle") {
+        return `rotate(${(d.angle * 180 / Math.PI - 90)})translate(${(r + 65) / 2})`;
+      } else if (itemTextJustify === "start") {
+        return `rotate(${(d.angle * 180 / Math.PI - 90)})translate(${65 + alignmentMargin})`;
+      } else if (itemTextJustify === "end") {
+        return `rotate(${(d.angle * 180 / Math.PI - 90)})translate(${r - alignmentMargin})`;
+      }
+    })
+    .style("fill", "#f7cd61")
+    .attr("class", "item-text")
+    .attr("width", maxTextWidth)
+    //.attr("text-anchor", "start") // for when items are aligned from the center
+    .attr("text-anchor", itemTextJustify)
+    .attr("dy", "0.2em")
+    .text((d, i) => items[i])
+  // .call(ellip)
+
+  // svg.append("g")
+  //   .attr("transform", `translate(${w + padding.left + padding.right},${h / 2 + padding.top})`)
+  //   .append("path")
+  //   .attr("d", `M-${r * .15},0L0,${r * .05}L0,-${r * .05}Z`)
+  //   .style("fill", "black");
+
+  // container.append("circle")
+  //   .attr("cx", 0)
+  //   .attr("cy", 0)
+  //   .attr("r", 65)
+  //   .attr("fill", "#fcba03")
+  //   .attr("stroke", "#a67a00")
+  //   .attr("stroke-width", "4px");
+
+  // container.append("circle")
+  //   .attr("cx", 0)
+  //   .attr("cy", 0)
+  //   .attr("r", 36)
+  //   .attr("fill", "red")
+  //   .attr("stroke", "yellow")
+  //   .attr("stroke-width", "4px");
+
+  function rotTween(to) {
+    let i = d3.interpolate(oldrotation % 360, rotation);
+    return function (t) {
+      return `rotate(${i(t)})`;
+    };
+  }
+  spinRoulette = function (callback) {
+
+    let ps = 360 / items.length;
+
+    var rng = Math.floor((Math.random() * 1440) + 360 * minimumSpins);
+
+    rotation = (Math.round(rng / ps) * ps);
+
+    picked = Math.round(items.length - (rotation % 360) / ps);
+    picked = picked >= items.length ? (picked % items.length) : picked;
+
+    rotation += 90 - Math.round(ps / 2);
+
+
+    var easing = BezierEasing(0.16, -0.2, 0, 1)
+    vis.transition()
+      .duration(duration)
+      // .ease(d3.easeBack.overshoot(1))
+      .ease(function (t) {
+        return easing(t)
+      })
+      .attrTween("transform", rotTween)
+      .on("end", function () {
+        d3.select(".slice:nth-child(" + (picked + 1) + ") path");
+        oldrotation = rotation;
+        //container.on("click", spin);
+        // var triangle = confetti.shapeFromPath({ path: 'M0 10 L5 0 L10 10z' });
+        (function frame() {
+          const count = 200
+          const defaults = {
+            shapes: ["circle"],
+            colors: [
+              "#FFD700", // Bright Gold
+              "#E6BE8A", // Rich Gold
+              "#B8860B", // Dark Gold
+              "#FAD02E", // Pale Gold
+              "#FFCC00", // Golden Yellow
+              "#D4AF37", // Metallic Gold
+              "#CFB53B", // Antique Gold
+              "#F7C100", // Sunshine Gold
+              "#EEDC82", // Gold Leaf
+              "#DAA520"  // Goldenrod
+            ]
+          }
+
+          function fire(particleRatio, opts) {
+            confetti(
+              Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+                origin: { x: 0, y: 0 },
+                angle: -45,
+                zIndex: 3000
+              })
+            );
+            confetti(
+              Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+                origin: { x: 1, y: 0 },
+                angle: -135,
+                zIndex: 3000
+              })
+            );
+          }
+
+          fire(0.25, {
+            spread: 26,
+            startVelocity: 55,
+            scalar: 1.8,
+          });
+
+          fire(0.2, {
+            spread: 60,
+            scalar: 1,
+          });
+
+          fire(0.35, {
+            spread: 100,
+            decay: 0.91,
+            scalar: 1.4,
+          });
+
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 25,
+            decay: 0.92,
+            scalar: 1.8,
+          });
+
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 45,
+            scalar: 1.6,
+          });
+        }());
+        callback(items[picked])
+      });
+
+      return items[picked]
+  }
+}
+
+
+
+// function ellipsis(text) {
+//   text.each(function () {
+//     var text = d3.select(this);
+//     var words = text.text().split(/\s+/);
+
+//     var ellipsis = text.text('').append('tspan').attr('class', 'elip').text('...');
+//     var width = parseFloat(text.attr('width')) - ellipsis.node().getComputedTextLength();
+//     var numWords = words.length;
+
+//     var tspan = text.insert('tspan', ':first-child').text(words.join(' '));
+
+//     // Try the whole line
+//     // While it's too long, and we have words left, keep removing words
+
+//     while (tspan.node().getComputedTextLength() > width && words.length) {
+//       words.pop();
+//       tspan.text(words.join(' '));
+//     }
+
+//     if (words.length === numWords) {
+//       ellipsis.remove();
+//     }
+//   });
+// }
+
+// function wrap(text) {
+//   text.each(function () {
+//     var text = d3.select(this),
+//       words = text.text().split(/\s+/).reverse(),
+//       word,
+//       line = [],
+//       lineNumber = 0,
+//       lineHeight = 1.1, // ems
+//       y = text.attr("y"),
+//       dy = parseFloat(text.attr("dy")),
+//       initialDy = dy, // Store the initial dy value
+//       tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em"),
+//       wrappedLines = 1; // Variable to track the number of wrapped lines
+
+//     while (word = words.pop()) {
+//       line.push(word);
+//       tspan.text(line.join(" "));
+//       if (tspan.node().getComputedTextLength() > text.attr('width')) {
+//         wrappedLines++
+//         line.pop();
+//         tspan.text(line.join(" "));
+//         line = [word];
+//         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineHeight + "em").text(word);
+//       }
+//     }
+//     // Adjust the dy attribute to center the text vertically
+//     if (wrappedLines > 1) {
+//       //text.attr("dy", -0.2 * lineHeight * wrappedLines + "em");
+//     }
+//   });
+// }
+
+// function shrink(text) {
+//   text.each(function () {
+//     var text = d3.select(this);
+
+//     var width = parseFloat(text.attr('width'));
+
+//     if (text.node().getComputedTextLength() > width) {
+//       text.node().setAttribute("textLength", "{maxTextWidth}")
+//       text.node().setAttribute("lengthAdjust", "spacingAndGlyphs")
+//     }
+//   });
+// }

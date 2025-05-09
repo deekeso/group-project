@@ -66,3 +66,14 @@ a,
 .success-modal .el-button:hover {
   background: #f5f5f5 !important;
 }
+
+
+.item-text {
+  font-family: 'SuperDream', sans-serif;
+  font-size: 1.5rem;
+}
+
+.roulette-shadow {
+  -webkit-filter: drop-shadow(0 0 10px #eee);
+  filter: drop-shadow(0 0 10px #eee);
+}

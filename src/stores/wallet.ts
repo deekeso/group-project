@@ -1,30 +1,44 @@
 import { TransactionOperation } from '@/types'
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
+import { useGameStore } from './useGameStore'
 
-interface Transaction {
-  oldBalance: number
-  operation: TransactionOperation
+interface BaseTransaction {
   amount: number
-  newBalance: number
+  operation: TransactionOperation
   timestamp: Date
+  metadata?: {
+    gameMode?: string
+    purchaseMode?: string
+    numberOfCards?: number
+  }
+}
+
+interface TransactionRecord extends BaseTransaction {
+  oldBalance: number
+  newBalance: number
+}
+
+export interface PendingTransaction extends BaseTransaction {
+  walletId: string
 }
 
 export interface Wallet {
   id: string
   balance: number
-  transactions: Transaction[]
+  transactions: TransactionRecord[]
 }
 
 export const useWalletsStore = defineStore('wallets', {
   state: () => ({
     wallets: [] as Wallet[],
+    pendingTransactions: [] as PendingTransaction[],
   }),
 
   actions: {
     createWallet(): string {
       const id = uuidv4()
-      let newWallet: Wallet = {
+      const newWallet: Wallet = {
         id,
         balance: 0,
         transactions: [],
@@ -44,7 +58,12 @@ export const useWalletsStore = defineStore('wallets', {
       return foundWallet
     },
 
-    performTransaction(id: string, operation: TransactionOperation, amount: number): Transaction {
+    performTransaction(
+      id: string,
+      operation: TransactionOperation,
+      amount: number,
+      timestamp?: Date,
+    ): BaseTransaction {
       const wallet = this.findWallet(id)
 
       const oldBalance = wallet.balance
@@ -59,23 +78,79 @@ export const useWalletsStore = defineStore('wallets', {
           wallet.balance -= amount
           break
       }
-
-      const transaction = {
+      const gameStore = useGameStore()
+      let transaction = {
         oldBalance,
         operation,
         amount,
         newBalance: wallet.balance,
         timestamp: new Date(),
+      } as TransactionRecord
+
+      if (operation === TransactionOperation.Payout || operation === TransactionOperation.Wage) {
+        transaction = {
+          ...transaction,
+          metadata: {
+            gameMode: gameStore.mode,
+            purchaseMode: gameStore.purchaseMode,
+            numberOfCards: gameStore.numberOfCards,
+          },
+        }
       }
 
       wallet.transactions.push(transaction)
       return transaction
+    },
+
+    createPendingTransaction(amount: number, operation: TransactionOperation, walletId: string) {
+      const foundWallet = this.wallets.find((wallet) => wallet.id === walletId)
+
+      if (!foundWallet) {
+        throw new Error('Wallet not found!')
+      }
+
+      const pendingTransaction: PendingTransaction = {
+        amount,
+        operation,
+        walletId,
+        timestamp: new Date(),
+      }
+
+      this.pendingTransactions.push(pendingTransaction)
+    },
+
+    commitPendingTransactions(walletId: string) {
+      const transactionsForRemoval = [] as number[]
+
+      const pendingTransactions = this.pendingTransactions.filter((pendingTransaction, index) => {
+        if (pendingTransaction.walletId === walletId) {
+          transactionsForRemoval.push(index)
+          return true
+        }
+        return false
+      })
+
+      transactionsForRemoval.reverse().forEach((index) => {
+        this.pendingTransactions.splice(index, 1)
+      })
+
+      pendingTransactions.forEach((pendingTransaction) => {
+        this.performTransaction(
+          pendingTransaction.walletId,
+          pendingTransaction.operation,
+          pendingTransaction.amount,
+          pendingTransaction.timestamp,
+        )
+      })
+
+      const { resetCumulativeLoseStreakWager } = useGameStore()
+      resetCumulativeLoseStreakWager()
     },
   },
 
   persist: {
     key: 'wallet-store',
     storage: localStorage,
-    paths: ['wallet'],
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any,
 })

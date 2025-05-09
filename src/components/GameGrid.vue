@@ -1,7 +1,7 @@
 <template>
   <div class="keno-grid">
     <div class="container">
-      <div :class="`${gameType}-grid`">
+      <div :class="`${gameMode}-grid`">
         <div
           v-for="number in cellCount"
           :key="number"
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { useGameDrawing } from '@/composables/useGameDrawing'
 import { useGameStore } from '@/stores/useGameStore'
-import { GameType } from '@/types'
+import { GameMode } from '@/types'
 import { storeToRefs } from 'pinia'
 import toggleSoundEffect from '@/assets/sounds/drawn/75250__creek23__click.wav'
 import { computed } from 'vue'
@@ -41,13 +41,13 @@ const emit = defineEmits<{
   (e: 'resetRound'): void
 }>()
 
-const { isRoundFinished, gameType, cardIndex } = defineProps<{
+const { isRoundFinished, gameMode, cardIndex } = defineProps<{
   isRoundFinished: boolean
-  gameType: GameType
+  gameMode: GameMode
   cardIndex: number
 }>()
 
-const cellCount = gameType === GameType.Classic ? 80 : gameType === GameType.Mini ? 49 : 80
+const cellCount = gameMode === GameMode.Classic ? 80 : gameMode === GameMode.Mini ? 49 : 80
 
 const card = computed(() => cards.value[cardIndex])
 
@@ -59,7 +59,8 @@ function toggleNumber(number: number): void {
     drawnNumbers.value = []
     emit('resetRound')
   }
-  const selectionLimit = gameType === GameType.Classic ? 15 : 10
+
+  const selectionLimit = gameMode === GameMode.Classic ? 15 : 10
   const index = card.value.selectedNumbers.indexOf(number)
   if (index > -1) {
     card.value.selectedNumbers.splice(index, 1) //multcard

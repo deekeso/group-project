@@ -35,6 +35,10 @@ onBeforeMount(() => {
 function directToTutorial() {
   router.push('/tutorial')
 }
+
+function scrollToGames() {
+  window.location.href = "#game-modes"
+}
 </script>
 
 <template>
@@ -89,7 +93,7 @@ function directToTutorial() {
                 </div>
 
                 <div class="play-btn">
-                  <el-button @click="directToTutorial">
+                  <el-button @click="scrollToGames">
                     <el-icon :size="32">
                       <CaretRight class="Icon" />
                     </el-icon>
@@ -109,7 +113,7 @@ function directToTutorial() {
         </el-col>
       </el-row>
 
-      <div class="heading">
+      <div class="heading" id="game-modes">
         <h1>Game Modes</h1>
       </div>
 
@@ -119,13 +123,6 @@ function directToTutorial() {
 
     </el-main>
   </el-container>
-  <!-- <div class="background">
-    <div class="home">
-      <Navbar />
-
-      <hr />
-    </div>
-  </div> -->
 </template>
 
 <style scoped>
