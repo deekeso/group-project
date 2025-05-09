@@ -324,4 +324,62 @@ const startCount = (end: number) => {
     transform: scale(1.3);
   }
 }
+
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {
+  :deep(.result-content h2) {
+    font-size: 2rem;
+    line-height: 30px;
+  }
+
+  :deep(.result-content h1) {
+    line-height: 30px;
+    font-size: 3rem;
+  }
+
+  .twinkle-container img {
+    width: 100%;
+  }
+
+  :deep(.purple-div) {
+    padding: 20px;
+    border-radius: 30px;
+  }
+
+  :deep(.result-content) {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 20px;
+    background-position: center;
+    background-size: cover;
+    background-image: url(src/assets/game-modals-bg.png);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
+}
 </style>
