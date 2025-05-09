@@ -211,7 +211,7 @@ export const useGameStore = defineStore(
           loseStreakCallback()
         }
       }
-      
+
       if (status === 'win') {
         loseStreak.value = 0
         cumulativeLoseStreakWager.value = 0
@@ -274,6 +274,7 @@ export const useGameStore = defineStore(
     cards,
     hasWin,
     totalWins,
+    cumulativeLoseStreakWager,
     initializeCards,
     increaseWager,
     decreaseWager,
@@ -300,5 +301,6 @@ export const useGameStore = defineStore(
   persist: {
     key: 'keno-game',
     storage: localStorage,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any,
 },)

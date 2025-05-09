@@ -1,16 +1,19 @@
 <template>
   <div class="debug-tools">
     <button @click="trigger20Losses">Trigger 20 losses</button>
-    <!-- <BonusSpin /> -->
-    <!-- <BonusSpin /> -->
+    <button @click="emit('pickNumbers')">Autopick numbers</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useGameStore } from '@/stores/useGameStore'
-import BonusSpin from '@/components/BonusSpinDialog.vue'
+
+const emit = defineEmits<{
+  (e: 'pickNumbers'): void
+}>()
 
 const { setLostStreak, setResult } = useGameStore()
+
 function trigger20Losses() {
   setLostStreak(19)
   setResult('lose')

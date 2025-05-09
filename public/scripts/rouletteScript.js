@@ -110,7 +110,7 @@ function loadRoulette(items, width, height) {
   }
 
 
-  let padding = { top: 20, right: 60, bottom: 20, left: 60 };
+  let padding = { top: 50, right: 50, bottom: 50, left: 50 };
   let w = width - padding.left - padding.right;
   let h = height - padding.top - padding.bottom;
   let r = Math.min(w, h) / 2;
@@ -118,7 +118,7 @@ function loadRoulette(items, width, height) {
   let oldrotation = 0;
   let picked = 100000;
 
-  let spinDuration = 10;
+  let spinDuration = 0.1;
   let minSpinCount = 10;
 
   let duration = 1000 * spinDuration;
@@ -137,7 +137,7 @@ function loadRoulette(items, width, height) {
     // .attr("height", h + padding.top + padding.bottom);
     .attr("width", "100%")
     .attr("height", "100%")
-    .attr("viewBox", "0 0 600 600")
+    .attr("viewBox", `0 0 ${width} ${height}`)
 
   let container = svg.append("g")
     .attr("class", "chartholder")
@@ -145,11 +145,12 @@ function loadRoulette(items, width, height) {
 
 
   container.insert("circle")
+    .attr("class", "roulette-shadow")
     .attr("cx", 0)
     .attr("cy", 0)
     .attr("r", r + 21)
-    .attr("fill", "black")
-    .attr("stroke", "black")
+    .attr("fill", "#fcba03")
+    .attr("stroke", "#a67a00")
     .attr("stroke-width", "4px");
 
 
@@ -157,8 +158,8 @@ function loadRoulette(items, width, height) {
     .attr("cx", 0)
     .attr("cy", 0)
     .attr("r", r + 2)
-    .attr("fill", "white")
-    .attr("stroke", "white")
+    .attr("fill", "#fcba03")
+    .attr("stroke", "#a67a00")
     .attr("stroke-width", "4px");
 
   let vis = container.append("g");
@@ -175,8 +176,8 @@ function loadRoulette(items, width, height) {
 
   arcs.append("path")
     .attr("fill", (d, i) => {
-      //if (items.length % 2 === 0) 
-      return i % 2 === 0 ? "red" : "yellow";
+      //if (items.length % 2 === 0)
+      return i % 2 === 0 ? "#0b25ae" : "#2d67f6";
       //return i % 3 === 0 ? "#cab6fa" : i % 3 === 1 ? "#{primaryColor}" : "#b1a4ec";
     })
     .attr("d", arc);
@@ -194,7 +195,7 @@ function loadRoulette(items, width, height) {
         return `rotate(${(d.angle * 180 / Math.PI - 90)})translate(${r - alignmentMargin})`;
       }
     })
-    .style("fill", "blac")
+    .style("fill", "#f7cd61")
     .attr("class", "item-text")
     .attr("width", maxTextWidth)
     //.attr("text-anchor", "start") // for when items are aligned from the center
@@ -203,27 +204,27 @@ function loadRoulette(items, width, height) {
     .text((d, i) => items[i])
   // .call(ellip)
 
-  svg.append("g")
-    .attr("transform", `translate(${w + padding.left + padding.right},${h / 2 + padding.top})`)
-    .append("path")
-    .attr("d", `M-${r * .15},0L0,${r * .05}L0,-${r * .05}Z`)
-    .style("fill", "black");
+  // svg.append("g")
+  //   .attr("transform", `translate(${w + padding.left + padding.right},${h / 2 + padding.top})`)
+  //   .append("path")
+  //   .attr("d", `M-${r * .15},0L0,${r * .05}L0,-${r * .05}Z`)
+  //   .style("fill", "black");
 
-  container.append("circle")
-    .attr("cx", 0)
-    .attr("cy", 0)
-    .attr("r", 65)
-    .attr("fill", "gray")
-    .attr("stroke", "green")
-    .attr("stroke-width", "4px");
+  // container.append("circle")
+  //   .attr("cx", 0)
+  //   .attr("cy", 0)
+  //   .attr("r", 65)
+  //   .attr("fill", "#fcba03")
+  //   .attr("stroke", "#a67a00")
+  //   .attr("stroke-width", "4px");
 
-  container.append("circle")
-    .attr("cx", 0)
-    .attr("cy", 0)
-    .attr("r", 36)
-    .attr("fill", "red")
-    .attr("stroke", "yellow")
-    .attr("stroke-width", "4px");
+  // container.append("circle")
+  //   .attr("cx", 0)
+  //   .attr("cy", 0)
+  //   .attr("r", 36)
+  //   .attr("fill", "red")
+  //   .attr("stroke", "yellow")
+  //   .attr("stroke-width", "4px");
 
   function rotTween(to) {
     let i = d3.interpolate(oldrotation % 360, rotation);
@@ -257,27 +258,56 @@ function loadRoulette(items, width, height) {
         d3.select(".slice:nth-child(" + (picked + 1) + ") path");
         oldrotation = rotation;
         //container.on("click", spin);
-        var triangle = confetti.shapeFromPath({ path: 'M0 10 L5 0 L10 10z' });
-        var duration = 2 * 1000;
-        var end = Date.now() + duration;
+        // var triangle = confetti.shapeFromPath({ path: 'M0 10 L5 0 L10 10z' });
         (function frame() {
-          confetti({
-            particleCount: 5,
-            shapes: [triangle],
-            origin: { x: 0, y: 0 },
-            angle: -45
-          });
-          confetti({
-            particleCount: 5,
-            shapes: [triangle],
-            origin: { x: 1, y: 0 },
-            angle: -135
+          const count = 200
+          const defaults = {}
+
+          function fire(particleRatio, opts) {
+            confetti(
+              Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+                origin: { x: 0, y: 0 },
+                angle: -45,
+                zIndex: 3000
+              })
+            );
+            confetti(
+              Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio),
+                origin: { x: 1, y: 0 },
+                angle: -135,
+                zIndex: 3000
+              })
+            );
+          }
+
+          fire(0.25, {
+            spread: 26,
+            startVelocity: 55,
           });
 
-          // keep going until we are out of time
-          if (Date.now() < end) {
-            requestAnimationFrame(frame);
-          }
+          fire(0.2, {
+            spread: 60,
+          });
+
+          fire(0.35, {
+            spread: 100,
+            decay: 0.91,
+            scalar: 0.8,
+          });
+
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 25,
+            decay: 0.92,
+            scalar: 1.2,
+          });
+
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 45,
+          });
         }());
         callback(items[picked])
       });

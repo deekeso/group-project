@@ -21,7 +21,7 @@
     <BonusSpinDialog v-model:dialog-visible="rouletteDialogVisible" />
     <TutorialDialog v-model:dialog-visible="dialogVisible" />
     <el-header>
-      <DebugTools />
+      <DebugTools @pick-numbers="startPredefinedDraw" />
       <div class="game-header">
         <HomeButton
           class="header-button"
@@ -253,6 +253,64 @@ async function startDraw() {
   }, 150)
 }
 
+async function startPredefinedDraw() {
+  const totalWager = gameStore.wager * gameStore.numberOfCards
+
+  // Check balance before playing
+  if (wallet.balance < totalWager) {
+    ElNotification({
+      title: 'Insufficient Balance',
+      message: 'Please top up your wallet or adjust your wager.',
+      type: 'error',
+      position: 'top-right',
+      duration: 2000,
+      showClose: true,
+    })
+    return
+  }
+
+  performTransaction(TransactionOperation.Wage, totalWager)
+  gameStore.increaseCumulativeLoseStreakWager(gameStore.wager)
+
+  resetDraw()
+  displayMatching.value = true
+
+  isDrawing.value = true
+  let count = 0
+
+  async function playSoundEffect(i: number, soundEffect: string) {
+    const response = await fetch(soundEffect)
+    const arrayBuffer = await response.arrayBuffer()
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+    const source = audioContext.createBufferSource()
+    source.buffer = audioBuffer
+
+    source.playbackRate.value = 1 + i * 0.005 // Increase pitch each time
+
+    source.connect(audioContext.destination)
+    source.start()
+  }
+
+  const interval = setInterval(() => {
+    if (gameMode === GameMode.Classic) {
+      classicKenoDraw(true)
+    } else if (gameMode === GameMode.Mini) {
+      miniKenoDraw(true)
+    }
+    playSoundEffect(count, drawSoundEffect)
+    count++
+    const maxDraw = gameMode === GameMode.Classic ? 20 : 10
+    if (count >= maxDraw) {
+      clearInterval(interval)
+      isDrawing.value = false
+      isRoundFinished.value = true
+
+      evaluateGame()
+      displayResult()
+    }
+  }, 150)
+}
+
 function autopickNumberSelected(number: number, cardIndex: number) {
   if (isDrawing.value) return
   isDrawing.value = true
@@ -275,9 +333,12 @@ function autopickNumberSelected(number: number, cardIndex: number) {
 function resetRound() {
   gameStore.resetGame(true)
   isRoundFinished.value = false
+  displayMatching.value = false
 }
 
 function resetGame(cardIndex: number) {
+  isRoundFinished.value = false
+  displayMatching.value = false
   if (isDrawing.value) return
   gameStore.resetCard(cardIndex)
 }
