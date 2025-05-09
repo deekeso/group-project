@@ -212,7 +212,7 @@ async function startDraw() {
   }
 
   performTransaction(TransactionOperation.Wage, totalWager)
-  gameStore.increaseCumulativeLoseStreakWager(gameStore.wager)
+  gameStore.increaseCumulativeLoseStreakWager(totalWager)
 
   resetDraw()
   displayMatching.value = true
@@ -270,7 +270,7 @@ async function startPredefinedDraw() {
   }
 
   performTransaction(TransactionOperation.Wage, totalWager)
-  gameStore.increaseCumulativeLoseStreakWager(gameStore.wager)
+  gameStore.increaseCumulativeLoseStreakWager(totalWager)
 
   resetDraw()
   displayMatching.value = true

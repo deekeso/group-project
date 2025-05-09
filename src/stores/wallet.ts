@@ -38,7 +38,7 @@ export const useWalletsStore = defineStore('wallets', {
   actions: {
     createWallet(): string {
       const id = uuidv4()
-      let newWallet: Wallet = {
+      const newWallet: Wallet = {
         id,
         balance: 0,
         transactions: [],
@@ -142,11 +142,15 @@ export const useWalletsStore = defineStore('wallets', {
           pendingTransaction.timestamp,
         )
       })
+
+      const { resetCumulativeLoseStreakWager } = useGameStore()
+      resetCumulativeLoseStreakWager()
     },
   },
 
   persist: {
     key: 'wallet-store',
     storage: localStorage,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any,
 })

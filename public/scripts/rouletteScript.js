@@ -118,13 +118,13 @@ function loadRoulette(items, width, height) {
   let oldrotation = 0;
   let picked = 100000;
 
-  let spinDuration = 0.1;
+  let spinDuration = 10;
   let minSpinCount = 10;
 
   let duration = 1000 * spinDuration;
   let minimumSpins = minSpinCount;
 
-  let longEntryAdjustment = 'wrap'
+  // let longEntryAdjustment = 'wrap'
   let alignmentMargin = 0
   let maxTextWidth = 20
   let itemTextJustify = "middle"
@@ -261,7 +261,21 @@ function loadRoulette(items, width, height) {
         // var triangle = confetti.shapeFromPath({ path: 'M0 10 L5 0 L10 10z' });
         (function frame() {
           const count = 200
-          const defaults = {}
+          const defaults = {
+            shapes: ["circle"],
+            colors: [
+              "#FFD700", // Bright Gold
+              "#E6BE8A", // Rich Gold
+              "#B8860B", // Dark Gold
+              "#FAD02E", // Pale Gold
+              "#FFCC00", // Golden Yellow
+              "#D4AF37", // Metallic Gold
+              "#CFB53B", // Antique Gold
+              "#F7C100", // Sunshine Gold
+              "#EEDC82", // Gold Leaf
+              "#DAA520"  // Goldenrod
+            ]
+          }
 
           function fire(particleRatio, opts) {
             confetti(
@@ -285,28 +299,31 @@ function loadRoulette(items, width, height) {
           fire(0.25, {
             spread: 26,
             startVelocity: 55,
+            scalar: 1.8,
           });
 
           fire(0.2, {
             spread: 60,
+            scalar: 1,
           });
 
           fire(0.35, {
             spread: 100,
             decay: 0.91,
-            scalar: 0.8,
+            scalar: 1.4,
           });
 
           fire(0.1, {
             spread: 120,
             startVelocity: 25,
             decay: 0.92,
-            scalar: 1.2,
+            scalar: 1.8,
           });
 
           fire(0.1, {
             spread: 120,
             startVelocity: 45,
+            scalar: 1.6,
           });
         }());
         callback(items[picked])

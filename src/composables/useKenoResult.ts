@@ -35,7 +35,9 @@ export function useKenoResult(mode: 'mini' | 'classic') {
   function evaluateGame() {
     cards.value.forEach((card, index) => {
       const isWin = winValues.value[index] > 0
-      card.result = isWin ? 'win' : 'lose'
+      const result = isWin ? 'win' : 'lose'
+      gameStore.setResult(result)
+      card.result = result
     })
   }
 
