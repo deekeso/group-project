@@ -108,7 +108,7 @@
     v-model="showHistory"
     title="Transaction History"
     direction="rtl"
-    size="30%"
+    :size="drawerWidth"
     class="history-drawer"
   >
     <div class="history-content">
@@ -187,7 +187,7 @@ import { useAuthStore } from '@/stores/auth'
 import { TransactionOperation } from '@/types'
 import { Back, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onUnmounted, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -197,6 +197,25 @@ const { performTransaction, user, wallet } = useAuthStore()
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 const showHistory = ref(false)
+const drawerWidth = ref('40%')
+
+function updateWidth() {
+  if (window.innerWidth < 1000) {
+    drawerWidth.value = '60%'
+  }
+  if (window.innerWidth < 700) {
+    drawerWidth.value = '100%'
+  }
+}
+
+// Watch for window resize events
+onMounted(() => {
+  window.addEventListener('resize', updateWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth)
+})
 
 const num = ref(20)
 const radio1 = ref('1')
@@ -401,7 +420,9 @@ body {
 .el-radio-button {
   flex-grow: 1;
 }
-
+.el-drawer.rtl {
+  background-color: transparent;
+}
 :deep(.el-radio-group) {
   display: flex;
   flex: 1;
