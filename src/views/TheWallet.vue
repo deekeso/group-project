@@ -108,15 +108,17 @@
     v-model="showHistory"
     title="Transaction History"
     direction="rtl"
-    size="80%"
+    :size="drawerWidth"
     class="history-drawer"
   >
     <div class="history-content">
       <div v-for="(transaction, index) in recentTransactions" :key="index" class="transaction-card">
         <div class="transaction-header">
-          <span class="transaction-type" :class="transaction.operation.toLowerCase()">
-            {{ formatOperationType(transaction.operation) }}
-          </span>
+          <div class="transaction-header-left">
+            <span class="transaction-type" :class="transaction.operation.toLowerCase()">
+              {{ formatOperationType(transaction.operation) }}
+            </span>
+          </div>
 
           <span class="transaction-date">
             {{ formatDate(transaction.timestamp) }}
@@ -125,6 +127,30 @@
 
         <div class="transaction-details">
           <div class="amount-section">
+            <div v-if="transaction.metadata?.gameMode" class="game-mode">
+              <span>Game Mode:</span>
+              <span>{{
+                transaction.metadata.gameMode.charAt(0).toUpperCase() +
+                transaction.metadata.gameMode.slice(1)
+              }}</span>
+            </div>
+            <div
+              v-if="
+                transaction.metadata?.purchaseMode &&
+                transaction.metadata?.numberOfCards !== undefined
+              "
+              class="purchase-info"
+            >
+              <span>Purchase Mode:</span>
+              <span>
+                {{
+                  transaction.metadata.purchaseMode.charAt(0).toUpperCase() +
+                  transaction.metadata.purchaseMode.slice(1)
+                }}
+                - {{ transaction.metadata.numberOfCards }}
+                Card/s
+              </span>
+            </div>
             <div class="final-balance">
               <span>Old Balance:</span>
               <span>₱{{ transaction.oldBalance.toFixed(2) }}</span>
@@ -161,7 +187,7 @@ import { useAuthStore } from '@/stores/auth'
 import { TransactionOperation } from '@/types'
 import { Back, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onUnmounted, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -171,6 +197,25 @@ const { performTransaction, user, wallet } = useAuthStore()
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 const showHistory = ref(false)
+const drawerWidth = ref('40%')
+
+function updateWidth() {
+  if (window.innerWidth < 1000) {
+    drawerWidth.value = '60%'
+  }
+  if (window.innerWidth < 700) {
+    drawerWidth.value = '100%'
+  }
+}
+
+// Watch for window resize events
+onMounted(() => {
+  window.addEventListener('resize', updateWidth)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWidth)
+})
 
 const num = ref(20)
 const radio1 = ref('1')
@@ -375,7 +420,9 @@ body {
 .el-radio-button {
   flex-grow: 1;
 }
-
+.el-drawer.rtl {
+  background-color: transparent;
+}
 :deep(.el-radio-group) {
   display: flex;
   flex: 1;
@@ -490,6 +537,10 @@ body {
   justify-content: space-between;
   margin-bottom: 1rem;
 }
+.transaction-header-left {
+  display: flex;
+  gap: 8px;
+}
 
 .transaction-type {
   font-weight: bold;
@@ -561,7 +612,8 @@ body {
   padding-top: 1rem;
   margin-top: 1rem;
 }
-
+.game-mode,
+.purchase-info,
 .balance-change,
 .final-balance {
   display: flex;
