@@ -108,8 +108,9 @@
     v-model="showHistory"
     title="Transaction History"
     direction="rtl"
-    :size="drawerWidth"
+    size="100%"
     class="history-drawer"
+    style="width: 100%; max-width: 500px;"
   >
     <div class="history-content">
       <div v-for="(transaction, index) in recentTransactions" :key="index" class="transaction-card">
@@ -187,7 +188,7 @@ import { useAuthStore } from '@/stores/auth'
 import { TransactionOperation } from '@/types'
 import { Back, ArrowRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { ref, watch, computed, onUnmounted, onMounted } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -197,25 +198,25 @@ const { performTransaction, user, wallet } = useAuthStore()
 const showConfirmDeposit = ref(false)
 const confirmExitDialogVisible = ref(false)
 const showHistory = ref(false)
-const drawerWidth = ref('40%')
+// const drawerWidth = ref('40%')
 
-function updateWidth() {
-  if (window.innerWidth < 1000) {
-    drawerWidth.value = '60%'
-  }
-  if (window.innerWidth < 700) {
-    drawerWidth.value = '100%'
-  }
-}
+// function updateWidth() {
+//   if (window.innerWidth < 1000) {
+//     drawerWidth.value = '60%'
+//   }
+//   if (window.innerWidth < 700) {
+//     drawerWidth.value = '100%'
+//   }
+// }
 
 // Watch for window resize events
-onMounted(() => {
-  window.addEventListener('resize', updateWidth)
-})
+// onMounted(() => {
+//   window.addEventListener('resize', updateWidth)
+// })
 
-onUnmounted(() => {
-  window.removeEventListener('resize', updateWidth)
-})
+// onUnmounted(() => {
+//   window.removeEventListener('resize', updateWidth)
+// })
 
 const num = ref(20)
 const radio1 = ref('1')
@@ -515,10 +516,10 @@ body {
   z-index: 1000;
 }
 
-.history-drawer {
+/* .history-drawer {
   background-color: #f8f9fa;
   color: #212529;
-}
+} */
 
 .history-content {
   padding: 1rem;
