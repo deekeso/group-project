@@ -23,7 +23,7 @@ const loading = ref(false)
 // Update the validateForm function to properly handle validation
 const validateForm = () => {
   if (!formRef.value) return Promise.resolve(false)
-  
+
   return formRef.value.validate()
     .then(() => true)
     .catch(() => {
@@ -96,14 +96,14 @@ const handleSubmit = async (e: Event) => {
 
     await authStore.login(form.email, form.password)
     const modalShown = showSuccessModal('Login Successful', 'Welcome back to Keno Plus!')
-    
+
     if (!modalShown) {
       ElMessage({
         message: 'Login successful! Welcome back to Keno Plus!',
         type: 'success',
       })
     }
-    
+
     emit('close')
     const redirect = (router.currentRoute.value.query.redirect as string) || '/home'
     router.push(redirect)
@@ -135,7 +135,50 @@ defineExpose({ resetForm })
 </script>
 
 <template>
-  <div class="image-container">
+  <div style="width: 100%; height: 100%;">
+    <el-dialog v-model="showSignupForm" @close="showSignupForm = false" style="background-color: transparent" center>
+      <SignupForm @close="((showSignupForm = false), (showSigninForm = true))" />
+    </el-dialog>
+    <div class="dialog-content">
+        <!-- <img src="../assets/SignInImg.png" alt="Sign In" class="main-image" />
+        <img src="../assets/Group 27.png" alt="Top Left Logo" class="keno-logo" /> -->
+      <div class="form-container">
+        <div class="form-heading">
+            <p>Sign In</p>
+          </div>
+          <div class="form-body">
+            <el-form ref="formRef" :model="form" :rules="rules" class="login-form" @submit.prevent="handleSubmit">
+              <div class="form-group">
+                <label>Email</label>
+                <el-form-item prop="email">
+                  <el-input v-model.trim="form.email" placeholder="Enter your email" type="email" />
+                </el-form-item>
+              </div>
+
+              <div class="form-group" style="margin-top: 24px">
+                <label>Password</label>
+                <el-form-item prop="password">
+                  <el-input v-model.trim="form.password" placeholder="Enter your password" type="password"
+                    show-password />
+                </el-form-item>
+              </div>
+              <div class="forgot-password">
+                <router-link to="/forgot-password" class="forgot-link"> Forgot Password? </router-link>
+              </div>
+
+              <div class="form-footer">
+                <el-button type="primary" native-type="submit" :loading="loading" class="submit-btn">
+                  Sign in
+                </el-button>
+              </div>
+            </el-form>
+          </div>
+          <p class="text-end">Dont have an account? <el-link type="primary" @click="handleSignupClick">Sign up here.</el-link></p>
+
+      </div>
+    </div>
+  </div>
+  <!-- <div class="image-container">
     <img src="../assets/SignInImg.png" alt="Sign In" class="main-image" />
     <img src="../assets/Group 27.png" alt="Top Left Logo" class="keno-logo" />
     <div class="text-overlay">
@@ -192,44 +235,90 @@ defineExpose({ resetForm })
         </el-form>
       </div>
     </div>
-  </div>
-
-  <el-dialog
-    v-model="showSignupForm"
-    @close="showSignupForm = false"
-    style="background-color: transparent"
-    center
-  >
-    <SignupForm @close="((showSignupForm = false), (showSigninForm = true))" />
-  </el-dialog>
+  </div> -->
 </template>
 <style scoped>
+.dialog-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  background-color: white;
+  height: fit-content;
+  width: 100%;
+  border-radius: 12px;
+}
+
+.left-container,
 .form-container {
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.left-container {
+  background-image: url(src/assets/SignInImg.png);
+  background-position: center;
+  background-size: cover;
+}
+
+@media (max-width: 576px) {
+  .dialog-content {}
+}
+
+/* Small devices (tablets) */
+@media (max-width: 768px) {}
+
+/* Medium devices (small laptops) */
+@media (max-width: 992px) {
+  /* Styles for small laptops */
+}
+
+/* Large devices (desktops) */
+@media (max-width: 1200px) {
+  /* Styles for desktops */
+}
+
+/* Extra large devices (large screens) */
+@media (max-width: 1400px) {
+  /* Styles for very large screens */
+}
+
+/* .form-container {
   background-color: rgb(235, 235, 235);
   border-radius: 0px 12px 12px 0px;
   width: 574px;
   height: 722px;
-}
-.form-heading {
+} */
+
+/* .form-heading {
   color: #060351;
   font-size: 22px;
   font-family: 'Inter', sans-serif;
   font-variation-settings: 'wght' 700;
   margin-top: 28px;
   margin-left: 28px;
-}
+} */
 
-.form-body {
+/* .form-body {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 120px;
   margin-left: 57px;
   margin-right: 57px;
-}
+} */
+
 .el-input {
-  width: 460px;
+  width: 100%;
   height: 54px;
+}
+
+.form-body {
+  width: 100%;
 }
 
 .form-group label {
@@ -237,35 +326,40 @@ defineExpose({ resetForm })
   font-family: 'Inter', sans-serif;
   font-size: 16px;
 }
+
 .forgot-password .forgot-link {
   margin-top: 24px;
   color: #060351;
   text-decoration: underline;
+  float: right;
 }
+
 .form-footer .el-button {
   margin-top: 24px;
-  width: 460px;
+  width: 100%;
   height: 60px;
   font-size: 20px;
   background-color: #f8ab00;
   color: #060351;
 }
+
 .image-container {
   position: relative;
-  width: fit-content;
+  width: 100%;
   display: flex;
 }
-.main-image {
-  width: 100%; /* Adjust as needed */
-  display: block;
-}
+
+
 .keno-logo {
   position: absolute;
-  top: 0px; /* Adjust position */
-  left: 28px; /* Adjust position */
+  top: 0px;
+  /* Adjust position */
+  left: 28px;
+  /* Adjust position */
   width: 200px;
   height: auto;
 }
+
 .text-overlay {
   position: absolute;
   top: 25%;
@@ -280,6 +374,7 @@ defineExpose({ resetForm })
   font-size: 14px;
   font-weight: bold;
 }
+
 .text-body {
   position: absolute;
   margin-top: 40px;
@@ -287,14 +382,17 @@ defineExpose({ resetForm })
   font-family: Roboto, sans-serif;
   width: 100%;
 }
+
 .text-end {
-  margin-top: 170px;
+  margin-top: 24px;
   text-align: center;
   font-family: Roboto, sans-serif;
 }
+
 .signup-btn {
   margin-top: 24px;
 }
+
 .signup-btn,
 .el-button {
   margin-left: auto;
@@ -304,6 +402,7 @@ defineExpose({ resetForm })
   background-color: transparent;
   color: #f8ab00;
 }
+
 .signup-btn:hover .el-button {
   color: #060351;
   background-color: #f8ab00;
@@ -313,7 +412,13 @@ defineExpose({ resetForm })
 ::v-deep(.el-dialog__header) {
   display: none;
 }
-::v-deep(.el-dialocenter) {
-  display: none;
+
+.form-heading {
+  color: #060351;
+  font-size: 22px;
+  font-family: 'Inter', sans-serif;
+  font-variation-settings: 'wght' 700;
+  margin-top: 28px;
+  margin-left: 28px;
 }
 </style>

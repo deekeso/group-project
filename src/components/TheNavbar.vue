@@ -38,15 +38,6 @@ const showSigninModal = () => {
   isSignupVisible.value = false
 }
 
-const showSignupModal = () => {
-  isSignupVisible.value = true
-  isSigninVisible.value = false
-}
-
-const handleLoginClick = () => {
-  isSigninVisible.value = true
-}
-
 // Handle signin to signup transition
 const handleOpenSignup = () => {
   isSigninVisible.value = false
